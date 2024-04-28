@@ -1,6 +1,6 @@
 [package]
 name = "alkyd"
-version = "0.1.6"
+version = "0.1.7"
 edition = "2021"
 license = "MIT license"
 description = "bevy crate for handling procedural textures and shaders"
