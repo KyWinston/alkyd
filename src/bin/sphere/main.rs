@@ -29,10 +29,7 @@ fn main() {
         .add_systems(Startup, (init_camera.before(init_scene), init_scene))
         .add_systems(
             Update,
-            (
-                generate_tangents,
-                rotate_mesh.run_if(resource_exists::<PainterlyInspector>),
-            ),
+            (rotate_mesh.run_if(resource_exists::<PainterlyInspector>),),
         )
         .run();
 }
@@ -69,12 +66,12 @@ fn init_scene(
     asset_server: Res<AssetServer>,
 ) {
     let material = materials.add(Painterly {
-        diffuse_color: Color::BLUE,
-        brush_handle: asset_server.load("brush_grunge.png"),
-        brush_handle_normal: asset_server.load("brush_grunge_normal.png"),
+        // diffuse_color: Color::BLUE,
+        // brush_handle: asset_server.load("brush_grunge.png"),
+        // brush_handle_normal: asset_server.load("brush_grunge_normal.png"),
         ..default()
     });
-    let mesh = meshes.add(Sphere::new(4.0).mesh().ico(8).unwrap());
+    let mesh = meshes.add(Sphere::new(4.0).mesh().ico(12).unwrap());
     commands.spawn((
         MaterialMeshBundle {
             mesh,
@@ -99,16 +96,4 @@ fn init_scene(
         transform: Transform::from_xyz(-4.0, 0.5, -2.0),
         ..default()
     });
-}
-
-fn generate_tangents(
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut show_q: Query<&Handle<Mesh>, With<Showcase>>,
-) {
-    if let Ok(show) = show_q.get_single_mut() {
-        let check_mesh = meshes.get_mut(show.id());
-        if check_mesh.is_some() {
-            let _ = check_mesh.unwrap().generate_tangents();
-        }
-    }
 }
