@@ -8,7 +8,6 @@ use alkyd::{
 
 use bevy::{
     core_pipeline::prepass::NormalPrepass,
-    math::primitives::Sphere,
     prelude::*,
     render::texture::{ImageAddressMode, ImageSamplerDescriptor},
 };
@@ -66,12 +65,12 @@ fn init_scene(
     asset_server: Res<AssetServer>,
 ) {
     let material = materials.add(Painterly {
-        // diffuse_color: Color::BLUE,
-        // brush_handle: asset_server.load("brush_grunge.png"),
-        // brush_handle_normal: asset_server.load("brush_grunge_normal.png"),
+        diffuse_color: Color::BLUE,
+        brush_handle: asset_server.load("brush_grunge.png"),
+        brush_handle_normal: asset_server.load("brush_grunge_normal.png"),
         ..default()
     });
-    let mesh = meshes.add(Sphere::new(4.0).mesh().ico(12).unwrap());
+    let mesh = meshes.add(Cuboid::from_size(Vec3::splat(4.0)));
     commands.spawn((
         MaterialMeshBundle {
             mesh,

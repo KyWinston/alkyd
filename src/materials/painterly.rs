@@ -14,19 +14,18 @@ pub struct Painterly {
     pub diffuse_color: Color,
     pub roughness: f32,
     pub metallic: f32,
-    // pub brush_distortion: f32,
-    // pub brush_blur: f32,
-    // pub brush_angle: f32,
-    // pub brush_texture_influence: f32,
+    pub brush_distortion: f32,
+    pub brush_blur: f32,
+    pub brush_angle: f32,
+    pub brush_texture_influence: f32,
     pub color_varience: f32,
-    pub tiling_period: Vec3,
     pub noise_scale: f32,
-    // #[texture(1)]
-    // #[sampler(2)]
-    // pub brush_handle: Handle<Image>,
-    // #[texture(3)]
-    // #[sampler(4)]
-    // pub brush_handle_normal: Handle<Image>,
+    #[texture(1)]
+    #[sampler(2)]
+    pub brush_handle: Handle<Image>,
+    #[texture(3)]
+    #[sampler(4)]
+    pub brush_handle_normal: Handle<Image>,
 }
 
 #[derive(Clone, Default, ShaderType)]
@@ -35,12 +34,11 @@ pub struct PainterlyUniform {
     pub diffuse_color: Vec4,
     pub roughness: f32,
     pub metallic: f32,
-    // pub brush_distortion: f32,
-    // pub brush_blur: f32,
-    // pub brush_angle: f32,
-    // pub brush_texture_influence: f32,
+    pub brush_distortion: f32,
+    pub brush_blur: f32,
+    pub brush_angle: f32,
+    pub brush_texture_influence: f32,
     pub color_varience: f32,
-    pub tiling_period: Vec3,
     pub noise_scale: f32,
 }
 
@@ -64,12 +62,11 @@ impl AsBindGroupShaderType<PainterlyUniform> for Painterly {
             diffuse_color: self.diffuse_color.as_linear_rgba_f32().into(),
             roughness: self.roughness,
             metallic: self.metallic,
-            // brush_distortion: self.brush_distortion,
-            // brush_blur: self.brush_blur,
-            // brush_angle: self.brush_angle,
-            // brush_texture_influence: self.brush_texture_influence,
+            brush_distortion: self.brush_distortion,
+            brush_blur: self.brush_blur,
+            brush_angle: self.brush_angle,
+            brush_texture_influence: self.brush_texture_influence,
             color_varience: self.color_varience,
-            tiling_period: self.tiling_period,
             noise_scale: self.noise_scale,
         }
     }
