@@ -13,6 +13,7 @@ pub struct Painterly {
     pub view_normals: bool,
     pub diffuse_color: Color,
     pub roughness: f32,
+    pub normal_strength:f32,
     pub metallic: f32,
     pub brush_distortion: f32,
     pub brush_blur: f32,
@@ -32,6 +33,7 @@ pub struct Painterly {
 pub struct PainterlyUniform {
     pub view_normals: u32,
     pub diffuse_color: Vec4,
+    pub normal_strength:f32,
     pub roughness: f32,
     pub metallic: f32,
     pub brush_distortion: f32,
@@ -62,6 +64,7 @@ impl AsBindGroupShaderType<PainterlyUniform> for Painterly {
             diffuse_color: self.diffuse_color.as_linear_rgba_f32().into(),
             roughness: self.roughness,
             metallic: self.metallic,
+            normal_strength: self.normal_strength,
             brush_distortion: self.brush_distortion,
             brush_blur: self.brush_blur,
             brush_angle: self.brush_angle,
