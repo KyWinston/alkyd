@@ -23,7 +23,7 @@ fn main() {
                     ..Default::default()
                 },
             }),
-            AlkydPlugin,
+            AlkydPlugin { debug: true },
         ))
         .add_systems(Startup, (init_camera.before(init_scene), init_scene))
         .add_systems(

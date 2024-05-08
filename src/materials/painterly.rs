@@ -33,8 +33,8 @@ pub struct Painterly {
 pub struct PainterlyUniform {
     pub view_normals: u32,
     pub diffuse_color: Vec4,
-    pub normal_strength:f32,
     pub roughness: f32,
+    pub normal_strength:f32,
     pub metallic: f32,
     pub brush_distortion: f32,
     pub brush_blur: f32,

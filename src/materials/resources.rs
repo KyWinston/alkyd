@@ -18,7 +18,7 @@ pub struct PainterlyInspector {
     diffuse_color: Color,
     pub roughness: f32,
     pub metallic: f32,
-    pub normal_strength:f32,
+    pub normal_strength: f32,
     brush_blur: f32,
     brush_distortion: f32,
     brush_angle: f32,
@@ -34,7 +34,7 @@ impl Default for PainterlyInspector {
             diffuse_color: Color::BLUE,
             brush_blur: 20.0,
             brush_distortion: 34.0,
-            normal_strength:1.0,
+            normal_strength: 1.0,
             brush_angle: 15.6,
             brush_texture_influence: 20.0,
             color_varience: 0.5,
@@ -54,7 +54,7 @@ pub fn material_changed(
         if let Ok(alk_handle) = alkyd_q.get_single() {
             if let Some(mat) = paint_q.get_mut(alk_handle.id()) {
                 let src_mat = &my_res.painterly;
-               
+
                 mat.view_normals = src_mat.view_normals;
                 mat.diffuse_color = src_mat.diffuse_color;
                 mat.brush_distortion = src_mat.brush_distortion;
