@@ -1,6 +1,6 @@
 [package]
 name = "alkyd"
-version = "0.1.12"
+version = "0.1.13"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 description = "bevy crate for handling procedural textures and shaders"
@@ -10,12 +10,12 @@ exclude = ["src/bin"]
 bevy = { version = "0.13.2", features = ["dynamic_linking"] }
 bevy-inspector-egui = "0.24.0"
 
+[dependencies.bitflags]
+version = "2.5.0"
+
 [lib]
 name = "alkyd"
 path = "src/lib.rs"
-
-[dependencies.bitflags]
-version = "2.5.0"
 
 # Enable only a small amount of optimization in debug mode
 [profile.dev]
