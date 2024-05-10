@@ -1,19 +1,44 @@
 use bevy::{
+    pbr::{MaterialPipeline, MaterialPipelineKey},
     prelude::*,
     render::{
+        mesh::MeshVertexBufferLayout,
         render_asset::RenderAssets,
-        render_resource::{AsBindGroup, AsBindGroupShaderType, ShaderRef, ShaderType},
+        render_resource::{
+            AsBindGroup, AsBindGroupShaderType, RenderPipelineDescriptor, ShaderRef, ShaderType,
+            SpecializedMeshPipelineError,
+        },
     },
 };
 
-#[derive(Asset, AsBindGroup, Default, Reflect, Debug, Clone)]
-#[reflect(Default, Debug)]
+bitflags::bitflags! {
+    #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+    pub struct PainterlyFlags: u8 {
+        const BASE_COLOR_TEXTURE         = 0x01;
+        const VARIENCE_TEXTURE           = 0x02;
+        const SHOW_NORMAL                = 0x04;
+        const METALLIC_ROUGHNESS         = 0x08;
+        const OCCLUSION_TEXTURE          = 0x16;
+        const NORMAL_TEXTURE             = 0x32;
+        const NONE                       = 0;
+        const UNINITIALIZED              = 0xF;
+    }
+}
+
+impl Default for PainterlyFlags {
+    fn default() -> Self {
+        PainterlyFlags::NONE
+    }
+}
+
+#[derive(Asset, TypePath, Default, AsBindGroup, Debug, Clone)]
 #[uniform(0, PainterlyUniform)]
+#[bind_group_data(CustomMaterialKey)]
 pub struct Painterly {
     pub view_normals: bool,
     pub diffuse_color: Color,
     pub roughness: f32,
-    pub normal_strength:f32,
+    pub normal_strength: f32,
     pub metallic: f32,
     pub brush_distortion: f32,
     pub brush_blur: f32,
@@ -23,44 +48,58 @@ pub struct Painterly {
     pub noise_scale: f32,
     #[texture(1)]
     #[sampler(2)]
-    pub brush_handle: Handle<Image>,
+    pub brush_handle: Option<Handle<Image>>,
     #[texture(3)]
     #[sampler(4)]
-    pub brush_handle_normal: Handle<Image>,
+    pub brush_handle_normal: Option<Handle<Image>>,
 }
 
 #[derive(Clone, Default, ShaderType)]
 pub struct PainterlyUniform {
-    pub view_normals: u32,
-    pub diffuse_color: Vec4,
-    pub roughness: f32,
-    pub normal_strength:f32,
-    pub metallic: f32,
-    pub brush_distortion: f32,
-    pub brush_blur: f32,
-    pub brush_angle: f32,
-    pub brush_texture_influence: f32,
-    pub color_varience: f32,
-    pub noise_scale: f32,
+    diffuse_color: Vec4,
+    roughness: f32,
+    normal_strength: f32,
+    metallic: f32,
+    brush_distortion: f32,
+    brush_blur: f32,
+    brush_angle: f32,
+    brush_texture_influence: f32,
+    color_varience: f32,
+    noise_scale: f32,
 }
 
 impl Material for Painterly {
     fn fragment_shader() -> ShaderRef {
-        "painterly_material.wgsl".into()
+        "embedded://alkyd/materials/painterly_material.wgsl".into()
     }
-    fn deferred_fragment_shader() -> ShaderRef {
-        "painterly_material.wgsl".into()
+    // fn deferred_fragment_shader() -> ShaderRef {
+    //     "painterly_material.wgsl".into()
+    // }
+    fn specialize(
+        _pipeline: &MaterialPipeline<Self>,
+        descriptor: &mut RenderPipelineDescriptor,
+        _layout: &MeshVertexBufferLayout,
+        key: MaterialPipelineKey<Self>,
+    ) -> Result<(), SpecializedMeshPipelineError> {
+        let fragment = descriptor.fragment.as_mut().unwrap();
+
+        if key.bind_group_data.show_normals {
+            fragment.shader_defs.push("SHOW_NORMAL".into());
+        }
+        if key.bind_group_data.normal_texture {
+            fragment.shader_defs.push("NORMAL_TEXTURE".into());
+        }
+        if key.bind_group_data.metallic_roughness {
+            fragment.shader_defs.push("METTALIC_ROUGHNESS".into());
+        }
+
+        Ok(())
     }
 }
 
 impl AsBindGroupShaderType<PainterlyUniform> for Painterly {
     fn as_bind_group_shader_type(&self, _: &RenderAssets<Image>) -> PainterlyUniform {
-        let mut view_n = 0;
-        if self.view_normals {
-            view_n = 1;
-        }
         PainterlyUniform {
-            view_normals: view_n,
             diffuse_color: self.diffuse_color.as_linear_rgba_f32().into(),
             roughness: self.roughness,
             metallic: self.metallic,
@@ -71,6 +110,39 @@ impl AsBindGroupShaderType<PainterlyUniform> for Painterly {
             brush_texture_influence: self.brush_texture_influence,
             color_varience: self.color_varience,
             noise_scale: self.noise_scale,
+        }
+    }
+}
+
+#[derive(Eq, PartialEq, Hash, Clone)]
+pub struct CustomMaterialKey {
+    show_normals: bool,
+    metallic_roughness: bool,
+    normal_texture: bool,
+}
+
+impl From<&Painterly> for CustomMaterialKey {
+    fn from(material: &Painterly) -> Self {
+        let mut flags = PainterlyFlags::NONE;
+        if material.view_normals {
+            flags |= PainterlyFlags::SHOW_NORMAL;
+        }
+
+        if material.brush_handle_normal.is_some() && material.brush_distortion > 0.0 {
+            flags |= PainterlyFlags::NORMAL_TEXTURE;
+        }
+
+        if material.metallic > 0.0 {
+            flags |= PainterlyFlags::METALLIC_ROUGHNESS;
+        }
+
+        if material.color_varience > 0.0 {
+            flags |= PainterlyFlags::VARIENCE_TEXTURE;
+        }
+        Self {
+            show_normals: flags.contains(PainterlyFlags::SHOW_NORMAL),
+            metallic_roughness: flags.contains(PainterlyFlags::METALLIC_ROUGHNESS),
+            normal_texture: flags.contains(PainterlyFlags::NORMAL_TEXTURE),
         }
     }
 }

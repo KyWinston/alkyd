@@ -4,11 +4,11 @@
 #import bevy_pbr::prepass_utils::prepass_normal;
 #import bevy_pbr::mesh_view_bindings::view;
 
-
+    
 struct Painterly {
-    view_normals: u32,
     diffuse_color: vec4<f32>,
     roughness: f32,
+    normal_strength: f32,
     metallic: f32,
     brush_distortion: f32,
     brush_blur: f32,
@@ -30,15 +30,23 @@ fn fragment(
     @builtin(front_facing) is_front: bool
 ) -> @location(0) vec4<f32> {
     var pbr_input: PbrInput = pbr_input_new();
+    let varience = snoise2(in.uv).x * material.brush_distortion;
     let grunge_tex = textureSample(brush_handle, nearest_sampler, in.uv * material.noise_scale * 0.5);
+    #ifdef NORMAL_TEXTURE
     let grunge_tex_normal = textureSample(brush_handle_normal, normal_sampler, in.uv * material.noise_scale);
+    let grunge_normal_distort = mix(vec3(varience), grunge_tex.rgb, material.brush_texture_influence).xy;
+    #else
+    let grunge_normal_distort = vec2(varience);
+    #endif
     let double_sided = (pbr_input.material.flags & STANDARD_MATERIAL_FLAGS_DOUBLE_SIDED_BIT) != 0u;
-    pbr_input.material.perceptual_roughness = smooth_knob(material.roughness);
-    pbr_input.material.metallic = smooth_knob(material.metallic);
+    pbr_input.material.perceptual_roughness = material.roughness;
+    #ifdef METALLIC_ROUGHNESS;
+    pbr_input.material.metallic = material.metallic;
+    #endif
     pbr_input.frag_coord = in.position;
     pbr_input.world_position = in.world_position;
-    let varience = snoise2(in.uv).x;
-    let voronoi_base = voronoise(mix(in.uv * material.noise_scale, mix(vec3(snoise2(in.uv).x * material.brush_distortion), grunge_tex.rgb, smooth_knob(material.brush_texture_influence)).xy, 0.5), smooth_knob(material.brush_angle), smooth_knob(material.brush_blur));
+
+    let voronoi_base = voronoise(mix(in.uv * material.noise_scale, grunge_normal_distort, 0.5), material.brush_angle, material.brush_blur);
     pbr_input.world_normal = fns::prepare_world_normal(
         apply_hue(in.world_normal, voronoi_base),
         double_sided,
@@ -49,22 +57,16 @@ fn fragment(
         pbr_input.world_normal,
         double_sided,
         is_front,
-        #ifdef VERTEX_TANGENTS
-        #ifdef STANDARD_MATERIAL_NORMAL_MAP
-        in.world_tangent,
-        #endif
-        #endif
         in.uv,
         view.mip_bias,
     );
     pbr_input.material.base_color = vec4(apply_hue(material.diffuse_color.rgb, voronoi_base * material.color_varience), 1.0);
     pbr_input.V = fns::calculate_view(in.world_position, pbr_input.is_orthographic);
-    if material.view_normals == 1 {
-        return vec4(pbr_input.N, 1.0);
-        // return vec4(vec3(voronoi_base), 1.0);
-    } else {
-        return fns::apply_pbr_lighting(pbr_input);
-    }
+    #ifdef SHOW_NORMAL  
+    return vec4(pbr_input.N, 1.0);
+    #else 
+    return fns::apply_pbr_lighting(pbr_input);
+    #endif
 }
 
 fn hash_three(p: vec2<f32>) -> vec3<f32> {
@@ -135,8 +137,7 @@ fn snoise(v:vec2<f32>) -> f32 {
     let x12_dot_b = dot(x12.zw,x12.zw);
 
     var m = max(0.5 - vec3<f32>(x0_dot, x12_dot_a, x12_dot_b), vec3<f32>(0.0));
-    m = m*m;
-    m = m*m;
+    m *= m*m;
 
     let x = 2.0 * fract(p * C.www) - 1.0;
     let h = abs(x) - 0.5;
@@ -156,8 +157,4 @@ fn snoise2(  x:vec2<f32> ) -> vec2<f32>{
     let s = snoise(vec2( x ));
     let s1 = snoise(vec2( x.y - 19.1, x.x + 47.2 ));
     return vec2( s , s1 );
-}
-
-fn smooth_knob(x:f32) -> f32 {
-    return clamp(x / 50.0, 0.0, 1.0);
 }

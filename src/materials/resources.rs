@@ -16,15 +16,15 @@ pub struct MaterialsInspector {
 pub struct PainterlyInspector {
     view_normals: bool,
     diffuse_color: Color,
-    pub roughness: f32,
-    pub metallic: f32,
-    pub normal_strength: f32,
-    brush_blur: f32,
+    roughness: f32,
+    normal_strength: f32,
+    metallic: f32,
     brush_distortion: f32,
+    brush_blur: f32,
     brush_angle: f32,
-    pub brush_texture_influence: f32,
-    pub noise_scale: f32,
-    pub color_varience: f32,
+    brush_texture_influence: f32,
+    color_varience: f32,
+    noise_scale: f32,
 }
 
 impl Default for PainterlyInspector {
@@ -32,13 +32,13 @@ impl Default for PainterlyInspector {
         Self {
             view_normals: false,
             diffuse_color: Color::BLUE,
-            brush_blur: 20.0,
+            brush_blur: 20.0 / 50.0,
             brush_distortion: 34.0,
-            normal_strength: 1.0,
-            brush_angle: 15.6,
-            brush_texture_influence: 20.0,
+            normal_strength: 1.0 / 50.0,
+            brush_angle: 15.6 / 50.0,
+            brush_texture_influence: 20.0 / 50.0,
             color_varience: 0.5,
-            roughness: 15.0,
+            roughness: 15.0 / 50.0,
             metallic: 0.0,
             noise_scale: 5.0,
         }

@@ -66,8 +66,8 @@ fn init_scene(
 ) {
     let material = materials.add(Painterly {
         diffuse_color: Color::BLUE,
-        brush_handle: asset_server.load("brush_grunge.png"),
-        brush_handle_normal: asset_server.load("brush_grunge_normal.png"),
+        brush_handle: Some(asset_server.load("brush_grunge.png")),
+        brush_handle_normal: Some(asset_server.load("brush_grunge_normal.png")),
         ..default()
     });
     let mesh = meshes.add(Cuboid::from_size(Vec3::splat(4.0)));

@@ -1,7 +1,7 @@
 target/
 target/*
 **/*.rs.bk
-assets/*.png
+assets
 Cargo.lock
 .cargo/config
 .cargo/config.toml
