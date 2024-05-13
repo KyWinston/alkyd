@@ -1,4 +1,5 @@
-use super::painterly::Painterly;
+use super::components::Showcase;
+use super::painterly::PainterlyMaterial;
 use bevy::prelude::*;
 
 use bevy_inspector_egui::prelude::ReflectInspectorOptions;
@@ -11,7 +12,7 @@ pub struct MaterialsInspector {
     painterly: PainterlyInspector,
 }
 
-#[derive(Reflect, Resource, Debug, InspectorOptions)]
+#[derive(Reflect, Default, Resource, Debug, InspectorOptions)]
 #[reflect(Resource, InspectorOptions)]
 pub struct PainterlyInspector {
     view_normals: bool,
@@ -27,34 +28,40 @@ pub struct PainterlyInspector {
     noise_scale: f32,
 }
 
-impl Default for PainterlyInspector {
-    fn default() -> Self {
-        Self {
-            view_normals: false,
-            diffuse_color: Color::BLUE,
-            brush_blur: 20.0 / 50.0,
-            brush_distortion: 34.0,
-            normal_strength: 1.0 / 50.0,
-            brush_angle: 15.6 / 50.0,
-            brush_texture_influence: 20.0 / 50.0,
-            color_varience: 0.5,
-            roughness: 15.0 / 50.0,
-            metallic: 0.0,
-            noise_scale: 5.0,
+pub fn init_material(
+    mut commands: Commands,
+    mut my_res: ResMut<MaterialsInspector>,
+    paint_q: Res<Assets<PainterlyMaterial>>,
+    alkyd_q: Query<(Entity, &Handle<PainterlyMaterial>)>,
+) {
+    if my_res.is_added() {
+        if let Ok((ent, alk_handle)) = alkyd_q.get_single() {
+            if let Some(mat) = paint_q.get(alk_handle.id()) {
+                my_res.painterly.view_normals = mat.view_normals;
+                my_res.painterly.brush_angle = mat.brush_angle;
+                my_res.painterly.diffuse_color = mat.diffuse_color;
+                my_res.painterly.brush_distortion = mat.brush_distortion;
+                my_res.painterly.brush_blur = mat.brush_blur;
+                my_res.painterly.color_varience = mat.color_varience;
+                my_res.painterly.metallic = mat.metallic;
+                my_res.painterly.normal_strength = mat.normal_strength;
+                my_res.painterly.noise_scale = mat.noise_scale;
+                my_res.painterly.brush_texture_influence = mat.brush_texture_influence;
+            }
+            commands.entity(ent).insert(Showcase);
         }
     }
 }
 
 pub fn material_changed(
     my_res: ResMut<MaterialsInspector>,
-    mut paint_q: ResMut<Assets<Painterly>>,
-    alkyd_q: Query<&Handle<Painterly>>,
+    mut paint_q: ResMut<Assets<PainterlyMaterial>>,
+    alkyd_q: Query<&Handle<PainterlyMaterial>, With<Showcase>>,
 ) {
-    if my_res.is_changed() {
+    if my_res.is_changed() && !my_res.is_added() {
         if let Ok(alk_handle) = alkyd_q.get_single() {
             if let Some(mat) = paint_q.get_mut(alk_handle.id()) {
                 let src_mat = &my_res.painterly;
-
                 mat.view_normals = src_mat.view_normals;
                 mat.diffuse_color = src_mat.diffuse_color;
                 mat.brush_distortion = src_mat.brush_distortion;

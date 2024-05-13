@@ -1,6 +1,7 @@
 use alkyd::{
     materials::{
-        painterly::Painterly,
+        components::Showcase,
+        painterly::PainterlyMaterial,
         resources::{MaterialsInspector, PainterlyInspector},
     },
     AlkydPlugin,
@@ -33,9 +34,6 @@ fn main() {
         .run();
 }
 
-#[derive(Component)]
-struct Showcase;
-
 fn rotate_mesh(
     mut mesh_q: Query<&mut Transform, With<Showcase>>,
     inspector: Res<MaterialsInspector>,
@@ -60,37 +58,32 @@ fn init_camera(mut commands: Commands) {
 
 fn init_scene(
     mut commands: Commands,
-    mut materials: ResMut<Assets<Painterly>>,
+    mut materials: ResMut<Assets<PainterlyMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
     asset_server: Res<AssetServer>,
 ) {
-    let material = materials.add(Painterly {
+    let material = materials.add(PainterlyMaterial {
         diffuse_color: Color::BLUE,
         brush_handle: Some(asset_server.load("brush_grunge.png")),
         brush_handle_normal: Some(asset_server.load("brush_grunge_normal.png")),
         ..default()
     });
     let mesh = meshes.add(Cuboid::from_size(Vec3::splat(4.0)));
-    commands.spawn((
-        MaterialMeshBundle {
-            mesh,
-            material,
-            ..default()
-        },
-        Showcase,
-    ));
+    commands.spawn((MaterialMeshBundle {
+        mesh,
+        material,
+        ..default()
+    },));
 
     commands.spawn(DirectionalLightBundle {
         directional_light: DirectionalLight::default(),
         transform: Transform::from_xyz(-4.0, 5.0, 2.0).looking_at(Vec3::ZERO, Vec3::Y),
         ..default()
     });
-
     commands.spawn(PointLightBundle {
         transform: Transform::from_xyz(1.0, 3.0, -2.0),
         ..default()
     });
-
     commands.spawn(PointLightBundle {
         transform: Transform::from_xyz(-4.0, 0.5, -2.0),
         ..default()

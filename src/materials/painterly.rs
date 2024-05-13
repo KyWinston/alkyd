@@ -31,10 +31,10 @@ impl Default for PainterlyFlags {
     }
 }
 
-#[derive(Asset, TypePath, Default, AsBindGroup, Debug, Clone)]
+#[derive(Asset, TypePath, AsBindGroup, Debug, Clone)]
 #[uniform(0, PainterlyUniform)]
 #[bind_group_data(CustomMaterialKey)]
-pub struct Painterly {
+pub struct PainterlyMaterial {
     pub view_normals: bool,
     pub diffuse_color: Color,
     pub roughness: f32,
@@ -54,6 +54,26 @@ pub struct Painterly {
     pub brush_handle_normal: Option<Handle<Image>>,
 }
 
+impl Default for PainterlyMaterial {
+    fn default() -> Self {
+        Self {
+            view_normals: false,
+            diffuse_color: Color::BLUE,
+            roughness: 0.4,
+            normal_strength: 1.0,
+            metallic: 0.0,
+            brush_distortion: 1.0,
+            brush_blur: 0.05,
+            brush_angle: 0.75,
+            brush_texture_influence: 3.5,
+            color_varience: 0.5,
+            noise_scale: 2.8,
+            brush_handle: None,
+            brush_handle_normal: None,
+        }
+    }
+}
+
 #[derive(Clone, Default, ShaderType)]
 pub struct PainterlyUniform {
     diffuse_color: Vec4,
@@ -68,7 +88,7 @@ pub struct PainterlyUniform {
     noise_scale: f32,
 }
 
-impl Material for Painterly {
+impl Material for PainterlyMaterial {
     fn fragment_shader() -> ShaderRef {
         "embedded://alkyd/materials/painterly_material.wgsl".into()
     }
@@ -97,7 +117,7 @@ impl Material for Painterly {
     }
 }
 
-impl AsBindGroupShaderType<PainterlyUniform> for Painterly {
+impl AsBindGroupShaderType<PainterlyUniform> for PainterlyMaterial {
     fn as_bind_group_shader_type(&self, _: &RenderAssets<Image>) -> PainterlyUniform {
         PainterlyUniform {
             diffuse_color: self.diffuse_color.as_linear_rgba_f32().into(),
@@ -121,8 +141,8 @@ pub struct CustomMaterialKey {
     normal_texture: bool,
 }
 
-impl From<&Painterly> for CustomMaterialKey {
-    fn from(material: &Painterly) -> Self {
+impl From<&PainterlyMaterial> for CustomMaterialKey {
+    fn from(material: &PainterlyMaterial) -> Self {
         let mut flags = PainterlyFlags::NONE;
         if material.view_normals {
             flags |= PainterlyFlags::SHOW_NORMAL;
