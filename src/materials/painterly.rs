@@ -15,11 +15,11 @@ bitflags::bitflags! {
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
     pub struct PainterlyFlags: u8 {
         const BASE_COLOR_TEXTURE         = 0x01;
-        const VARIENCE_TEXTURE           = 0x02;
-        const SHOW_NORMAL                = 0x04;
-        const METALLIC_ROUGHNESS         = 0x08;
-        const OCCLUSION_TEXTURE          = 0x16;
-        const NORMAL_TEXTURE             = 0x32;
+        const SHOW_NORMAL                = 0x02;
+        const METALLIC_ROUGHNESS         = 0x04;
+        const NORMAL_TEXTURE             = 0x08;
+        const BRUSH_TEXTURE              = 0x16;
+        const VARIANCE                   = 0x32;
         const NONE                       = 0;
         const UNINITIALIZED              = 0xF;
     }
@@ -112,6 +112,12 @@ impl Material for PainterlyMaterial {
         if key.bind_group_data.metallic_roughness {
             fragment.shader_defs.push("METTALIC_ROUGHNESS".into());
         }
+        if key.bind_group_data.normal_texture {
+            fragment.shader_defs.push("BRUSH_TEXTURE".into());
+        }
+        if key.bind_group_data.metallic_roughness {
+            fragment.shader_defs.push("VARIANCE".into());
+        }
 
         Ok(())
     }
@@ -137,8 +143,10 @@ impl AsBindGroupShaderType<PainterlyUniform> for PainterlyMaterial {
 #[derive(Eq, PartialEq, Hash, Clone)]
 pub struct CustomMaterialKey {
     show_normals: bool,
-    metallic_roughness: bool,
     normal_texture: bool,
+    metallic_roughness: bool,
+    brush_texture: bool,
+    variance: bool
 }
 
 impl From<&PainterlyMaterial> for CustomMaterialKey {
@@ -157,12 +165,19 @@ impl From<&PainterlyMaterial> for CustomMaterialKey {
         }
 
         if material.color_varience > 0.0 {
-            flags |= PainterlyFlags::VARIENCE_TEXTURE;
+            flags |= PainterlyFlags::VARIANCE;
+        }
+
+        if material.brush_handle.is_some() {
+            flags |= PainterlyFlags::BRUSH_TEXTURE;
         }
         Self {
             show_normals: flags.contains(PainterlyFlags::SHOW_NORMAL),
             metallic_roughness: flags.contains(PainterlyFlags::METALLIC_ROUGHNESS),
             normal_texture: flags.contains(PainterlyFlags::NORMAL_TEXTURE),
+            brush_texture: flags.contains(PainterlyFlags::BRUSH_TEXTURE),
+            variance: flags.contains(PainterlyFlags::VARIANCE),
+
         }
     }
 }
