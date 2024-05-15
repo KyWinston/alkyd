@@ -10,6 +10,7 @@ use bevy::{
 };
 
 use super::{
+    components::OffCam,
     resources::{NoiseImageBindGroups, NoiseImages, NoisePipeline},
     SIZE,
 };
@@ -31,13 +32,16 @@ pub fn setup(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
     let image0 = images.add(image.clone());
     let image1 = images.add(image);
 
-    commands.spawn(Camera2dBundle {
-        camera: Camera {
-            order: -1,
+    commands.spawn((
+        Camera2dBundle {
+            camera: Camera {
+                order: -1,
+                ..default()
+            },
             ..default()
         },
-        ..default()
-    });
+        OffCam,
+    ));
     commands.insert_resource(NoiseImages(vec![image0, image1]))
 }
 

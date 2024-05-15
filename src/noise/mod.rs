@@ -22,6 +22,7 @@ pub struct NoiseGenPlugin;
 #[derive(Debug, Hash, PartialEq, Eq, Clone, RenderLabel)]
 struct NoiseLabel;
 
+pub mod components;
 pub mod resources;
 pub mod systems;
 
