@@ -13,9 +13,11 @@ pub struct MaterialsInspector {
 }
 
 #[derive(Reflect, Default, Resource, Debug, InspectorOptions)]
+pub struct NoiseCache(Vec<Handle<Image>>);
+
+#[derive(Reflect, Default, Resource, Debug, InspectorOptions)]
 #[reflect(Resource, InspectorOptions)]
 pub struct PainterlyInspector {
-    view_normals: bool,
     diffuse_color: Color,
     roughness: f32,
     normal_strength: f32,
@@ -37,7 +39,6 @@ pub fn init_material(
     if my_res.is_added() {
         if let Ok((ent, alk_handle)) = alkyd_q.get_single() {
             if let Some(mat) = paint_q.get(alk_handle.id()) {
-                my_res.painterly.view_normals = mat.view_normals;
                 my_res.painterly.brush_angle = mat.brush_angle;
                 my_res.painterly.diffuse_color = mat.diffuse_color;
                 my_res.painterly.brush_distortion = mat.brush_distortion;
@@ -62,7 +63,6 @@ pub fn material_changed(
         if let Ok(alk_handle) = alkyd_q.get_single() {
             if let Some(mat) = paint_q.get_mut(alk_handle.id()) {
                 let src_mat = &my_res.painterly;
-                mat.view_normals = src_mat.view_normals;
                 mat.diffuse_color = src_mat.diffuse_color;
                 mat.brush_distortion = src_mat.brush_distortion;
                 mat.normal_strength = src_mat.normal_strength;

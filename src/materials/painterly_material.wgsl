@@ -16,7 +16,6 @@ struct Painterly {
     brush_texture_influence: f32,
     color_varience: f32,   
     noise_scale: f32,
-    
 }
 
 @group(2) @binding(0) var<uniform> material:Painterly;
@@ -24,6 +23,10 @@ struct Painterly {
 @group(2) @binding(2) var nearest_sampler: sampler;
 @group(2) @binding(3) var brush_handle_normal: texture_2d<f32>;
 @group(2) @binding(4) var normal_sampler: sampler;
+@group(2) @binding(5) var voro_cache: texture_2d<f32>;
+@group(2) @binding(6) var v_sampler: sampler;
+@group(2) @binding(7) var snoise_cache: texture_2d<f32>;
+@group(2) @binding(8) var s_sampler: sampler;
 
 @fragment
 fn fragment(
@@ -32,8 +35,7 @@ fn fragment(
 ) -> @location(0) vec4<f32> {
     var pbr_input: PbrInput = pbr_input_new();
     let double_sided = (pbr_input.material.flags & STANDARD_MATERIAL_FLAGS_DOUBLE_SIDED_BIT) != 0u;
-
-    let varience = snoise2(in.uv).x * material.brush_distortion;
+    let varience = textureSample(snoise_cache, s_sampler, in.uv).x * material.brush_distortion;
     #ifdef BRUSH_TEXTURE
     let grunge_tex = textureSample(brush_handle, nearest_sampler, in.uv * material.noise_scale);
     let grunge_normal_distort = mix(vec3(varience), grunge_tex.rgb, material.brush_texture_influence).xy;
@@ -107,64 +109,9 @@ fn voronoise(p: vec2<f32>, u: f32, v: f32) -> f32{
     return a.x/a.y;
 }
 
-fn mod289(x: vec2<f32>) -> vec2<f32> { 
-    return x - floor(x * (1.0 / 289.0)) * 289.0;
-}
-
-fn mod289_3(x: vec3<f32>) -> vec3<f32> { 
-    return x - floor(x * (1.0 / 289.0)) * 289.0;
-}
-
-fn permute(v: vec3<f32>) -> vec3<f32> { 
-    return mod289_3(((v * 34.0) + 1.0) * v);
-}
-
 fn apply_hue(col: vec3<f32>, hueAdjust:f32) -> vec3<f32>{
     let k = vec3(0.57735, 0.57735, 0.57735);
     let cosAngle = cos(hueAdjust);
     return col * cosAngle + cross(k, col) * sin(hueAdjust) + k * dot(k, col) * (1.0 - cosAngle);
 }
 
-fn snoise(v:vec2<f32>) -> f32 {
-    let C = vec4<f32>(0.211324865405187,  0.366025403784439, -0.577350269189626, 0.024390243902439); 
-    var i:vec2<f32>  = floor(v + dot(v, C.yy) );
-    let x0:vec2<f32> = v - i + dot(i, C.xx);
-
-    var i1:vec2<f32>;
-   
-    i1.x = step(x0.y,x0.x);
-    i1.y = 1.0 - i1.x;
-  
-    var x12 = vec4<f32>(x0.xyxy + C.xxzz);
-    x12 = vec4<f32>(x12.xy - vec2<f32>(i1),vec2<f32>(x12.zw));
-
-    i = mod289(i); 
-    let p:vec3<f32> = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
-    + i.x + vec3(0.0, i1.x, 1.0 ));
-
-    let x0_dot = dot(x0,x0);
-    let x12_dot_a = dot(x12.xy,x12.xy);
-    let x12_dot_b = dot(x12.zw,x12.zw);
-
-    var m = max(0.5 - vec3<f32>(x0_dot, x12_dot_a, x12_dot_b), vec3<f32>(0.0));
-    m *= m*m;
-
-    let x = 2.0 * fract(p * C.www) - 1.0;
-    let h = abs(x) - 0.5;
-    let ox = floor(x + 0.5);
-    let a0 = x - ox;
-
-   
-    m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
-
-    var g:vec3<f32>;
-    g.x  = a0.x  * x0.x  + h.x  * x0.y;
-    g = vec3<f32>(g.x,vec2<f32>(a0.yz * x12.xz + h.yz * x12.yw));
-    return 130.0 * dot(m, g);
-}
-
-fn snoise2(  x:vec2<f32> ) -> vec2<f32>{
-    let s = snoise(vec2( x ));
-    let s1 = snoise(vec2( x.y - 19.1, x.x + 47.2 ));
-    return vec2( s , s1 );
-}

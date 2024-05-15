@@ -4,6 +4,7 @@ use alkyd::{
         painterly::PainterlyMaterial,
         resources::{MaterialsInspector, PainterlyInspector},
     },
+    noise::resources::NoiseImages,
     AlkydPlugin,
 };
 
@@ -60,13 +61,15 @@ fn init_scene(
     mut commands: Commands,
     mut materials: ResMut<Assets<PainterlyMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
+    noise: Res<NoiseImages>,
     asset_server: Res<AssetServer>,
 ) {
     let material = materials.add(PainterlyMaterial {
         diffuse_color: Color::BLUE,
         brush_handle: Some(asset_server.load("brush_grunge.png")),
         brush_handle_normal: Some(asset_server.load("brush_grunge_normal.png")),
-
+        voro_cache: Some(noise.0[0].clone()),
+        snoise_cache: Some(noise.0[1].clone()),
         ..default()
     });
     let mesh = meshes.add(Cuboid::from_size(Vec3::splat(4.0)));
