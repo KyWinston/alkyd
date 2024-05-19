@@ -4,29 +4,26 @@
 #import bevy_pbr::prepass_utils::prepass_normal;
 #import bevy_pbr::mesh_view_bindings::view;
 
-    
 struct Painterly {
     diffuse_color: vec4<f32>,
     roughness: f32,
-    normal_strength: f32,
     metallic: f32,
-    brush_distortion: f32,
-    brush_blur: f32,
-    brush_angle: f32,
-    brush_texture_influence: f32,
-    color_varience: f32,   
-    noise_scale: f32,
+    color_varience: f32,
+    scale: f32,
+    distort: f32,
+    influence: f32,
+    angle: f32,
+    blur: f32,
 }
 
 @group(2) @binding(0) var<uniform> material:Painterly;
 @group(2) @binding(1) var brush_handle: texture_2d<f32>;
-@group(2) @binding(2) var nearest_sampler: sampler;
+@group(2) @binding(2) var s: sampler;
 @group(2) @binding(3) var brush_handle_normal: texture_2d<f32>;
 @group(2) @binding(4) var normal_sampler: sampler;
 @group(2) @binding(5) var voro_cache: texture_2d<f32>;
 @group(2) @binding(6) var v_sampler: sampler;
-@group(2) @binding(7) var snoise_cache: texture_2d<f32>;
-@group(2) @binding(8) var s_sampler: sampler;
+
 
 @fragment
 fn fragment(
@@ -34,26 +31,21 @@ fn fragment(
     @builtin(front_facing) is_front: bool
 ) -> @location(0) vec4<f32> {
     var pbr_input: PbrInput = pbr_input_new();
+    let varience = textureSample(voro_cache, v_sampler, in.uv).x * material.distort;
+    let grunge_tex = textureSample(brush_handle, s, in.uv);
+    let grunge_tex_normal = textureSample(brush_handle_normal, normal_sampler, in.uv * material.scale);
+    let grunge_normal_distort = mix(vec3(varience), grunge_tex.rgb, material.influence).xy;
     let double_sided = (pbr_input.material.flags & STANDARD_MATERIAL_FLAGS_DOUBLE_SIDED_BIT) != 0u;
-    let varience = textureSample(snoise_cache, s_sampler, in.uv).x * material.brush_distortion;
-    #ifdef BRUSH_TEXTURE
-    let grunge_tex = textureSample(brush_handle, nearest_sampler, in.uv * material.noise_scale);
-    let grunge_normal_distort = mix(vec3(varience), grunge_tex.rgb, material.brush_texture_influence).xy;
-    #else
-    let grunge_normal_distort = vec2(varience);
-    #endif
     pbr_input.material.perceptual_roughness = material.roughness;
     pbr_input.material.metallic = material.metallic;
     pbr_input.frag_coord = in.position;
     pbr_input.world_position = in.world_position;
-    let voronoi_base = voronoise(mix(in.uv * material.noise_scale, grunge_normal_distort, 0.5), material.brush_angle, material.brush_blur);
+    let voronoi_base = voronoise(mix(in.uv * material.scale, grunge_normal_distort, 0.5), material.angle, material.blur);
     pbr_input.world_normal = fns::prepare_world_normal(
         apply_hue(in.world_normal, voronoi_base),
         double_sided,
         is_front
     );
-    #ifdef NORMAL_TEXTURE
-    let grunge_tex_normal = textureSample(brush_handle_normal, normal_sampler, in.uv * material.noise_scale);
     pbr_input.N = mix(fns::apply_normal_mapping(
         pbr_input.material.flags,
         pbr_input.world_normal,
@@ -62,21 +54,7 @@ fn fragment(
         in.uv,
         view.mip_bias,
     ), grunge_tex_normal.rgb, 0.5);
-    #else
-    pbr_input.N = fns::apply_normal_mapping(
-        pbr_input.material.flags,
-        pbr_input.world_normal,
-        double_sided,
-        is_front,
-        in.uv,
-        view.mip_bias,
-    );
-    #endif
-    #ifdef VARIANCE
     pbr_input.material.base_color = vec4(apply_hue(material.diffuse_color.rgb, voronoi_base * material.color_varience), 1.0);
-    #else
-    pbr_input.material.base_color = material.diffuse_color;
-    #endif
     pbr_input.V = fns::calculate_view(in.world_position, pbr_input.is_orthographic);
     return fns::apply_pbr_lighting(pbr_input);
 }
@@ -114,4 +92,3 @@ fn apply_hue(col: vec3<f32>, hueAdjust:f32) -> vec3<f32>{
     let cosAngle = cos(hueAdjust);
     return col * cosAngle + cross(k, col) * sin(hueAdjust) + k * dot(k, col) * (1.0 - cosAngle);
 }
-
