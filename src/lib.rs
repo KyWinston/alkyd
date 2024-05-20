@@ -26,18 +26,18 @@ pub mod utilities;
 
 impl Plugin for AlkydPlugin {
     fn build(&self, app: &mut App) {
-        embedded_asset!(app, "src", "utilities/noise.wgsl");
         app.add_plugins((
             MaterialSwatchPlugin { debug: self.debug },
             EmbeddedAssetPlugin::default(),
             MaterialPlugin::<PainterlyMaterial>::default(),
             AppComputePlugin,
             AppComputeWorkerPlugin::<VoronoiWorker>::default(),
-        ))
-        .add_event::<LoadNoise>()
-        .insert_resource::<VoronoiImage>(VoronoiImage(None))
-        .insert_resource::<Debug>(Debug(self.debug))
-        .add_systems(Update, (read_data, run_worker));
+        ));
+        embedded_asset!(app, "src", "utilities/noise.wgsl");
+        app.add_event::<LoadNoise>()
+            .insert_resource::<VoronoiImage>(VoronoiImage(None))
+            .insert_resource::<Debug>(Debug(self.debug))
+            .add_systems(Update, (read_data, run_worker));
         if self.debug {
             app.add_plugins(ResourceInspectorPlugin::<MaterialsInspector>::default());
             app.init_resource::<MaterialsInspector>()
