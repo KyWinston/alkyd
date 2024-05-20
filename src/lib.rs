@@ -1,17 +1,15 @@
-use bevy::{asset::embedded_asset, prelude::*};
+use bevy::prelude::*;
 use bevy_app_compute::prelude::{AppComputePlugin, AppComputeWorkerPlugin};
 use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_inspector_egui::quick::ResourceInspectorPlugin;
 use materials::{
     painterly::PainterlyMaterial, resources::MaterialsInspector, MaterialSwatchPlugin,
 };
+use utilities::UtilitiesPlugin;
 
 use crate::{
     materials::resources::VoronoiImage,
-    utilities::{
-        systems::{read_data, run_worker, LoadNoise},
-        VoronoiWorker,
-    },
+    utilities::{systems::LoadNoise, VoronoiWorker},
 };
 
 pub struct AlkydPlugin {
@@ -31,13 +29,12 @@ impl Plugin for AlkydPlugin {
             EmbeddedAssetPlugin::default(),
             MaterialPlugin::<PainterlyMaterial>::default(),
             AppComputePlugin,
+            UtilitiesPlugin,
             AppComputeWorkerPlugin::<VoronoiWorker>::default(),
         ));
-        embedded_asset!(app, "src", "utilities/noise.wgsl");
         app.add_event::<LoadNoise>()
             .insert_resource::<VoronoiImage>(VoronoiImage(None))
-            .insert_resource::<Debug>(Debug(self.debug))
-            .add_systems(Update, (read_data, run_worker));
+            .insert_resource::<Debug>(Debug(self.debug));
         if self.debug {
             app.add_plugins(ResourceInspectorPlugin::<MaterialsInspector>::default());
             app.init_resource::<MaterialsInspector>()

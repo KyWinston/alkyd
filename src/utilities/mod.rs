@@ -1,4 +1,5 @@
 use bevy::{
+    app::{App, Plugin, Update},
     ecs::{system::Resource, world::World},
     reflect::TypePath,
     render::render_resource::ShaderType,
@@ -6,6 +7,8 @@ use bevy::{
 use bevy_app_compute::prelude::{
     AppComputeWorker, AppComputeWorkerBuilder, ComputeShader, ComputeWorker,
 };
+
+use self::systems::{read_data, run_worker};
 
 pub mod systems;
 
@@ -36,5 +39,13 @@ impl ComputeWorker for VoronoiWorker {
             .add_pass::<VoronoiShader>([2048, 2048, 1], &["texture"])
             .one_shot()
             .build()
+    }
+}
+
+pub struct UtilitiesPlugin;
+
+impl Plugin for UtilitiesPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Update, (read_data, run_worker));
     }
 }
