@@ -1,8 +1,5 @@
 use bevy::{
-    app::{App, Plugin, Update},
-    ecs::{schedule::{common_conditions::resource_exists, IntoSystemConfigs}, system::Resource, world::World},
-    reflect::TypePath,
-    render::render_resource::{ShaderRef, ShaderType},
+    app::{App, Plugin, Update}, asset::embedded_asset, ecs::{system::Resource, world::World}, reflect::TypePath, render::render_resource::{ShaderRef, ShaderType}
 };
 
 use crate::compute::{
@@ -49,6 +46,7 @@ pub struct UtilitiesPlugin;
 
 impl Plugin for UtilitiesPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, (read_data, run_worker).run_if(resource_exists::<VoronoiWorker>));
+        embedded_asset!(app, "src", "noise.wgsl");
+        app.add_systems(Update, (read_data, run_worker));
     }
 }
