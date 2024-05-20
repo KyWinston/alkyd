@@ -1,5 +1,6 @@
 use bevy::{asset::embedded_asset, prelude::*};
 use bevy_app_compute::prelude::{AppComputePlugin, AppComputeWorkerPlugin};
+use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_inspector_egui::quick::ResourceInspectorPlugin;
 use materials::{
     painterly::PainterlyMaterial, resources::MaterialsInspector, MaterialSwatchPlugin,
@@ -28,6 +29,7 @@ impl Plugin for AlkydPlugin {
         embedded_asset!(app, "src", "utilities/noise.wgsl");
         app.add_plugins((
             MaterialSwatchPlugin { debug: self.debug },
+            EmbeddedAssetPlugin::default(),
             MaterialPlugin::<PainterlyMaterial>::default(),
             AppComputePlugin,
             AppComputeWorkerPlugin::<VoronoiWorker>::default(),

@@ -14,7 +14,6 @@ bevy_embedded_assets = "0.10.2"
 
 [dependencies.bitflags]
 version = "2.5.0"
-bevy_embedded_assets = "0.10.2"
 
 [lib]
 name = "alkyd"
