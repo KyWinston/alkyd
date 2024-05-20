@@ -1,11 +1,14 @@
 use bevy::{
     app::{App, Plugin, Update},
-    ecs::{system::Resource, world::World},
+    ecs::{schedule::{common_conditions::resource_exists, IntoSystemConfigs}, system::Resource, world::World},
     reflect::TypePath,
-    render::render_resource::ShaderType,
+    render::render_resource::{ShaderRef, ShaderType},
 };
-use bevy_app_compute::prelude::{
-    AppComputeWorker, AppComputeWorkerBuilder, ComputeShader, ComputeWorker,
+
+use crate::compute::{
+    traits::{ComputeShader, ComputeWorker},
+    worker::AppComputeWorker,
+    worker_builder::AppComputeWorkerBuilder,
 };
 
 use self::systems::{read_data, run_worker};
@@ -16,7 +19,7 @@ pub mod systems;
 pub struct VoronoiShader;
 
 impl ComputeShader for VoronoiShader {
-    fn shader() -> bevy_app_compute::prelude::ShaderRef {
+    fn shader() -> ShaderRef {
         "embedded://alkyd/utilities/noise.wgsl".into()
     }
 }
@@ -46,6 +49,6 @@ pub struct UtilitiesPlugin;
 
 impl Plugin for UtilitiesPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, (read_data, run_worker));
+        app.add_systems(Update, (read_data, run_worker).run_if(resource_exists::<VoronoiWorker>));
     }
 }

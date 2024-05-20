@@ -1,5 +1,5 @@
 use super::VoronoiWorker;
-use crate::materials::resources::VoronoiImage;
+use crate::{compute::worker::AppComputeWorker, materials::resources::VoronoiImage};
 use bevy::{
     prelude::*,
     render::{
@@ -7,7 +7,6 @@ use bevy::{
         render_resource::{Extent3d, TextureDimension, TextureFormat},
     },
 };
-use bevy_app_compute::prelude::AppComputeWorker;
 
 #[derive(Event)]
 pub struct LoadNoise;

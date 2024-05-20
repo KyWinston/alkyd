@@ -1,16 +1,13 @@
-use bevy::prelude::*;
-use bevy_app_compute::prelude::{AppComputePlugin, AppComputeWorkerPlugin};
+use bevy::{asset::embedded_asset, prelude::*};
 use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_inspector_egui::quick::ResourceInspectorPlugin;
+use compute::plugin::{AppComputePlugin, AppComputeWorkerPlugin};
 use materials::{
     painterly::PainterlyMaterial, resources::MaterialsInspector, MaterialSwatchPlugin,
 };
-use utilities::UtilitiesPlugin;
+use utilities::{UtilitiesPlugin, VoronoiWorker};
 
-use crate::{
-    materials::resources::VoronoiImage,
-    utilities::{systems::LoadNoise, VoronoiWorker},
-};
+use crate::{materials::resources::VoronoiImage, utilities::systems::LoadNoise};
 
 pub struct AlkydPlugin {
     pub debug: bool,
@@ -19,17 +16,19 @@ pub struct AlkydPlugin {
 #[derive(Resource)]
 pub struct Debug(pub bool);
 
+pub mod compute;
 pub mod materials;
 pub mod utilities;
 
 impl Plugin for AlkydPlugin {
     fn build(&self, app: &mut App) {
+        embedded_asset!(app, "src", "utilities/noise.wgsl");
         app.add_plugins((
             MaterialSwatchPlugin { debug: self.debug },
             EmbeddedAssetPlugin::default(),
             MaterialPlugin::<PainterlyMaterial>::default(),
-            AppComputePlugin,
             UtilitiesPlugin,
+            AppComputePlugin,
             AppComputeWorkerPlugin::<VoronoiWorker>::default(),
         ));
         app.add_event::<LoadNoise>()
