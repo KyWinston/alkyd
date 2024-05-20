@@ -9,7 +9,7 @@ pub struct EmbeddedAssetPlugin;
 
 impl Plugin for EmbeddedAssetPlugin {
     fn build(&self, app: &mut App) {
-        embedded_asset!(app, "src", "../utilities/noise.wgsl");
+        embedded_asset!(app, "assets", "../utilities/noise.wgsl");
         app.add_systems(Startup, setup);
     }
 }
