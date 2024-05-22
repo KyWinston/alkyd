@@ -22,10 +22,6 @@ naga_oil = { version = "0.13,0", default-features = false, features = [
 version = "2.5.0"
 
 
-[build-dependencies]
-cargo-emit = "0.2.1"
-
-
 [lib]
 name = "alkyd"
 path = "src/lib.rs"
