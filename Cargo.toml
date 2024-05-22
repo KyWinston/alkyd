@@ -4,7 +4,7 @@ version = "0.1.25"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 description = "bevy crate for handling procedural textures and shaders"
-exclude = ["assets", "src/bin"]
+exclude = ["src/bin"]
 
 [dependencies]
 bevy = { version = "0.13.2", features = ["dynamic_linking"] }
