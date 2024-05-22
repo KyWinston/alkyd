@@ -1,12 +1,4 @@
-use alkyd::{
-    materials::{
-        components::Showcase,
-        painterly::PainterlyMaterial,
-        resources::{MaterialsInspector, PainterlyInspector, VoronoiImage},
-    },
-    utilities::systems::LoadNoise,
-    AlkydPlugin,
-};
+use alkyd::{materials::painterly::{components::Showcase, painterly::PainterlyMaterial, resources::{MaterialsInspector, PainterlyInspector, VoronoiImage}}, utilities::systems::LoadNoise, AlkydPlugin};
 
 use bevy::{
     core_pipeline::prepass::NormalPrepass,

@@ -1,5 +1,5 @@
 use super::VoronoiWorker;
-use crate::{compute::worker::AppComputeWorker, materials::resources::VoronoiImage};
+use crate::{compute::worker::AppComputeWorker, materials::painterly::resources::VoronoiImage};
 use bevy::{
     prelude::*,
     render::{

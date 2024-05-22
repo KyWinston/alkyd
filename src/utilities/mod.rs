@@ -1,5 +1,8 @@
 use bevy::{
-    app::{App, Plugin, Update}, asset::embedded_asset, ecs::{system::Resource, world::World}, reflect::TypePath, render::render_resource::{ShaderRef, ShaderType}
+    app::{App, Plugin, Update},
+    ecs::{system::Resource, world::World},
+    reflect::TypePath,
+    render::render_resource::{ShaderRef, ShaderType},
 };
 
 use crate::compute::{
@@ -17,7 +20,7 @@ pub struct VoronoiShader;
 
 impl ComputeShader for VoronoiShader {
     fn shader() -> ShaderRef {
-        "embedded://alkyd/utilities/noise.wgsl".into()
+        "embedded://noise.wgsl".into()
     }
 }
 
@@ -46,7 +49,6 @@ pub struct UtilitiesPlugin;
 
 impl Plugin for UtilitiesPlugin {
     fn build(&self, app: &mut App) {
-        embedded_asset!(app, "src", "noise.wgsl");
         app.add_systems(Update, (read_data, run_worker));
     }
 }
