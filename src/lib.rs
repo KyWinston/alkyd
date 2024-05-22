@@ -37,8 +37,8 @@ impl Plugin for AlkydPlugin {
             EmbeddedAssetPlugin::default(),
             AppComputeWorkerPlugin::<VoronoiWorker>::default(),
         ));
-        embedded_asset!(app, "../assets", "../assets/noise.wgsl");
-        embedded_asset!(app, "../assets", "../assets/painterly_material.wgsl");
+        embedded_asset!(app, "", "../assets/noise.wgsl");
+        embedded_asset!(app, "", "../assets/painterly_material.wgsl");
 
         app.add_event::<LoadNoise>()
             .insert_resource::<VoronoiImage>(VoronoiImage(None))
