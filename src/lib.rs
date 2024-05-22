@@ -1,10 +1,4 @@
-use std::path::Path;
-
-use bevy::{
-    asset::{embedded_asset, io::AssetSourceId, AssetPath},
-    prelude::*,
-};
-use bevy_embedded_assets::EmbeddedAssetPlugin;
+use bevy::prelude::*;
 use bevy_inspector_egui::quick::ResourceInspectorPlugin;
 use compute::plugin::{AppComputePlugin, AppComputeWorkerPlugin};
 
@@ -34,30 +28,16 @@ impl Plugin for AlkydPlugin {
             MaterialPlugin::<PainterlyMaterial>::default(),
             UtilitiesPlugin,
             AppComputePlugin,
-            EmbeddedAssetPlugin::default(),
             AppComputeWorkerPlugin::<VoronoiWorker>::default(),
         ));
-        embedded_asset!(app, "", "../assets/noise.wgsl");
-        embedded_asset!(app, "", "../assets/painterly_material.wgsl");
 
         app.add_event::<LoadNoise>()
             .insert_resource::<VoronoiImage>(VoronoiImage(None))
-            .insert_resource::<Debug>(Debug(self.debug))
-            .add_systems(Startup, setup);
+            .insert_resource::<Debug>(Debug(self.debug));
         if self.debug {
             app.add_plugins(ResourceInspectorPlugin::<MaterialsInspector>::default());
             app.init_resource::<MaterialsInspector>()
                 .register_type::<MaterialsInspector>();
         }
     }
-}
-
-fn setup() {
-    let crate_name = "alkyd";
-
-    let path = Path::new(crate_name).join("noise.wgsl");
-    let source = AssetSourceId::from("embedded");
-    let asset_path = AssetPath::from_path(&path).with_source(source);
-
-    assert_eq!(asset_path, "embedded://alkyd/noise.wgsl".into());
 }

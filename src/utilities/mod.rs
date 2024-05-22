@@ -18,7 +18,7 @@ pub struct VoronoiShader;
 
 impl ComputeShader for VoronoiShader {
     fn shader() -> ShaderRef {
-        "embedded://noise.wgsl".into()
+        "noise.wgsl".into()
     }
 }
 
