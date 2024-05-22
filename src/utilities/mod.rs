@@ -20,7 +20,7 @@ pub struct VoronoiShader;
 
 impl ComputeShader for VoronoiShader {
     fn shader() -> ShaderRef {
-        "embedded://alkyd/noise.wgsl".into()
+        "embedded://alkyd/utilities/noise.wgsl".into()
     }
 }
 
@@ -49,7 +49,7 @@ pub struct UtilitiesPlugin;
 
 impl Plugin for UtilitiesPlugin {
     fn build(&self, app: &mut App) {
-        embedded_asset!(app, "src/utilities", "noise.wgsl");
+        embedded_asset!(app, "noise.wgsl");
         app.add_systems(Startup, setup);
         app.add_systems(Update, (read_data, run_worker));
     }

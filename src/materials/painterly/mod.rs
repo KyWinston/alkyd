@@ -19,7 +19,7 @@ pub struct MaterialSwatchPlugin {
 
 impl Plugin for MaterialSwatchPlugin {
     fn build(&self, app: &mut App) {
-        embedded_asset!(app, "src/materials/painterly", "painterly_material.wgsl");
+        embedded_asset!(app, "painterly_material.wgsl");
         if self.debug {
             app.init_resource::<PainterlyInspector>().add_systems(
                 Update,
