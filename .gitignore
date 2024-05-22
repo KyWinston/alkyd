@@ -2,7 +2,6 @@ target/
 target/*
 **/*.rs.bk
 Cargo.lock
-*.png
 .cargo/config
 .cargo/config.toml
 /.idea

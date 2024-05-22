@@ -88,7 +88,7 @@ pub struct PainterlyUniform {
 
 impl Material for PainterlyMaterial {
     fn fragment_shader() -> ShaderRef {
-        "embedded://painterly_material.wgsl".into()
+        "embedded://alkyd/painterly_material.wgsl".into()
     }
 
     fn specialize(

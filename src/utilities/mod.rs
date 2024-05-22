@@ -1,9 +1,9 @@
+use bevy::asset::{embedded_asset, io::AssetSourceId, AssetPath};
 use bevy::{
-    app::{App, Plugin, Update},
-    ecs::{system::Resource, world::World},
-    reflect::TypePath,
+    prelude::*,
     render::render_resource::{ShaderRef, ShaderType},
 };
+use std::path::Path;
 
 use crate::compute::{
     traits::{ComputeShader, ComputeWorker},
@@ -20,7 +20,7 @@ pub struct VoronoiShader;
 
 impl ComputeShader for VoronoiShader {
     fn shader() -> ShaderRef {
-        "embedded://noise.wgsl".into()
+        "embedded://alkyd/noise.wgsl".into()
     }
 }
 
@@ -49,6 +49,18 @@ pub struct UtilitiesPlugin;
 
 impl Plugin for UtilitiesPlugin {
     fn build(&self, app: &mut App) {
+        embedded_asset!(app, "src/utilities", "noise.wgsl");
+        app.add_systems(Startup, setup);
         app.add_systems(Update, (read_data, run_worker));
     }
+}
+
+fn setup() {
+    let crate_name = "alkyd";
+
+    let path = Path::new(crate_name).join("noise.wgsl");
+    let source = AssetSourceId::from("embedded");
+    let asset_path = AssetPath::from_path(&path).with_source(source);
+
+    assert_eq!(asset_path, "embedded://alkyd/noise.wgsl".into());
 }

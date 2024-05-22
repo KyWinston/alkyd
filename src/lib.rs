@@ -28,8 +28,8 @@ impl Plugin for AlkydPlugin {
             MaterialSwatchPlugin { debug: self.debug },
             MaterialPlugin::<PainterlyMaterial>::default(),
             UtilitiesPlugin,
-            EmbeddedAssetPlugin::default(),
             AppComputePlugin,
+            EmbeddedAssetPlugin::default(),
             AppComputeWorkerPlugin::<VoronoiWorker>::default(),
         ));
         app.add_event::<LoadNoise>()
