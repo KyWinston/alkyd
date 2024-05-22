@@ -41,7 +41,6 @@ pub fn read_data(
             TextureFormat::R32Float,
             RenderAssetUsages::RENDER_WORLD,
         );
-        println!("voronoi generated");
         voro_img.0 = Some(images.add(voro));
     }
 }
