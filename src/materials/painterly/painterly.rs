@@ -40,18 +40,15 @@ pub struct PainterlyMaterial {
     pub color_varience: f32,
     pub scale: f32,
     pub distort: f32,
+    #[storage(5)]
+    pub voro_cache: [Vec4; 100],
     pub influence: f32,
-    pub angle: f32,
-    pub blur: f32,
     #[texture(1)]
     #[sampler(2)]
     pub brush_handle: Option<Handle<Image>>,
     #[texture(3)]
     #[sampler(4)]
     pub brush_handle_normal: Option<Handle<Image>>,
-    #[texture(5)]
-    #[sampler(6)]
-    pub voro_cache: Option<Handle<Image>>,
 }
 
 impl Default for PainterlyMaterial {
@@ -64,16 +61,14 @@ impl Default for PainterlyMaterial {
             scale: 2.0,
             distort: 3.3,
             influence: 0.5,
-            angle: 0.4,
-            blur: 0.05,
+            voro_cache: [Vec4::ZERO; 100],
             brush_handle: None,
             brush_handle_normal: None,
-            voro_cache: None,
         }
     }
 }
 
-#[derive(Clone, Default, ShaderType)]
+#[derive(Clone, ShaderType)]
 pub struct PainterlyUniform {
     pub diffuse_color: Vec4,
     pub roughness: f32,
@@ -82,8 +77,8 @@ pub struct PainterlyUniform {
     pub scale: f32,
     pub distort: f32,
     pub influence: f32,
-    pub angle: f32,
-    pub blur: f32,
+
+    pub voro_cache: [Vec4; 100],
 }
 
 impl Material for PainterlyMaterial {
@@ -125,8 +120,7 @@ impl AsBindGroupShaderType<PainterlyUniform> for PainterlyMaterial {
             scale: self.scale,
             distort: self.distort,
             influence: self.influence,
-            angle: self.angle,
-            blur: self.blur,
+            voro_cache: self.voro_cache,
         }
     }
 }

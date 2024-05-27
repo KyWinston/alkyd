@@ -1,12 +1,11 @@
-use bevy::{
-    prelude::*,
-    render::render_resource::{ShaderRef, ShaderType},
-};
-
 use crate::compute::{
     traits::{ComputeShader, ComputeWorker},
     worker::AppComputeWorker,
     worker_builder::AppComputeWorkerBuilder,
+};
+use bevy::{
+    prelude::*,
+    render::render_resource::{ShaderRef, ShaderType},
 };
 
 use self::systems::{read_data, run_worker};
@@ -36,8 +35,9 @@ pub struct VoronoiWorker;
 impl ComputeWorker for VoronoiWorker {
     fn build(world: &mut World) -> AppComputeWorker<Self> {
         AppComputeWorkerBuilder::new(world)
-            .add_staging("texture", &[0.0; 2048 * 2048])
-            .add_pass::<VoronoiShader>([2048, 2048, 1], &["texture"])
+            .add_uniform("cell_size", &5.)
+            .add_staging("centroids", &[Vec4::ZERO; 100])
+            .add_pass::<VoronoiShader>([10, 10, 1], &["cell_size", "centroids"])
             .one_shot()
             .build()
     }

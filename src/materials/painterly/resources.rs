@@ -11,7 +11,7 @@ pub struct MaterialsInspector {
 }
 
 #[derive(Resource, Debug)]
-pub struct VoronoiImage(pub Option<Handle<Image>>);
+pub struct VoronoiImage(pub [Vec4; 100]);
 
 #[derive(Reflect, Resource, Debug, InspectorOptions)]
 #[reflect(Resource, InspectorOptions)]
@@ -23,8 +23,6 @@ pub struct PainterlyInspector {
     pub scale: f32,
     pub distort: f32,
     pub influence: f32,
-    pub angle: f32,
-    pub blur: f32,
 }
 
 impl Default for PainterlyInspector {
@@ -37,8 +35,6 @@ impl Default for PainterlyInspector {
             scale: 5.0,
             distort: 0.3,
             influence: 0.5,
-            angle: 0.6,
-            blur: 0.05,
         }
     }
 }
