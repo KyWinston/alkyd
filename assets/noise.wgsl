@@ -10,7 +10,10 @@ fn main(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
     let location = vec2<i32>(i32(invocation_id.x), i32(invocation_id.y));
     let uv = vec2<f32>(f32(location.x) / 10.0, f32(location.y) / 10.0);
     let seed = hash_three(uv);
-    centroids_out[location.x + (location.y * 10)] = vec4<f32>(seed, cell_size);
+    let out = location.x + (location.y * 10);
+    if centroids_out[out].x <= 0.0 {
+        centroids_out[out] = vec4<f32>(seed, cell_size);
+    }
 }
 
 fn hash_three(p: vec2<f32>) -> vec3<f32> {
