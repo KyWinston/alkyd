@@ -36,8 +36,8 @@ impl ComputeWorker for VoronoiWorker {
     fn build(world: &mut World) -> AppComputeWorker<Self> {
         AppComputeWorkerBuilder::new(world)
             .add_uniform("cell_size", &5.)
-            .add_staging("centroids", &[Vec4::ZERO; 100])
-            .add_pass::<VoronoiShader>([10, 10, 1], &["cell_size", "centroids"])
+            .add_staging("centroids", &[Vec4::ZERO; 64 * 64])
+            .add_pass::<VoronoiShader>([64, 64, 1], &["cell_size", "centroids"])
             .one_shot()
             .build()
     }

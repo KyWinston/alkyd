@@ -37,3 +37,6 @@ opt-level = "z"
 
 [profile.release]
 codegen-units = 1
+opt-level = "z"
+strip = true
+lto = true

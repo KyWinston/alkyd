@@ -41,7 +41,7 @@ pub struct PainterlyMaterial {
     pub scale: f32,
     pub distort: f32,
     #[storage(5)]
-    pub voro_cache: [Vec4; 100],
+    pub voro_cache: [Vec4; 64 * 64],
     pub influence: f32,
     #[texture(1)]
     #[sampler(2)]
@@ -61,7 +61,7 @@ impl Default for PainterlyMaterial {
             scale: 2.0,
             distort: 3.3,
             influence: 0.5,
-            voro_cache: [Vec4::ZERO; 100],
+            voro_cache: [Vec4::ZERO; 64 * 64],
             brush_handle: None,
             brush_handle_normal: None,
         }
@@ -78,7 +78,7 @@ pub struct PainterlyUniform {
     pub distort: f32,
     pub influence: f32,
 
-    pub voro_cache: [Vec4; 100],
+    pub voro_cache: [Vec4; 64 * 64],
 }
 
 impl Material for PainterlyMaterial {
