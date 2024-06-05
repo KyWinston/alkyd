@@ -1,4 +1,10 @@
-use alkyd::{materials::painterly::{components::Showcase, painterly::PainterlyMaterial, resources::{MaterialsInspector, PainterlyInspector, VoronoiImage}}, utilities::systems::LoadNoise, AlkydPlugin};
+use alkyd::{
+    materials::painterly::{
+        components::Showcase, painterly::PainterlyMaterial, resources::VoronoiImage,
+    },
+    utilities::systems::LoadNoise,
+    AlkydPlugin,
+};
 
 use bevy::{
     core_pipeline::prepass::NormalPrepass,
@@ -23,24 +29,24 @@ fn main() {
         .add_systems(
             Update,
             (
-                rotate_mesh.run_if(resource_exists::<PainterlyInspector>),
+                // rotate_mesh.run_if(resource_exists::<PainterlyInspector>),
                 create_cube.run_if(resource_added::<VoronoiImage>),
             ),
         )
         .run();
 }
 
-fn rotate_mesh(
-    mut mesh_q: Query<&mut Transform, With<Showcase>>,
-    inspector: Res<MaterialsInspector>,
-    time: Res<Time>,
-) {
-    if let Ok(mut mesh) = mesh_q.get_single_mut() {
-        if inspector.turn_table {
-            mesh.rotate_y(1.0 * time.delta_seconds());
-        }
-    }
-}
+// fn rotate_mesh(
+//     mut mesh_q: Query<&mut Transform, With<Showcase>>,
+//     // inspector: Res<MaterialsInspector>,
+//     time: Res<Time>,
+// ) {
+//     if let Ok(mut mesh) = mesh_q.get_single_mut() {
+        // if inspector.turn_table {
+        //     mesh.rotate_y(1.0 * time.delta_seconds());
+        // }
+//     }
+// }
 
 fn init_camera(mut commands: Commands) {
     commands.spawn((

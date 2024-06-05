@@ -1,7 +1,5 @@
 use bevy::prelude::*;
-
-use bevy_inspector_egui::prelude::ReflectInspectorOptions;
-use bevy_inspector_egui::InspectorOptions;
+use bevy_inspector_egui::prelude::*;
 
 #[derive(Reflect, Default, Resource, Debug, InspectorOptions)]
 #[reflect(Resource, InspectorOptions)]
@@ -11,7 +9,7 @@ pub struct MaterialsInspector {
 }
 
 #[derive(Resource, Debug)]
-pub struct VoronoiImage(pub [Vec4; 64*64]);
+pub struct VoronoiImage(pub [Vec4; 20 * 20 * 20]);
 
 #[derive(Reflect, Resource, Debug, InspectorOptions)]
 #[reflect(Resource, InspectorOptions)]
@@ -20,7 +18,7 @@ pub struct PainterlyInspector {
     pub roughness: f32,
     pub metallic: f32,
     pub color_varience: f32,
-    pub scale: f32,
+    pub scale: Vec3,
     pub distort: f32,
     pub influence: f32,
 }
@@ -32,7 +30,7 @@ impl Default for PainterlyInspector {
             roughness: 0.2,
             metallic: 0.0,
             color_varience: 0.7,
-            scale: 5.0,
+            scale: Vec3::splat(5.0),
             distort: 0.3,
             influence: 0.5,
         }

@@ -1,11 +1,8 @@
-use bevy::{
-    app::{App, Plugin, Update},
-    ecs::schedule::IntoSystemConfigs,
-};
-
-use crate::materials::painterly::systems::{material_changed, update_material};
+use bevy::prelude::*;
 
 use self::resources::PainterlyInspector;
+
+use crate::materials::painterly::systems::{material_changed, update_material};
 
 pub mod components;
 pub mod painterly;

@@ -1,13 +1,8 @@
 use bevy::{
-    pbr::{MaterialPipeline, MaterialPipelineKey},
     prelude::*,
     render::{
-        mesh::MeshVertexBufferLayout,
         render_asset::RenderAssets,
-        render_resource::{
-            AsBindGroup, AsBindGroupShaderType, RenderPipelineDescriptor, ShaderRef, ShaderType,
-            SpecializedMeshPipelineError,
-        },
+        render_resource::{AsBindGroup, AsBindGroupShaderType, ShaderRef, ShaderType},
     },
 };
 
@@ -38,10 +33,10 @@ pub struct PainterlyMaterial {
     pub roughness: f32,
     pub metallic: f32,
     pub color_varience: f32,
-    pub scale: f32,
+    pub scale: Vec3,
     pub distort: f32,
     #[storage(5)]
-    pub voro_cache: [Vec4; 64 * 64],
+    pub voro_cache: [Vec4; 20 * 20 * 20],
     pub influence: f32,
     #[texture(1)]
     #[sampler(2)]
@@ -58,10 +53,10 @@ impl Default for PainterlyMaterial {
             roughness: 0.4,
             metallic: 0.0,
             color_varience: 0.5,
-            scale: 2.0,
+            scale: Vec3::splat(5.0),
             distort: 3.3,
             influence: 0.5,
-            voro_cache: [Vec4::ZERO; 64 * 64],
+            voro_cache: [Vec4::ZERO; 20 * 20 * 20],
             brush_handle: None,
             brush_handle_normal: None,
         }
@@ -74,11 +69,11 @@ pub struct PainterlyUniform {
     pub roughness: f32,
     pub metallic: f32,
     pub color_varience: f32,
-    pub scale: f32,
+    pub scale: Vec3,
     pub distort: f32,
     pub influence: f32,
 
-    pub voro_cache: [Vec4; 64 * 64],
+    pub voro_cache: [Vec4; 20 * 20 * 20],
 }
 
 impl Material for PainterlyMaterial {
@@ -86,34 +81,34 @@ impl Material for PainterlyMaterial {
         "painterly_material.wgsl".into()
     }
 
-    fn specialize(
-        _pipeline: &MaterialPipeline<Self>,
-        descriptor: &mut RenderPipelineDescriptor,
-        _layout: &MeshVertexBufferLayout,
-        key: MaterialPipelineKey<Self>,
-    ) -> Result<(), SpecializedMeshPipelineError> {
-        let fragment = descriptor.fragment.as_mut().unwrap();
+    // fn specialize(
+    //     _pipeline: &MaterialPipeline<Self>,
+    //     descriptor: &mut RenderPipelineDescriptor,
+    //     _layout: &MeshVertexBufferLayout,
+    //     key: MaterialPipelineKey<Self>,
+    // ) -> Result<(), SpecializedMeshPipelineError> {
+    //     let fragment = descriptor.fragment.as_mut().unwrap();
 
-        if key.bind_group_data.normal_texture {
-            fragment.shader_defs.push("NORMAL_TEXTURE".into());
-        }
-        if key.bind_group_data.metallic_roughness {
-            fragment.shader_defs.push("METALLIC_ROUGHNESS".into());
-        }
-        if key.bind_group_data.normal_texture {
-            fragment.shader_defs.push("BRUSH_TEXTURE".into());
-        }
-        if key.bind_group_data.metallic_roughness {
-            fragment.shader_defs.push("VARIANCE".into());
-        }
-        Ok(())
-    }
+    //     if key.bind_group_data.normal_texture {
+    //         fragment.shader_defs.push("NORMAL_TEXTURE".into());
+    //     }
+    //     if key.bind_group_data.metallic_roughness {
+    //         fragment.shader_defs.push("METALLIC_ROUGHNESS".into());
+    //     }
+    //     if key.bind_group_data.normal_texture {
+    //         fragment.shader_defs.push("BRUSH_TEXTURE".into());
+    //     }
+    //     if key.bind_group_data.metallic_roughness {
+    //         fragment.shader_defs.push("VARIANCE".into());
+    //     }
+    //     Ok(())
+    // }
 }
 
 impl AsBindGroupShaderType<PainterlyUniform> for PainterlyMaterial {
     fn as_bind_group_shader_type(&self, _: &RenderAssets<Image>) -> PainterlyUniform {
         PainterlyUniform {
-            diffuse_color: self.diffuse_color.as_linear_rgba_f32().into(),
+            diffuse_color: self.diffuse_color.rgba_linear_to_vec4(),
             roughness: self.roughness,
             metallic: self.metallic,
             color_varience: self.color_varience,
