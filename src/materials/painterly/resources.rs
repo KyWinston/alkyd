@@ -23,18 +23,22 @@ pub struct PainterlyInspector {
     pub scale: f32,
     pub distort: f32,
     pub influence: f32,
+    pub border: f32,
+    pub dist_falloff: f32,
 }
 
 impl Default for PainterlyInspector {
     fn default() -> Self {
         Self {
-            diffuse_color: Color::BLUE,
+            diffuse_color: Color::GRAY,
             roughness: 0.2,
             metallic: 0.0,
             color_varience: 0.7,
             scale: 5.0,
             distort: 0.3,
             influence: 0.5,
+            border: 0.02,
+            dist_falloff: 20.0,
         }
     }
 }
