@@ -32,11 +32,11 @@ impl Default for PainterlyInspector {
             roughness: 0.2,
             metallic: 0.0,
             color_varience: 0.7,
-            scale: Vec3::splat(5.0),
+            scale: Vec2::splat(2.0).extend(0.2),
             distort: 0.3,
             influence: 0.5,
             border: 0.02,
-            dist_falloff: 20.0,
+            dist_falloff: 200.0,
         }
     }
 }
