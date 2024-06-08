@@ -38,7 +38,7 @@ pub struct PainterlyMaterial {
     pub roughness: f32,
     pub metallic: f32,
     pub color_varience: f32,
-    pub scale: f32,
+    pub scale: Vec3,
     pub distort: f32,
     #[storage(5)]
     pub voro_cache: [Vec4; 100],
@@ -60,7 +60,7 @@ impl Default for PainterlyMaterial {
             roughness: 0.4,
             metallic: 0.0,
             color_varience: 0.5,
-            scale: 2.0,
+            scale: Vec2::splat(2.0).extend(0.2),
             distort: 3.3,
             influence: 0.5,
             border: 0.02,
@@ -78,7 +78,7 @@ pub struct PainterlyUniform {
     pub roughness: f32,
     pub metallic: f32,
     pub color_varience: f32,
-    pub scale: f32,
+    pub scale: Vec3,
     pub distort: f32,
     pub influence: f32,
     pub border: f32,
@@ -97,20 +97,20 @@ impl Material for PainterlyMaterial {
         _layout: &MeshVertexBufferLayout,
         key: MaterialPipelineKey<Self>,
     ) -> Result<(), SpecializedMeshPipelineError> {
-        let fragment = descriptor.fragment.as_mut().unwrap();
+        // let fragment = descriptor.fragment.as_mut().unwrap();
 
-        if key.bind_group_data.normal_texture {
-            fragment.shader_defs.push("NORMAL_TEXTURE".into());
-        }
-        if key.bind_group_data.metallic_roughness {
-            fragment.shader_defs.push("METALLIC_ROUGHNESS".into());
-        }
-        if key.bind_group_data.normal_texture {
-            fragment.shader_defs.push("BRUSH_TEXTURE".into());
-        }
-        if key.bind_group_data.metallic_roughness {
-            fragment.shader_defs.push("VARIANCE".into());
-        }
+        // if key.bind_group_data.normal_texture {
+        //     fragment.shader_defs.push("NORMAL_TEXTURE".into());
+        // }
+        // if key.bind_group_data.metallic_roughness {
+        //     fragment.shader_defs.push("METALLIC_ROUGHNESS".into());
+        // }
+        // if key.bind_group_data.normal_texture {
+        //     fragment.shader_defs.push("BRUSH_TEXTURE".into());
+        // }
+        // if key.bind_group_data.metallic_roughness {
+        //     fragment.shader_defs.push("VARIANCE".into());
+        // }
         Ok(())
     }
 }
@@ -137,8 +137,6 @@ pub struct VoronoiUniform {
     pub scale: f32,
     pub distort: f32,
     pub influence: f32,
-    pub angle: f32,
-    pub blur: f32,
 }
 
 #[derive(Eq, PartialEq, Hash, Clone)]

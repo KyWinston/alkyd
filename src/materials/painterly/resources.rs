@@ -20,7 +20,7 @@ pub struct PainterlyInspector {
     pub roughness: f32,
     pub metallic: f32,
     pub color_varience: f32,
-    pub scale: f32,
+    pub scale: Vec3,
     pub distort: f32,
     pub influence: f32,
     pub border: f32,
@@ -34,11 +34,11 @@ impl Default for PainterlyInspector {
             roughness: 0.2,
             metallic: 0.0,
             color_varience: 0.7,
-            scale: 5.0,
+            scale: Vec2::splat(2.0).extend(0.2),
             distort: 0.3,
             influence: 0.5,
             border: 0.02,
-            dist_falloff: 20.0,
+            dist_falloff: 200.0,
         }
     }
 }
