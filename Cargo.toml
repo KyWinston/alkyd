@@ -8,8 +8,8 @@ description = "bevy crate for handling procedural textures and shaders"
 exclude = ["src/bin"]
 
 [dependencies]
-bevy = "0.13.2"
-bevy-inspector-egui = "0.23.4"
+bevy = { workspace = true }
+bevy-inspector-egui = { workspace = true }
 parking_lot = "0.12.1"
 bytemuck = "1.16.0"
 wgpu = { version = "0.19.1", features = ["naga"] }

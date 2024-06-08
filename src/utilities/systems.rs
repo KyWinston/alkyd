@@ -23,7 +23,7 @@ pub fn read_data(
         return;
     };
 
-    let result: [Vec4; 100] = compute_worker
+    let result: [Vec4;100] = compute_worker
         .read_vec("centroids")
         .as_slice()
         .try_into()

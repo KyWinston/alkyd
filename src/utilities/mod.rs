@@ -23,10 +23,7 @@ impl ComputeShader for VoronoiShader {
 
 #[derive(ShaderType)]
 struct Properties {
-    distort: f32,
-    influence: f32,
-    angle: f32,
-    blur: f32,
+   cell_number:f32
 }
 
 #[derive(Resource)]
@@ -35,9 +32,9 @@ pub struct VoronoiWorker;
 impl ComputeWorker for VoronoiWorker {
     fn build(world: &mut World) -> AppComputeWorker<Self> {
         AppComputeWorkerBuilder::new(world)
-            .add_uniform("cell_size", &5.)
-            .add_staging("centroids", &[Vec4::ZERO; 20 * 20 * 20])
-            .add_pass::<VoronoiShader>([20, 20, 20], &["cell_size", "centroids"])
+            .add_uniform("cell_number", &100)
+            .add_staging("centroids", &[Vec4::ZERO; 100])
+            .add_pass::<VoronoiShader>([10, 10, 1], &["cell_number", "centroids"])
             .one_shot()
             .build()
     }
