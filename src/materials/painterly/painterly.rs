@@ -38,6 +38,8 @@ pub struct PainterlyMaterial {
     #[storage(5)]
     pub voro_cache: [Vec4; 20 * 20 * 20],
     pub influence: f32,
+    pub border: f32,
+    pub dist_falloff: f32,
     #[texture(1)]
     #[sampler(2)]
     pub brush_handle: Option<Handle<Image>>,
@@ -56,7 +58,9 @@ impl Default for PainterlyMaterial {
             scale: Vec3::splat(5.0),
             distort: 3.3,
             influence: 0.5,
-            voro_cache: [Vec4::ZERO; 20 * 20 * 20],
+            border: 0.02,
+            dist_falloff: 30.0,
+            voro_cache: [Vec4::ZERO; 100],
             brush_handle: None,
             brush_handle_normal: None,
         }
@@ -72,8 +76,9 @@ pub struct PainterlyUniform {
     pub scale: Vec3,
     pub distort: f32,
     pub influence: f32,
-
-    pub voro_cache: [Vec4; 20 * 20 * 20],
+    pub border: f32,
+    pub dist_falloff: f32,
+    pub voro_cache: [Vec4; 100],
 }
 
 impl Material for PainterlyMaterial {
@@ -115,6 +120,8 @@ impl AsBindGroupShaderType<PainterlyUniform> for PainterlyMaterial {
             scale: self.scale,
             distort: self.distort,
             influence: self.influence,
+            border: self.border,
+            dist_falloff: self.dist_falloff,
             voro_cache: self.voro_cache,
         }
     }
