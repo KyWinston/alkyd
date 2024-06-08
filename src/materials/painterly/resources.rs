@@ -9,7 +9,7 @@ pub struct MaterialsInspector {
 }
 
 #[derive(Resource, Debug)]
-pub struct VoronoiImage(pub [Vec4; 20 * 20 * 20]);
+pub struct VoronoiImage(pub [Vec4; 100]);
 
 #[derive(Reflect, Resource, Debug, InspectorOptions)]
 #[reflect(Resource, InspectorOptions)]

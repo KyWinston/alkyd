@@ -36,7 +36,7 @@ pub struct PainterlyMaterial {
     pub scale: Vec3,
     pub distort: f32,
     #[storage(5)]
-    pub voro_cache: [Vec4; 20 * 20 * 20],
+    pub voro_cache: [Vec4; 100],
     pub influence: f32,
     pub border: f32,
     pub dist_falloff: f32,

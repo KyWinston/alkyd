@@ -23,15 +23,12 @@ pub fn read_data(
         return;
     };
 
-    let result: [Vec4; 20 * 20 * 20] = compute_worker
+    let result: [Vec4; 100] = compute_worker
         .read_vec("centroids")
         .as_slice()
         .try_into()
         .unwrap();
 
-    // if poisson {
     voro_img.0 = result;
-    // } else {
     load_ev.send(LoadNoise);
-    // }
 }
