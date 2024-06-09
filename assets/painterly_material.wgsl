@@ -31,22 +31,32 @@ fn fragment(
     @builtin(front_facing) is_front: bool,
 ) -> @location(0) vec4<f32> {
     var pbr_input: PbrInput = pbr_input_new();
-
     let double_sided = (pbr_input.material.flags & STANDARD_MATERIAL_FLAGS_DOUBLE_SIDED_BIT) != 0u;
     pbr_input.frag_coord = in.position;
     pbr_input.world_position = in.world_position;
+    let  I = normalize(in.world_position.xyz - view.world_position);
+    let fresnel: f32 = 2.0 * pow(1.0 + dot(I, in.world_normal), 3.0);
     let depth = prepass_depth(in.position, 0u);
+    let ignore_detail = fresnel < 1.82;
+
     pbr_input.material.perceptual_roughness = material.roughness;
     pbr_input.material.metallic = material.metallic;
-    let grunge_tex_normal = textureSampleBias(brush_handle_normal, normal_sampler, in.uv, view.mip_bias);
-    let grunge_tex = textureSampleBias(brush_handle, s, in.uv * material.scale.z, view.mip_bias);
+    var grunge_tex: vec4<f32>;
+    var grunge_tex_normal: vec4<f32>;
+    if !ignore_detail {
+        grunge_tex_normal = material.diffuse_color;
+        grunge_tex = material.diffuse_color;
+    } else {
+        grunge_tex_normal = textureSampleBias(brush_handle_normal, normal_sampler, in.uv, view.mip_bias);
+        grunge_tex = textureSampleBias(brush_handle, s, in.uv * material.scale.z, view.mip_bias);
+    }
     let grunge_normal_distort = mix(vec3(noise2(in.uv * material.distort)), grunge_tex.rgb, material.influence).xy;
     let vsample = mix(in.uv / material.scale.xy, grunge_normal_distort, 0.5);
-    let voronoi_base = voronoise(vsample, depth);
+    let voronoi_base = select(material.diffuse_color.rrr * 0.5, voronoise(vsample, depth), ignore_detail);
     let valueChange = length(fwidth(vsample)) * material.dist_falloff;
     let isBorder = smoothstep(material.border - valueChange, material.border + valueChange, voronoi_base.z);
     pbr_input.world_normal = fns::prepare_world_normal(
-        apply_hue(in.world_normal, voronoi_base.x),
+        select(in.world_normal, apply_hue(in.world_normal, voronoi_base.x), ignore_detail),
         double_sided,
         is_front
     );
@@ -66,6 +76,7 @@ fn fragment(
     pbr_input.material.base_color = vec4<f32>(apply_hue(material.diffuse_color.rgb, voronoi_base.y * material.color_varience) * pow(1.0 - voronoi_base.x, 2.0) * pow(vec3<f32>(isBorder), vec3(10.0)), 1.0);
 
     pbr_input.V = fns::calculate_view(in.world_position, pbr_input.is_orthographic);
+
     return fns::apply_pbr_lighting(pbr_input);
 }
 
@@ -92,9 +103,7 @@ fn voronoise(p: vec2<f32>, dep: f32) -> vec3<f32> {
     }
     for (var z = -1; z <= 1; z++) {
         for (var w = -1; w <= 1; w++) {
-            if dep < 0.002 {
-                break;
-            }
+
             let g = n + vec2(f32(z), f32(w));
             let o = g + voro_cache[i32(g.x) + (i32(g.y) * 10)].xy;
             let r = o - p;

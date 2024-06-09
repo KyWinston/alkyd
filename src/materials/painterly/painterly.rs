@@ -6,6 +6,8 @@ use bevy::{
     },
 };
 
+use crate::PAINTERLY_SHADER_HANDLE;
+
 bitflags::bitflags! {
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
     pub struct PainterlyFlags: u8 {
@@ -36,7 +38,7 @@ pub struct PainterlyMaterial {
     pub scale: Vec3,
     pub distort: f32,
     #[storage(5)]
-    pub voro_cache: [Vec4;100],
+    pub voro_cache: [Vec4; 100],
     pub influence: f32,
     pub border: f32,
     pub dist_falloff: f32,
@@ -83,7 +85,7 @@ pub struct PainterlyUniform {
 
 impl Material for PainterlyMaterial {
     fn fragment_shader() -> ShaderRef {
-        "painterly_material.wgsl".into()
+        PAINTERLY_SHADER_HANDLE.into()
     }
 
     // fn specialize(

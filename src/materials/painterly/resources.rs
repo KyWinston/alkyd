@@ -2,17 +2,17 @@ use bevy::prelude::*;
 use bevy_inspector_egui::prelude::*;
 
 #[derive(Reflect, Default, Resource, Debug, InspectorOptions)]
-#[reflect(Resource, InspectorOptions)]
+// #[reflect(Resource, InspectorOptions)]
 pub struct MaterialsInspector {
     pub turn_table: bool,
     pub painterly: PainterlyInspector,
 }
 
 #[derive(Resource, Debug)]
-pub struct VoronoiImage(pub [Vec4;100]);
+pub struct VoronoiImage(pub [Vec4; 100]);
 
 #[derive(Reflect, Resource, Debug, InspectorOptions)]
-#[reflect(Resource, InspectorOptions)]
+// #[reflect(Resource, InspectorOptions)]
 pub struct PainterlyInspector {
     pub diffuse_color: Color,
     pub roughness: f32,
