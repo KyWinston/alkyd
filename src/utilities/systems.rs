@@ -30,24 +30,25 @@ pub fn read_data(
         .unwrap();
 
     voro_img.0 = result;
-    for v_ix in 0..10 {
-        for v_iy in 0..10 {
+    for v_ix in 0..9 {
+        for v_iy in 0..9 {
             smallest_dist(voro_img.0.to_vec(), v_ix, v_iy);
         }
     }
     load_ev.send(LoadNoise);
 }
 
-fn smallest_dist(points: Vec<Vec4>, idx: usize, idy: usize) {
+fn smallest_dist(mut points: Vec<Vec4>, idx: i32, idy: i32) {
     let mut min_dist = 1.0;
-    for x in 0..2 {
-        for y in 0..2 {
-            let neighbor_dist = points[idx + (x - 1) + (idy + y - 1) * 10]
+    for x in -1..1 {
+        for y in -1..1 {
+            let neighbor_dist = points[(idx + x).abs() as usize + (idy + y).abs() as usize * 10]
                 .xy()
-                .distance(points[idx + idy * 10].xy());
+                .distance(points[idx as usize + idy as usize * 10].xy());
             if neighbor_dist < min_dist {
                 min_dist = neighbor_dist;
             }
         }
     }
+    points[idx as usize + idy as usize * 10].w = min_dist;
 }
