@@ -1,8 +1,8 @@
-use bevy::prelude::*;
+use bevy::{color::palettes::css::GRAY, prelude::*};
 use bevy_inspector_egui::prelude::*;
 
 #[derive(Reflect, Default, Resource, Debug, InspectorOptions)]
-// #[reflect(Resource, InspectorOptions)]
+#[reflect(Resource)]
 pub struct MaterialsInspector {
     pub turn_table: bool,
     pub painterly: PainterlyInspector,
@@ -12,7 +12,7 @@ pub struct MaterialsInspector {
 pub struct VoronoiImage(pub [Vec4; 100]);
 
 #[derive(Reflect, Resource, Debug, InspectorOptions)]
-// #[reflect(Resource, InspectorOptions)]
+#[reflect(Resource)]
 pub struct PainterlyInspector {
     pub diffuse_color: Color,
     pub roughness: f32,
@@ -23,12 +23,13 @@ pub struct PainterlyInspector {
     pub influence: f32,
     pub border: f32,
     pub dist_falloff: f32,
+    pub detail_cutoff: f32,
 }
 
 impl Default for PainterlyInspector {
     fn default() -> Self {
         Self {
-            diffuse_color: Color::GRAY,
+            diffuse_color: Color::srgb_from_array(GRAY.to_f32_array_no_alpha()),
             roughness: 0.2,
             metallic: 0.0,
             color_varience: 0.7,
@@ -36,7 +37,8 @@ impl Default for PainterlyInspector {
             distort: 0.3,
             influence: 0.5,
             border: 0.02,
-            dist_falloff: 200.0,
+            dist_falloff: 5.0,
+            detail_cutoff: 1.9,
         }
     }
 }

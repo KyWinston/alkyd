@@ -1,6 +1,10 @@
 use bevy::prelude::*;
 
-use super::{components::Showcase, painterly::PainterlyMaterial, resources::{MaterialsInspector, VoronoiImage}};
+use super::{
+    components::Showcase,
+    painterly::PainterlyMaterial,
+    resources::{MaterialsInspector, VoronoiImage},
+};
 
 pub fn update_material(
     mut my_res: ResMut<MaterialsInspector>,
@@ -21,6 +25,7 @@ pub fn update_material(
                 my_res.painterly.scale = mat.scale;
                 my_res.painterly.border = mat.border;
                 my_res.painterly.dist_falloff = mat.dist_falloff;
+                my_res.painterly.detail_cutoff = mat.detail_cutoff;
                 mat.voro_cache = voro.0.clone();
             }
         }
@@ -47,6 +52,7 @@ pub fn material_changed(
                 mat.scale = src_mat.scale;
                 mat.border = src_mat.border;
                 mat.dist_falloff = src_mat.dist_falloff;
+                mat.detail_cutoff = src_mat.detail_cutoff;
                 mat.voro_cache = voro.0;
             }
         }

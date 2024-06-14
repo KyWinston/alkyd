@@ -1,8 +1,15 @@
 use bevy::{
+    color::palettes::css::BLUE,
+    pbr::{MaterialPipeline, MaterialPipelineKey},
     prelude::*,
     render::{
+        mesh::MeshVertexBufferLayoutRef,
         render_asset::RenderAssets,
-        render_resource::{AsBindGroup, AsBindGroupShaderType, ShaderRef, ShaderType},
+        render_resource::{
+            AsBindGroup, AsBindGroupShaderType, RenderPipelineDescriptor, ShaderRef, ShaderType,
+            SpecializedMeshPipelineError,
+        },
+        texture::GpuImage,
     },
 };
 
@@ -42,6 +49,7 @@ pub struct PainterlyMaterial {
     pub influence: f32,
     pub border: f32,
     pub dist_falloff: f32,
+    pub detail_cutoff: f32,
     #[texture(1)]
     #[sampler(2)]
     pub brush_handle: Option<Handle<Image>>,
@@ -53,7 +61,7 @@ pub struct PainterlyMaterial {
 impl Default for PainterlyMaterial {
     fn default() -> Self {
         Self {
-            diffuse_color: Color::BLUE,
+            diffuse_color: Color::srgb_from_array(BLUE.to_f32_array_no_alpha()),
             roughness: 0.4,
             metallic: 0.0,
             color_varience: 0.5,
@@ -62,6 +70,7 @@ impl Default for PainterlyMaterial {
             influence: 0.5,
             border: 0.02,
             dist_falloff: 30.0,
+            detail_cutoff: 1.7,
             voro_cache: [Vec4::ZERO; 100],
             brush_handle: None,
             brush_handle_normal: None,
@@ -80,6 +89,7 @@ pub struct PainterlyUniform {
     pub influence: f32,
     pub border: f32,
     pub dist_falloff: f32,
+    pub detail_cutoff: f32,
     pub voro_cache: [Vec4; 100],
 }
 
@@ -88,34 +98,34 @@ impl Material for PainterlyMaterial {
         PAINTERLY_SHADER_HANDLE.into()
     }
 
-    // fn specialize(
-    //     _pipeline: &MaterialPipeline<Self>,
-    //     descriptor: &mut RenderPipelineDescriptor,
-    //     _layout: &MeshVertexBufferLayout,
-    //     key: MaterialPipelineKey<Self>,
-    // ) -> Result<(), SpecializedMeshPipelineError> {
-    // let fragment = descriptor.fragment.as_mut().unwrap();
-
-    // if key.bind_group_data.normal_texture {
-    //     fragment.shader_defs.push("NORMAL_TEXTURE".into());
-    // }
-    // if key.bind_group_data.metallic_roughness {
-    //     fragment.shader_defs.push("METALLIC_ROUGHNESS".into());
-    // }
-    // if key.bind_group_data.normal_texture {
-    //     fragment.shader_defs.push("BRUSH_TEXTURE".into());
-    // }
-    // if key.bind_group_data.metallic_roughness {
-    //     fragment.shader_defs.push("VARIANCE".into());
-    // }
-    //         Ok(())
-    //     }
+    fn specialize(
+        _pipeline: &MaterialPipeline<Self>,
+        descriptor: &mut RenderPipelineDescriptor,
+        _layout: &MeshVertexBufferLayoutRef,
+        key: MaterialPipelineKey<Self>,
+    ) -> Result<(), SpecializedMeshPipelineError> {
+        let fragment = descriptor.fragment.as_mut().unwrap();
+        descriptor.primitive.cull_mode = Some(wgpu::Face::Back);
+        if key.bind_group_data.normal_texture {
+            fragment.shader_defs.push("NORMAL_TEXTURE".into());
+        }
+        if key.bind_group_data.metallic_roughness {
+            fragment.shader_defs.push("METALLIC_ROUGHNESS".into());
+        }
+        if key.bind_group_data.normal_texture {
+            fragment.shader_defs.push("BRUSH_TEXTURE".into());
+        }
+        if key.bind_group_data.metallic_roughness {
+            fragment.shader_defs.push("VARIANCE".into());
+        }
+        Ok(())
+    }
 }
 
 impl AsBindGroupShaderType<PainterlyUniform> for PainterlyMaterial {
-    fn as_bind_group_shader_type(&self, _: &RenderAssets<Image>) -> PainterlyUniform {
+    fn as_bind_group_shader_type(&self, _: &RenderAssets<GpuImage>) -> PainterlyUniform {
         PainterlyUniform {
-            diffuse_color: self.diffuse_color.rgba_linear_to_vec4(),
+            diffuse_color: self.diffuse_color.linear().to_vec4(),
             roughness: self.roughness,
             metallic: self.metallic,
             color_varience: self.color_varience,
@@ -124,6 +134,7 @@ impl AsBindGroupShaderType<PainterlyUniform> for PainterlyMaterial {
             influence: self.influence,
             border: self.border,
             dist_falloff: self.dist_falloff,
+            detail_cutoff: self.detail_cutoff,
             voro_cache: self.voro_cache,
         }
     }

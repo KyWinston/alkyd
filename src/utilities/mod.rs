@@ -1,10 +1,14 @@
-use crate::{compute::{
-    traits::{ComputeShader, ComputeWorker},
-    worker::AppComputeWorker,
-    worker_builder::AppComputeWorkerBuilder,
-}, VORONOI_SHADER_HANDLE};
+use crate::{
+    compute::{
+        traits::{ComputeShader, ComputeWorker},
+        worker::AppComputeWorker,
+        worker_builder::AppComputeWorkerBuilder,
+    }, NOISE_FUNCTIONS_HANDLE, VORONOI_SHADER_HANDLE
+};
 use bevy::{
-    asset::load_internal_asset, prelude::*, render::render_resource::{ShaderRef, ShaderType}
+    asset::load_internal_asset,
+    prelude::*,
+    render::render_resource::{ShaderRef, ShaderType},
 };
 
 use self::systems::{read_data, run_worker};
@@ -22,7 +26,7 @@ impl ComputeShader for VoronoiShader {
 
 #[derive(ShaderType)]
 struct Properties {
-   cell_number:f32
+    cell_number: f32,
 }
 
 #[derive(Resource)]
@@ -47,6 +51,12 @@ impl Plugin for UtilitiesPlugin {
             app,
             VORONOI_SHADER_HANDLE,
             "../../assets/noise.wgsl",
+            Shader::from_wgsl
+        );
+        load_internal_asset!(
+            app,
+            NOISE_FUNCTIONS_HANDLE,
+            "../../assets/utils.wgsl",
             Shader::from_wgsl
         );
         app.add_systems(Update, (read_data, run_worker));

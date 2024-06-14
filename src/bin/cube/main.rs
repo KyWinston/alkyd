@@ -7,9 +7,7 @@ use alkyd::{
 };
 
 use bevy::{
-    core_pipeline::prepass::NormalPrepass,
-    prelude::*,
-    render::texture::{ImageAddressMode, ImageSamplerDescriptor},
+    color::palettes::css::BLUE, core_pipeline::prepass::NormalPrepass, prelude::*, render::texture::{ImageAddressMode, ImageSamplerDescriptor}
 };
 
 fn main() {
@@ -42,9 +40,9 @@ fn main() {
 //     time: Res<Time>,
 // ) {
 //     if let Ok(mut mesh) = mesh_q.get_single_mut() {
-        // if inspector.turn_table {
-        //     mesh.rotate_y(1.0 * time.delta_seconds());
-        // }
+// if inspector.turn_table {
+//     mesh.rotate_y(1.0 * time.delta_seconds());
+// }
 //     }
 // }
 
@@ -83,7 +81,7 @@ pub fn create_cube(
     asset_server: Res<AssetServer>,
 ) {
     let material = materials.add(PainterlyMaterial {
-        diffuse_color: Color::BLUE,
+        diffuse_color: Color::srgb_from_array(BLUE.to_f32_array_no_alpha()),
         brush_handle: Some(asset_server.load("brush_grunge.png")),
         brush_handle_normal: Some(asset_server.load("brush_grunge_normal.png")),
         voro_cache: voro.0.clone(),
