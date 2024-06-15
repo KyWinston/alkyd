@@ -5,12 +5,11 @@ version = "0.1.31"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 description = "bevy crate for handling procedural textures and shaders"
-exclude = ["src/bin"]
 
 [dependencies]
-bevy = { workspace = true }
-bevy-inspector-egui = { workspace = true }
-bytemuck = { workspace = true }
+bevy.workspace = true 
+bevy-inspector-egui.workspace = true 
+bytemuck.workspace = true 
 parking_lot = "0.12.1"
 wgpu = { version = "0.19.1", features = ["naga"] }
 naga = { version = "0.19.0", features = ["wgsl-in"] }

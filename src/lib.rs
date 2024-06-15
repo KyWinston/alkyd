@@ -43,6 +43,7 @@ impl Plugin for AlkydPlugin {
             AppComputePlugin,
             AppComputeWorkerPlugin::<VoronoiWorker>::default(),
         ));
+       
         app.add_event::<LoadNoise>()
             .insert_resource::<VoronoiImage>(VoronoiImage([Vec4::ZERO; 100]))
             .insert_resource::<Debug>(Debug(self.debug));
