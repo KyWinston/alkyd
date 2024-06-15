@@ -23,5 +23,6 @@ struct GalaxyFog {
 fn fragment(
     in: VertexOutput
 ) -> @location(0) vec4<f32> {
-    return raymarch_hit(view.world_position, material.center, material.radius, material.diffuse_color);
+    return material.diffuse_color;
+    // return raymarch_hit(view.world_position, material.center, material.radius, material.diffuse_color);
 }

@@ -46,10 +46,10 @@ impl Plugin for AlkydPlugin {
         app.add_event::<LoadNoise>()
             .insert_resource::<VoronoiImage>(VoronoiImage([Vec4::ZERO; 100]))
             .insert_resource::<Debug>(Debug(self.debug));
-        // if self.debug {
-        //     app.add_plugins(ResourceInspectorPlugin::<MaterialsInspector>::default());
-        //     app.init_resource::<MaterialsInspector>()
-        //         .register_type::<MaterialsInspector>();
-        // }
+        if self.debug {
+            app.add_plugins(ResourceInspectorPlugin::<MaterialsInspector>::default());
+            app.init_resource::<MaterialsInspector>()
+                .register_type::<MaterialsInspector>();
+        }
     }
 }

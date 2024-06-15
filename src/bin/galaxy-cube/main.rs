@@ -1,14 +1,15 @@
 use alkyd::{
-    materials::painterly::{
-        components::Showcase, painterly::PainterlyMaterial, resources::VoronoiImage,
+    materials::{
+        galaxyfog::galaxy::GalaxyFogMaterial,
+        painterly::resources::{MaterialsInspector, PainterlyInspector, VoronoiImage},
     },
     utilities::systems::LoadNoise,
-    AlkydPlugin,
+    AlkydPlugin, Showcase,
 };
 
 use bevy::{
-    color::palettes::css::BLUE,
-    core_pipeline::prepass::{DepthPrepass, NormalPrepass},
+    color::palettes::css::PURPLE,
+    core_pipeline::prepass::NormalPrepass,
     prelude::*,
     render::texture::{ImageAddressMode, ImageSamplerDescriptor},
 };
@@ -30,24 +31,24 @@ fn main() {
         .add_systems(
             Update,
             (
-                // rotate_mesh.run_if(resource_exists::<PainterlyInspector>),
+                rotate_mesh.run_if(resource_exists::<PainterlyInspector>),
                 create_cube.run_if(resource_added::<VoronoiImage>),
             ),
         )
         .run();
 }
 
-// fn rotate_mesh(
-//     mut mesh_q: Query<&mut Transform, With<Showcase>>,
-//     // inspector: Res<MaterialsInspector>,
-//     time: Res<Time>,
-// ) {
-//     if let Ok(mut mesh) = mesh_q.get_single_mut() {
-// if inspector.turn_table {
-//     mesh.rotate_y(1.0 * time.delta_seconds());
-// }
-//     }
-// }
+fn rotate_mesh(
+    mut mesh_q: Query<&mut Transform, With<Showcase>>,
+    inspector: Res<MaterialsInspector>,
+    time: Res<Time>,
+) {
+    if let Ok(mut mesh) = mesh_q.get_single_mut() {
+        if inspector.turn_table {
+            mesh.rotate_y(1.0 * time.delta_seconds());
+        }
+    }
+}
 
 fn init_camera(mut commands: Commands) {
     commands.spawn((
@@ -55,7 +56,6 @@ fn init_camera(mut commands: Commands) {
             transform: Transform::from_xyz(0.0, 5.0, 15.0).looking_at(Vec3::ZERO, Vec3::Y),
             ..default()
         },
-        DepthPrepass,
         NormalPrepass,
     ));
 }
@@ -67,38 +67,35 @@ fn init_scene(mut commands: Commands, mut ev: EventWriter<LoadNoise>) {
         transform: Transform::from_xyz(-4.0, 5.0, 2.0).looking_at(Vec3::ZERO, Vec3::Y),
         ..default()
     });
-    commands.spawn(PointLightBundle {
-        transform: Transform::from_xyz(1.0, 3.0, -2.0),
-        ..default()
-    });
-    commands.spawn(PointLightBundle {
-        transform: Transform::from_xyz(-4.0, 0.5, -2.0),
-        ..default()
+    [
+        Transform::from_xyz(1.0, 3.0, -2.0),
+        Transform::from_xyz(-4.0, 0.5, -2.0),
+    ]
+    .map(|transform| {
+        commands.spawn(PointLightBundle {
+            transform,
+            ..default()
+        });
     });
 }
 
 pub fn create_cube(
-    mut materials: ResMut<Assets<PainterlyMaterial>>,
-    voro: Res<VoronoiImage>,
+    mut materials: ResMut<Assets<GalaxyFogMaterial>>,
+    _voro: Res<VoronoiImage>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    asset_server: Res<AssetServer>,
+    _asset_server: Res<AssetServer>,
 ) {
-    let material = materials.add(PainterlyMaterial {
-        diffuse_color: Color::srgb_from_array(BLUE.to_f32_array_no_alpha()),
-        brush_handle: Some(asset_server.load("brush_grunge.png")),
-        brush_handle_normal: Some(asset_server.load("brush_grunge_normal.png")),
-        voro_cache: voro.0.clone(),
+    let material = materials.add(GalaxyFogMaterial {
+        diffuse_color: Color::srgb_from_array(PURPLE.to_f32_array_no_alpha()),
+        radius: 0.2,
         ..default()
     });
 
-    let mesh = meshes.add(Cuboid::from_size(Vec3::splat(4.0)));
-    commands.spawn((
-        MaterialMeshBundle {
-            mesh,
-            material,
-            ..default()
-        },
-        Showcase,
-    ));
+    let mesh = meshes.add(Cuboid::from_size(Vec3::splat(5.0)));
+    commands.spawn((MaterialMeshBundle {
+        mesh,
+        material,
+        ..default()
+    },));
 }

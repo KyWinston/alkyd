@@ -1,8 +1,11 @@
 use bevy::{
-    color::palettes::css::BLUE, prelude::*, render::{
+    color::palettes::css::BLUE,
+    prelude::*,
+    render::{
         render_asset::RenderAssets,
-        render_resource::{AsBindGroup, AsBindGroupShaderType, ShaderRef, ShaderType, VertexState}, texture::GpuImage,
-    }
+        render_resource::{AsBindGroup, AsBindGroupShaderType, ShaderRef, ShaderType},
+        texture::GpuImage,
+    },
 };
 
 use crate::GALAXYFOG_SHADER_HANDLE;
@@ -42,10 +45,10 @@ impl Material for GalaxyFogMaterial {
     }
 
     fn specialize(
-        pipeline: &bevy::pbr::MaterialPipeline<Self>,
+        _pipeline: &bevy::pbr::MaterialPipeline<Self>,
         descriptor: &mut bevy::render::render_resource::RenderPipelineDescriptor,
-        layout: &bevy::render::mesh::MeshVertexBufferLayoutRef,
-        key: bevy::pbr::MaterialPipelineKey<Self>,
+        _layout: &bevy::render::mesh::MeshVertexBufferLayoutRef,
+        _key: bevy::pbr::MaterialPipelineKey<Self>,
     ) -> Result<(), bevy::render::render_resource::SpecializedMeshPipelineError> {
         descriptor.primitive.cull_mode = Some(wgpu::Face::Front);
 
@@ -60,14 +63,5 @@ impl AsBindGroupShaderType<GalaxyUniform> for GalaxyFogMaterial {
             center: self.center,
             radius: self.radius,
         }
-    }
-}
-
-pub fn fullscreen_shader_vertex_state() -> VertexState {
-    VertexState {
-        shader: GALAXYFOG_SHADER_HANDLE,
-        shader_defs: Vec::new(),
-        entry_point: "vertex".into(),
-        buffers: Vec::new(),
     }
 }

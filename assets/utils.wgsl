@@ -1,5 +1,8 @@
 #define_import_path utils
 
+
+@group(2) @binding(5) var<storage, read_write> voro_cache: array<vec4<f32>>;
+
 fn hash2(p: vec2<f32>) -> vec2<f32> {
     // Dave Hoskin's hash as in https://www.shadertoy.com/view/4djSRW
     var p3 = fract(vec3<f32>(p.xyx) * vec3<f32>(.1031, .1030, .0973));
@@ -73,4 +76,42 @@ fn raymarch_hit(position: vec3<f32>, center: vec3<f32>, radius: f32, fog_color: 
 
 fn sphere_hit(p: vec3<f32>, center: vec3<f32>, r: f32) -> f32 {
     return distance(p, center);
+}
+
+fn voronoi(p: vec2<f32>, depth: f32) -> vec3<f32> {
+    var md = 10.0;
+    var med = 10.0;
+    var tcc: vec2<f32>;
+    var cc: vec2<f32>;
+    let n = floor(p);
+    var cell_id = 0.0;
+
+    for (var x = -1; x <= 1; x++) {
+        for (var y = -1; y <= 1; y++) {
+            let g = n + vec2(f32(x), f32(y));
+            let cache = voro_cache[i32(g.x) + (i32(g.y) * 10)];
+            let o = g + cache.xy;
+            let r = o - p;
+            let d = length(r);
+            if depth < 0.0015 {
+                let dcc = abs(cc - g);
+                if !(dcc.x + dcc.y < 0.05) {
+                    let tc = (tcc + r) * 0.5;
+                    let cd = normalize(r - tcc);
+                    let ed = dot(tc, cd);
+                    med = min(med, ed);
+                }
+            }
+            if d < md {
+                md = d;
+                cc = g;
+                tcc = r;
+                cell_id = cache.z;
+                if d < cache.w {
+                    break;
+                }
+            }
+        }
+    }
+    return vec3<f32>(md, cell_id, med);
 }
