@@ -5,13 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 0.1.32 (2024-06-15)
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 9 commits contributed to the release over the course of 7 calendar days.
+ - 10 commits contributed to the release over the course of 7 calendar days.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Updates ([`2a7cad9`](https://github.com/Jasper-J-R/DreamLighters/commit/2a7cad9cf44747113522932fa12aba1eb92931f6))
     - Changelog update ([`2428bd3`](https://github.com/Jasper-J-R/DreamLighters/commit/2428bd377c001a070cd87f994c33501c6f08ce56))
     - Changelog update ([`65ed17a`](https://github.com/Jasper-J-R/DreamLighters/commit/65ed17aaa6b53a10a2b6b5a53a68d5ee529b0f12))
     - Changelog update ([`f79d1f6`](https://github.com/Jasper-J-R/DreamLighters/commit/f79d1f65c57049608cfb309697a57ec7ca3f8120))
