@@ -61,21 +61,21 @@ fn apply_hue(col: vec3<f32>, hueAdjust: f32) -> vec3<f32> {
 
 fn raymarch_hit(position: vec3<f32>, center: vec3<f32>, radius: f32, fog_color: vec4<f32>) -> vec4<f32> {
     var new_pos = position;
-    var step = radius / 2.0;
     let direction = normalize(position - center);
+    var dist = 99999.0;
+
     for (var i = 0; i < 20; i++) {
         let dist = sphere_hit(new_pos, center, radius);
-        if dist < radius - 5.0 {
+        if dist < - 0.2 {
             return vec4<f32>(vec3<f32>(fog_color.rgb), 1.0);
         }
-        new_pos += step * direction;
-        step /= f32(i);
+        new_pos += dist * direction;
     }
-    return vec4<f32>(0.0);
+    return vec4<f32>(1.0);
 }
 
 fn sphere_hit(p: vec3<f32>, center: vec3<f32>, r: f32) -> f32 {
-    return distance(p, center);
+    return distance(p, center) - r;
 }
 
 fn voronoi(p: vec2<f32>, depth: f32) -> vec3<f32> {

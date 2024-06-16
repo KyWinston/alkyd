@@ -88,11 +88,11 @@ pub fn create_cube(
 ) {
     let material = materials.add(GalaxyFogMaterial {
         diffuse_color: Color::srgb_from_array(PURPLE.to_f32_array_no_alpha()),
-        radius: 0.2,
+        radius: 2.0,
         ..default()
     });
 
-    let mesh = meshes.add(Cuboid::from_size(Vec3::splat(5.0)));
+    let mesh = meshes.add(Cuboid::from_size(Vec3::splat(10.0)));
     commands.spawn((MaterialMeshBundle {
         mesh,
         material,

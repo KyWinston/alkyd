@@ -60,9 +60,9 @@ struct ShaderCache {
 
 impl ShaderCache {
     fn new(render_device: &RenderDevice) -> Self {
-        const CAPABILITIES: &[(Features, Capabilities)] = &[
-            (Features::PUSH_CONSTANTS, Capabilities::PUSH_CONSTANT),
-            (Features::SHADER_F64, Capabilities::FLOAT64),
+        const CAPABILITIES: &[(wgpu::Features, Capabilities)] = &[
+            (wgpu::Features::PUSH_CONSTANTS, Capabilities::PUSH_CONSTANT),
+            (wgpu::Features::SHADER_F64, Capabilities::FLOAT64),
             (
                 wgpu::Features::SHADER_PRIMITIVE_INDEX,
                 Capabilities::PRIMITIVE_INDEX,
@@ -122,7 +122,7 @@ impl ShaderCache {
                         )?;
                     }
 
-                    composer.add_composable_module(shader.into())?;
+                    composer.add_composable_module(shader.into());
                 }
             }
             // if we fail to add a module the composer will tell us what is missing
