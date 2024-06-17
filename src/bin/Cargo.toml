@@ -1,6 +1,7 @@
 [dependencies]
 bevy = "0.13.2"
 bevy-inspector-egui = "0.24.0"
+bevy_third_person_camera = { path = "../../../crates/bevy_third_person_camera" }
 
 # Enable only a small amount of optimization in debug mode
 [profile.dev]

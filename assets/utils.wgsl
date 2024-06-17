@@ -1,5 +1,10 @@
 #define_import_path utils
-
+#import bevy_pbr::prepass_utils::{prepass_depth,prepass_normal};
+#import bevy_pbr::view_transformations::{
+    frag_coord_to_ndc,
+    position_ndc_to_view,
+    position_ndc_to_world
+};
 
 @group(2) @binding(5) var<storage, read_write> voro_cache: array<vec4<f32>>;
 
@@ -59,23 +64,23 @@ fn apply_hue(col: vec3<f32>, hueAdjust: f32) -> vec3<f32> {
     return col * cosAngle + cross(k, col) * sin(hueAdjust) + k * dot(k, col) * (1.0 - cosAngle);
 }
 
-fn raymarch_hit(position: vec3<f32>, center: vec3<f32>, radius: f32, fog_color: vec4<f32>) -> vec4<f32> {
-    var new_pos = position;
-    let direction = normalize(position - center);
-    var dist = 99999.0;
+fn raymarch_hit(position: vec4<f32>, view: vec3<f32>, center: vec3<f32>, radius: f32, fog_color: vec4<f32>) -> vec4<f32> {
+    var new_pos: vec3<f32> = view;
+    let ndc = vec3<f32>(frag_coord_to_ndc(position).xyz);
+    var dist: f32 = 999.0;
+    let direction: vec3<f32> = normalize(position_ndc_to_world(ndc) - new_pos);
 
-    for (var i = 0; i < 20; i++) {
-        let dist = sphere_hit(new_pos, center, radius);
-        if dist < - 0.2 {
-            return vec4<f32>(vec3<f32>(fog_color.rgb), 1.0);
-        }
+    for (var x = 0; x < 8; x++) {
+        dist = noise3(new_pos * 1.2 - 0.45);
         new_pos += dist * direction;
     }
-    return vec4<f32>(1.0);
+    return vec4<f32>(smoothstep(fog_color.rgb, vec3<f32>(1.0), vec3<f32>(clamp(dist, 0.0, 1.0))), 1.0);
 }
+    
 
-fn sphere_hit(p: vec3<f32>, center: vec3<f32>, r: f32) -> f32 {
-    return distance(p, center) - r;
+
+fn sphere_hit(p: vec3<f32>, c: vec3<f32>, r: f32) -> f32 {
+    return distance(p, c) - r;
 }
 
 fn voronoi(p: vec2<f32>, depth: f32) -> vec3<f32> {

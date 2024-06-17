@@ -11,6 +11,7 @@ bevy.workspace = true
 bevy-inspector-egui.workspace = true 
 bytemuck.workspace = true 
 parking_lot = "0.12.1"
+bevy_third_person_camera = { path = "../../../crates/bevy_third_person_camera" }
 wgpu = { version = "0.19.1", features = ["naga"] }
 naga = { version = "0.19.0", features = ["wgsl-in"] }
 naga_oil = { version = "0.13,0", default-features = false, features = [

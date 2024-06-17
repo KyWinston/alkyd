@@ -1,17 +1,17 @@
 use alkyd::{
-    materials::{
-        galaxyfog::galaxy::GalaxyFogMaterial,
-        painterly::resources::{MaterialsInspector, PainterlyInspector, VoronoiImage},
-    },
+    materials::{galaxyfog::galaxy::GalaxyFogMaterial, painterly::resources::VoronoiImage},
     utilities::systems::LoadNoise,
     AlkydPlugin, Showcase,
 };
 
 use bevy::{
     color::palettes::css::PURPLE,
-    core_pipeline::prepass::NormalPrepass,
+    core_pipeline::prepass::{DepthPrepass, NormalPrepass},
     prelude::*,
     render::texture::{ImageAddressMode, ImageSamplerDescriptor},
+};
+use bevy_third_person_camera::{
+    camera::Zoom, ThirdPersonCamera, ThirdPersonCameraPlugin, ThirdPersonCameraTarget,
 };
 
 fn main() {
@@ -25,37 +25,35 @@ fn main() {
                     ..Default::default()
                 },
             }),
+            ThirdPersonCameraPlugin,
             AlkydPlugin { debug: false },
         ))
         .add_systems(Startup, (init_camera.before(init_scene), init_scene))
         .add_systems(
             Update,
             (
-                rotate_mesh.run_if(resource_exists::<PainterlyInspector>),
+                rotate_mesh,
                 create_cube.run_if(resource_added::<VoronoiImage>),
             ),
         )
         .run();
 }
 
-fn rotate_mesh(
-    mut mesh_q: Query<&mut Transform, With<Showcase>>,
-    inspector: Res<MaterialsInspector>,
-    time: Res<Time>,
-) {
+fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<Time>) {
     if let Ok(mut mesh) = mesh_q.get_single_mut() {
-        if inspector.turn_table {
-            mesh.rotate_y(1.0 * time.delta_seconds());
-        }
+        mesh.rotate_y(1.0 * time.delta_seconds());
     }
 }
 
 fn init_camera(mut commands: Commands) {
     commands.spawn((
-        Camera3dBundle {
-            transform: Transform::from_xyz(0.0, 5.0, 15.0).looking_at(Vec3::ZERO, Vec3::Y),
+        Camera3dBundle::default(),
+        ThirdPersonCamera {
+            sensitivity: Vec2::new(10.0, 10.0),
+            zoom: Zoom::new(4.0, 20.0),
             ..default()
         },
+        DepthPrepass,
         NormalPrepass,
     ));
 }
@@ -81,21 +79,23 @@ fn init_scene(mut commands: Commands, mut ev: EventWriter<LoadNoise>) {
 
 pub fn create_cube(
     mut materials: ResMut<Assets<GalaxyFogMaterial>>,
-    _voro: Res<VoronoiImage>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    _asset_server: Res<AssetServer>,
 ) {
     let material = materials.add(GalaxyFogMaterial {
         diffuse_color: Color::srgb_from_array(PURPLE.to_f32_array_no_alpha()),
-        radius: 2.0,
+        radius: 1.0,
+        center: Vec3::ZERO,
         ..default()
     });
 
-    let mesh = meshes.add(Cuboid::from_size(Vec3::splat(10.0)));
-    commands.spawn((MaterialMeshBundle {
-        mesh,
-        material,
-        ..default()
-    },));
+    let mesh = meshes.add(Cuboid::from_size(Vec3::splat(4.0)));
+    commands.spawn((
+        MaterialMeshBundle {
+            mesh,
+            material,
+            ..default()
+        },
+        ThirdPersonCameraTarget,
+    ));
 }

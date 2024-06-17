@@ -18,9 +18,7 @@ use bevy::render::renderer::RenderDevice;
 use bevy::utils::{Entry, HashMap, HashSet};
 use naga::valid::Capabilities;
 use parking_lot::Mutex;
-use wgpu::{
-    Features, PipelineLayout, PipelineLayoutDescriptor, PushConstantRange, ShaderModuleDescriptor,
-};
+use wgpu::{PipelineLayout, PipelineLayoutDescriptor, PushConstantRange, ShaderModuleDescriptor};
 
 pub struct CachedAppPipeline {
     state: CachedPipelineState,
@@ -66,6 +64,10 @@ impl ShaderCache {
             (
                 wgpu::Features::SHADER_PRIMITIVE_INDEX,
                 Capabilities::PRIMITIVE_INDEX,
+            ),
+            (
+                wgpu::Features::TEXTURE_BINDING_ARRAY,
+                Capabilities::CUBE_ARRAY_TEXTURES,
             ),
             (
                 wgpu::Features::SAMPLED_TEXTURE_AND_STORAGE_BUFFER_ARRAY_NON_UNIFORM_INDEXING,
@@ -122,7 +124,7 @@ impl ShaderCache {
                         )?;
                     }
 
-                    composer.add_composable_module(shader.into());
+                    let _ = composer.add_composable_module(shader.into());
                 }
             }
             // if we fail to add a module the composer will tell us what is missing

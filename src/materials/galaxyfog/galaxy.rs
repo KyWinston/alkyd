@@ -16,6 +16,7 @@ pub struct GalaxyFogMaterial {
     pub diffuse_color: Color,
     pub center: Vec3,
     pub radius: f32,
+    pub ray_origin: Vec3
 }
 
 impl Default for GalaxyFogMaterial {
@@ -23,7 +24,8 @@ impl Default for GalaxyFogMaterial {
         Self {
             diffuse_color: Color::Srgba(BLUE),
             center: Vec3::ZERO,
-            radius: 50.0,
+            radius: 2.0,
+            ray_origin: Vec3::new(2.0, 4.0, 6.0)
         }
     }
 }
@@ -33,6 +35,8 @@ pub struct GalaxyUniform {
     pub diffuse_color: Vec4,
     pub center: Vec3,
     pub radius: f32,
+    pub ray_origin: Vec3
+
 }
 
 impl Material for GalaxyFogMaterial {
@@ -62,6 +66,7 @@ impl AsBindGroupShaderType<GalaxyUniform> for GalaxyFogMaterial {
             diffuse_color: self.diffuse_color.linear().to_vec4(),
             center: self.center,
             radius: self.radius,
+            ray_origin: self.ray_origin
         }
     }
 }
