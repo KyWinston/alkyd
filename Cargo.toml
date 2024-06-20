@@ -1,10 +1,10 @@
 [package]
 name = "alkyd"
-resolver = "2"
 version = "0.1.32"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 description = "bevy crate for handling procedural textures and shaders"
+publish = true
 
 [dependencies]
 bevy.workspace = true
