@@ -31,26 +31,24 @@ pub const PAINTERLY_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(17080
 pub const GALAXYFOG_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1508032910437029714);
 pub const VORONOI_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1708033355537473489);
 pub const NOISE_FUNCTIONS_HANDLE: Handle<Shader> = Handle::weak_from_u128(94071345065644201137);
+pub const NOISE_GEN_UTILS_HANDLE: Handle<Shader> = Handle::weak_from_u128(94071345065837501137);
+pub const SIMPLEX_HANDLE: Handle<Shader> = Handle::weak_from_u128(34071823065847501137);
+pub const SIMPLEX_4D_HANDLE: Handle<Shader> = Handle::weak_from_u128(34071823465847412137);
 
 impl Plugin for AlkydPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
             MaterialSwatchPlugin { debug: self.debug },
-            GalaxyFogPlugin,
+            GalaxyFogPlugin { debug: self.debug },
             MaterialPlugin::<PainterlyMaterial>::default(),
             MaterialPlugin::<GalaxyFogMaterial>::default(),
             UtilitiesPlugin,
             AppComputePlugin,
             AppComputeWorkerPlugin::<VoronoiWorker>::default(),
         ));
-       
+
         app.add_event::<LoadNoise>()
             .insert_resource::<VoronoiImage>(VoronoiImage([Vec4::ZERO; 100]))
             .insert_resource::<Debug>(Debug(self.debug));
-        if self.debug {
-            app.add_plugins(ResourceInspectorPlugin::<MaterialsInspector>::default());
-            app.init_resource::<MaterialsInspector>()
-                .register_type::<MaterialsInspector>();
-        }
     }
 }

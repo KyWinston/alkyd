@@ -6,8 +6,7 @@ use bevy::{
         mesh::MeshVertexBufferLayoutRef,
         render_asset::RenderAssets,
         render_resource::{
-            AsBindGroup, AsBindGroupShaderType, RenderPipelineDescriptor, ShaderRef, ShaderType,
-            SpecializedMeshPipelineError,
+            AsBindGroup, AsBindGroupShaderType, Face, RenderPipelineDescriptor, ShaderRef, ShaderType, SpecializedMeshPipelineError
         },
         texture::GpuImage,
     },
@@ -105,7 +104,7 @@ impl Material for PainterlyMaterial {
         key: MaterialPipelineKey<Self>,
     ) -> Result<(), SpecializedMeshPipelineError> {
         let fragment = descriptor.fragment.as_mut().unwrap();
-        descriptor.primitive.cull_mode = Some(wgpu::Face::Back);
+        descriptor.primitive.cull_mode = Some(Face::Back);
         if key.bind_group_data.normal_texture {
             fragment.shader_defs.push("NORMAL_TEXTURE".into());
         }
@@ -125,7 +124,7 @@ impl Material for PainterlyMaterial {
 impl AsBindGroupShaderType<PainterlyUniform> for PainterlyMaterial {
     fn as_bind_group_shader_type(&self, _: &RenderAssets<GpuImage>) -> PainterlyUniform {
         PainterlyUniform {
-            diffuse_color: self.diffuse_color.linear().to_vec4(),
+            diffuse_color: self.diffuse_color.to_linear().to_vec4(),
             roughness: self.roughness,
             metallic: self.metallic,
             color_varience: self.color_varience,

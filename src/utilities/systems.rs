@@ -16,29 +16,28 @@ pub fn run_worker(
 
 pub fn read_data(
     mut voro_img: ResMut<VoronoiImage>,
-    mut load_ev: EventWriter<LoadNoise>,
     compute_worker: ResMut<AppComputeWorker<VoronoiWorker>>,
+    mut load_ev: EventWriter<LoadNoise>,
 ) {
     if !compute_worker.ready() {
         return;
     };
 
-    let result: [Vec4; 100] = compute_worker
-        .read_vec("centroids")
-        .as_slice()
-        .try_into()
-        .unwrap();
-
-    voro_img.0 = result;
-    for v_ix in 0..9 {
-        for v_iy in 0..9 {
-            smallest_dist(voro_img.0.to_vec(), v_ix, v_iy);
+    if let Ok(result) = compute_worker.read_vec("centroids").as_slice().try_into() {
+        let mut new_vec: [Vec4; 100] = result;
+        for v_ix in 0..9 {
+            for v_iy in 0..9 {
+                new_vec[v_ix as usize + v_iy as usize * 10] =
+                    smallest_dist(&mut result.to_vec(), v_ix, v_iy);
+            }
         }
+        voro_img.0 = new_vec;
+    }else{
+        load_ev.send(LoadNoise);
     }
-    load_ev.send(LoadNoise);
 }
 
-fn smallest_dist(mut points: Vec<Vec4>, idx: i32, idy: i32) {
+fn smallest_dist(points: &mut Vec<Vec4>, idx: i32, idy: i32) -> Vec4 {
     let mut min_dist = 1.0;
     for x in -1..1 {
         for y in -1..1 {
@@ -51,4 +50,5 @@ fn smallest_dist(mut points: Vec<Vec4>, idx: i32, idy: i32) {
         }
     }
     points[idx as usize + idy as usize * 10].w = min_dist;
+    points[idx as usize + idy as usize * 10]
 }

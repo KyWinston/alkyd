@@ -1,6 +1,8 @@
 use alkyd::{
-    materials::{galaxyfog::galaxy::GalaxyFogMaterial, painterly::resources::VoronoiImage},
-    utilities::systems::LoadNoise,
+    materials::{
+        galaxyfog::galaxy::{GalaxyFogMaterial, NoiseProperties},
+        painterly::resources::VoronoiImage,
+    },
     AlkydPlugin, Showcase,
 };
 
@@ -26,7 +28,7 @@ fn main() {
                 },
             }),
             ThirdPersonCameraPlugin,
-            AlkydPlugin { debug: false },
+            AlkydPlugin { debug: true },
         ))
         .add_systems(Startup, (init_camera.before(init_scene), init_scene))
         .add_systems(
@@ -58,8 +60,7 @@ fn init_camera(mut commands: Commands) {
     ));
 }
 
-fn init_scene(mut commands: Commands, mut ev: EventWriter<LoadNoise>) {
-    ev.send(LoadNoise);
+fn init_scene(mut commands: Commands) {
     commands.spawn(DirectionalLightBundle {
         directional_light: DirectionalLight::default(),
         transform: Transform::from_xyz(-4.0, 5.0, 2.0).looking_at(Vec3::ZERO, Vec3::Y),
@@ -84,12 +85,21 @@ pub fn create_cube(
 ) {
     let material = materials.add(GalaxyFogMaterial {
         diffuse_color: Color::srgb_from_array(PURPLE.to_f32_array_no_alpha()),
-        radius: 1.0,
+        radius: 2.0,
         center: Vec3::ZERO,
+        steps: 50,
+        props: NoiseProperties {
+            octaves: 1,
+            lacunarity: 2.0,
+            frequency: 1.0,
+            gain: 0.5,
+            amplitude: 1.0,
+            ..default()
+        },
         ..default()
     });
 
-    let mesh = meshes.add(Cuboid::from_size(Vec3::splat(4.0)));
+    let mesh = meshes.add(Cuboid::from_size(Vec3::splat(6.0)));
     commands.spawn((
         MaterialMeshBundle {
             mesh,

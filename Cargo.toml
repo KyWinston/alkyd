@@ -7,16 +7,20 @@ license = "MIT OR Apache-2.0"
 description = "bevy crate for handling procedural textures and shaders"
 
 [dependencies]
-bevy.workspace = true 
-bevy-inspector-egui.workspace = true 
-bytemuck.workspace = true 
+bevy.workspace = true
+bevy-inspector-egui.workspace = true
+bevy_xpbd_3d.workspace = true
+bytemuck.workspace = true
 parking_lot = "0.12.1"
-bevy_third_person_camera = { path = "../../../crates/bevy_third_person_camera" }
-wgpu = { version = "0.19.1", features = ["naga"] }
-naga = { version = "0.19.0", features = ["wgsl-in"] }
-naga_oil = { version = "0.13,0", default-features = false, features = [
+codespan-reporting = "0.11.1"
+futures-lite = "1.13.0"
+bevy_third_person_camera.workspace = true
+naga = { version = "0.20.0", features = ["wgsl-in"] }
+wgpu = { version = "0.20.0", features = ["naga"] }
+naga_oil = { version = "0.14,0", default-features = false, features = [
     "test_shader",
 ] }
+
 
 [dependencies.bitflags]
 version = "2.5.0"

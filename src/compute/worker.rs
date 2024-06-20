@@ -4,13 +4,12 @@ use std::{marker::PhantomData, ops::Deref};
 use bevy::{
     prelude::{Res, ResMut, Resource},
     render::{
-        render_resource::{Buffer, CommandEncoderDescriptor, ComputePipeline},
+        render_resource::{BindGroupEntry, Buffer, CommandEncoder, CommandEncoderDescriptor, ComputePassDescriptor, ComputePipeline, Maintain, MapMode},
         renderer::{RenderDevice, RenderQueue},
     },
     utils::HashMap,
 };
 use bytemuck::{bytes_of, cast_slice, from_bytes, AnyBitPattern, NoUninit};
-use wgpu::{BindGroupEntry, CommandEncoder, ComputePassDescriptor};
 
 use super::{error::{Error, Result}, pipeline_cache::{AppPipelineCache, CachedAppComputePipelineId}, traits::ComputeWorker, worker_builder::AppComputeWorkerBuilder};
 
@@ -197,7 +196,7 @@ impl<W: ComputeWorker> AppComputeWorker<W> {
         for (_, staging_buffer) in self.staging_buffers.iter_mut() {
             let read_buffer_slice = staging_buffer.buffer.slice(..);
 
-            read_buffer_slice.map_async(wgpu::MapMode::Read, move |result| {
+            read_buffer_slice.map_async(MapMode::Read, move |result| {
                 let err = result.err();
                 if err.is_some() {
                     let some_err = err.unwrap();
@@ -308,14 +307,11 @@ impl<W: ComputeWorker> AppComputeWorker<W> {
 
     #[inline]
     fn poll(&self) -> bool {
-        match self
+        self
             .render_device
             .wgpu_device()
-            .poll(wgpu::MaintainBase::Wait)
-        {
-            wgpu::MaintainResult::SubmissionQueueEmpty => true,
-            wgpu::MaintainResult::Ok => false,
-        }
+            .poll(Maintain::Wait).is_queue_empty()
+        
     }
     /// Check if the worker is ready to be read from.
     #[inline]

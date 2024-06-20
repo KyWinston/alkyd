@@ -3,7 +3,7 @@ use bevy::{
     prelude::*,
     render::{
         render_asset::RenderAssets,
-        render_resource::{AsBindGroup, AsBindGroupShaderType, ShaderRef, ShaderType},
+        render_resource::{AsBindGroup, AsBindGroupShaderType, Face, ShaderRef, ShaderType},
         texture::GpuImage,
     },
 };
@@ -16,7 +16,10 @@ pub struct GalaxyFogMaterial {
     pub diffuse_color: Color,
     pub center: Vec3,
     pub radius: f32,
-    pub ray_origin: Vec3
+    pub steps: u32,
+    pub precision: f32,
+    #[uniform(1)]
+    pub props: NoiseProperties,
 }
 
 impl Default for GalaxyFogMaterial {
@@ -25,7 +28,9 @@ impl Default for GalaxyFogMaterial {
             diffuse_color: Color::Srgba(BLUE),
             center: Vec3::ZERO,
             radius: 2.0,
-            ray_origin: Vec3::new(2.0, 4.0, 6.0)
+            steps: 30,
+            precision: 25.0,
+            props: NoiseProperties::default(),
         }
     }
 }
@@ -35,8 +40,29 @@ pub struct GalaxyUniform {
     pub diffuse_color: Vec4,
     pub center: Vec3,
     pub radius: f32,
-    pub ray_origin: Vec3
+    pub steps: u32,
+    pub precision:f32
+}
 
+#[derive(Clone, ShaderType)]
+pub struct NoiseProperties {
+    pub octaves: i32,
+    pub lacunarity: f32,
+    pub frequency: f32,
+    pub gain: f32,
+    pub amplitude: f32,
+}
+
+impl Default for NoiseProperties {
+    fn default() -> Self {
+        Self {
+            octaves: 4,
+            lacunarity: 2.0,
+            frequency: 1.0,
+            gain: 0.03,
+            amplitude: 1.0,
+        }
+    }
 }
 
 impl Material for GalaxyFogMaterial {
@@ -54,7 +80,7 @@ impl Material for GalaxyFogMaterial {
         _layout: &bevy::render::mesh::MeshVertexBufferLayoutRef,
         _key: bevy::pbr::MaterialPipelineKey<Self>,
     ) -> Result<(), bevy::render::render_resource::SpecializedMeshPipelineError> {
-        descriptor.primitive.cull_mode = Some(wgpu::Face::Front);
+        descriptor.primitive.cull_mode = Some(Face::Front);
 
         Ok(())
     }
@@ -63,10 +89,23 @@ impl Material for GalaxyFogMaterial {
 impl AsBindGroupShaderType<GalaxyUniform> for GalaxyFogMaterial {
     fn as_bind_group_shader_type(&self, _: &RenderAssets<GpuImage>) -> GalaxyUniform {
         GalaxyUniform {
-            diffuse_color: self.diffuse_color.linear().to_vec4(),
+            diffuse_color: self.diffuse_color.to_linear().to_vec4(),
             center: self.center,
             radius: self.radius,
-            ray_origin: self.ray_origin
+            steps: self.steps,
+            precision:self.precision
+        }
+    }
+}
+
+impl AsBindGroupShaderType<NoiseProperties> for GalaxyFogMaterial {
+    fn as_bind_group_shader_type(&self, _: &RenderAssets<GpuImage>) -> NoiseProperties {
+        NoiseProperties {
+            octaves: self.props.octaves,
+            lacunarity: self.props.lacunarity,
+            frequency: self.props.frequency,
+            gain: self.props.gain,
+            amplitude: self.props.amplitude,
         }
     }
 }

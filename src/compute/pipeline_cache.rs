@@ -10,15 +10,13 @@ use std::mem;
 
 use bevy::prelude::*;
 use bevy::render::render_resource::{
-    BindGroupLayout, BindGroupLayoutId, CachedPipelineState, ComputePipeline,
-    ComputePipelineDescriptor, ErasedPipelineLayout, ErasedShaderModule, Pipeline,
-    PipelineCacheError, Shader, ShaderDefVal, ShaderImport, Source,
+    BindGroupLayout, BindGroupLayoutId, CachedPipelineState, ComputePipeline, ComputePipelineDescriptor, ErasedPipelineLayout, ErasedShaderModule, Pipeline, PipelineCacheError, PipelineCompilationOptions, PipelineLayout, PipelineLayoutDescriptor, PushConstantRange, RawComputePipelineDescriptor, Shader, ShaderDefVal, ShaderImport, ShaderModuleDescriptor, ShaderSource, Source
 };
 use bevy::render::renderer::RenderDevice;
+use bevy::render::settings::WgpuFeatures;
 use bevy::utils::{Entry, HashMap, HashSet};
-use naga::valid::Capabilities;
+use naga::valid::{Capabilities, ShaderStages};
 use parking_lot::Mutex;
-use wgpu::{PipelineLayout, PipelineLayoutDescriptor, PushConstantRange, ShaderModuleDescriptor};
 
 pub struct CachedAppPipeline {
     state: CachedPipelineState,
@@ -58,27 +56,27 @@ struct ShaderCache {
 
 impl ShaderCache {
     fn new(render_device: &RenderDevice) -> Self {
-        const CAPABILITIES: &[(wgpu::Features, Capabilities)] = &[
-            (wgpu::Features::PUSH_CONSTANTS, Capabilities::PUSH_CONSTANT),
-            (wgpu::Features::SHADER_F64, Capabilities::FLOAT64),
+        const CAPABILITIES: &[(WgpuFeatures, Capabilities)] = &[
+            (WgpuFeatures::PUSH_CONSTANTS, Capabilities::PUSH_CONSTANT),
+            (WgpuFeatures::SHADER_F64, Capabilities::FLOAT64),
             (
-                wgpu::Features::SHADER_PRIMITIVE_INDEX,
+                WgpuFeatures::SHADER_PRIMITIVE_INDEX,
                 Capabilities::PRIMITIVE_INDEX,
             ),
             (
-                wgpu::Features::TEXTURE_BINDING_ARRAY,
-                Capabilities::CUBE_ARRAY_TEXTURES,
-            ),
-            (
-                wgpu::Features::SAMPLED_TEXTURE_AND_STORAGE_BUFFER_ARRAY_NON_UNIFORM_INDEXING,
+                WgpuFeatures::SAMPLED_TEXTURE_AND_STORAGE_BUFFER_ARRAY_NON_UNIFORM_INDEXING,
                 Capabilities::SAMPLED_TEXTURE_AND_STORAGE_BUFFER_ARRAY_NON_UNIFORM_INDEXING,
             ),
             (
-                wgpu::Features::SAMPLED_TEXTURE_AND_STORAGE_BUFFER_ARRAY_NON_UNIFORM_INDEXING,
+                WgpuFeatures::TEXTURE_BINDING_ARRAY,
+                Capabilities::CUBE_ARRAY_TEXTURES,
+            ),
+            (
+                WgpuFeatures::SAMPLED_TEXTURE_AND_STORAGE_BUFFER_ARRAY_NON_UNIFORM_INDEXING,
                 Capabilities::SAMPLER_NON_UNIFORM_INDEXING,
             ),
             (
-                wgpu::Features::UNIFORM_BUFFER_AND_STORAGE_TEXTURE_ARRAY_NON_UNIFORM_INDEXING,
+                WgpuFeatures::UNIFORM_BUFFER_AND_STORAGE_TEXTURE_ARRAY_NON_UNIFORM_INDEXING,
                 Capabilities::UNIFORM_BUFFER_AND_STORAGE_TEXTURE_ARRAY_NON_UNIFORM_INDEXING,
             ),
         ];
@@ -95,7 +93,7 @@ impl ShaderCache {
         #[cfg(not(debug_assertions))]
         let composer = naga_oil::compose::Composer::non_validating();
 
-        let composer = composer.with_capabilities(capabilities);
+        let composer = composer.with_capabilities(capabilities,ShaderStages::COMPUTE);
 
         Self {
             composer,
@@ -124,7 +122,7 @@ impl ShaderCache {
                         )?;
                     }
 
-                    let _ = composer.add_composable_module(shader.into());
+                    composer.add_composable_module(shader.into())?;
                 }
             }
             // if we fail to add a module the composer will tell us what is missing
@@ -221,7 +219,7 @@ impl ShaderCache {
                             },
                         )?;
 
-                        wgpu::ShaderSource::Naga(Cow::Owned(naga))
+                        ShaderSource::Naga(Cow::Owned(naga))
                     }
                 };
 
@@ -456,11 +454,12 @@ impl AppPipelineCache {
             }
         };
 
-        let descriptor = wgpu::ComputePipelineDescriptor {
+        let descriptor = RawComputePipelineDescriptor {
             label: descriptor.label.as_deref(),
             layout,
             module: &compute_module,
             entry_point: descriptor.entry_point.as_ref(),
+            compilation_options: PipelineCompilationOptions::default(),
         };
 
         let pipeline = self.device.create_compute_pipeline(&descriptor);

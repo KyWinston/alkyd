@@ -4,14 +4,12 @@ use bevy::{
     prelude::{AssetServer, World},
     render::{
         render_resource::{
-            encase::{private::WriteInto, StorageBuffer, UniformBuffer},
-            Buffer, ComputePipelineDescriptor, ShaderRef, ShaderType,
+            encase::{private::WriteInto, StorageBuffer, UniformBuffer}, Buffer, BufferDescriptor, BufferInitDescriptor, BufferUsages, ComputePipelineDescriptor, ShaderRef, ShaderType
         },
         renderer::RenderDevice,
     },
     utils::HashMap,
 };
-use wgpu::{util::BufferInitDescriptor, BufferDescriptor, BufferUsages};
 
 use super::{
     pipeline_cache::{AppPipelineCache, CachedAppComputePipelineId},

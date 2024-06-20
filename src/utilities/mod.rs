@@ -3,7 +3,7 @@ use crate::{
         traits::{ComputeShader, ComputeWorker},
         worker::AppComputeWorker,
         worker_builder::AppComputeWorkerBuilder,
-    }, NOISE_FUNCTIONS_HANDLE, VORONOI_SHADER_HANDLE
+    }, NOISE_FUNCTIONS_HANDLE, NOISE_GEN_UTILS_HANDLE, SIMPLEX_4D_HANDLE, SIMPLEX_HANDLE, VORONOI_SHADER_HANDLE
 };
 use bevy::{
     asset::load_internal_asset,
@@ -35,9 +35,8 @@ pub struct VoronoiWorker;
 impl ComputeWorker for VoronoiWorker {
     fn build(world: &mut World) -> AppComputeWorker<Self> {
         AppComputeWorkerBuilder::new(world)
-            .add_uniform("cell_number", &100)
             .add_staging("centroids", &[Vec4::ZERO; 100])
-            .add_pass::<VoronoiShader>([10, 10, 1], &["cell_number", "centroids"])
+            .add_pass::<VoronoiShader>([10, 10, 1], &["centroids"])
             .one_shot()
             .build()
     }
@@ -56,7 +55,25 @@ impl Plugin for UtilitiesPlugin {
         load_internal_asset!(
             app,
             NOISE_FUNCTIONS_HANDLE,
-            "../../assets/utils.wgsl",
+            "../../assets/shader_utils/general.wgsl",
+            Shader::from_wgsl
+        );
+        load_internal_asset!(
+            app,
+            SIMPLEX_HANDLE,
+            "../../assets/shader_utils/simplex_3d.wgsl",
+            Shader::from_wgsl
+        );
+        load_internal_asset!(
+            app,
+            SIMPLEX_4D_HANDLE,
+            "../../assets/shader_utils/simplex_4d.wgsl",
+            Shader::from_wgsl
+        );
+        load_internal_asset!(
+            app,
+            NOISE_GEN_UTILS_HANDLE,
+            "../../assets/shader_utils/noise_gen.wgsl",
             Shader::from_wgsl
         );
         app.add_systems(Update, (read_data, run_worker));

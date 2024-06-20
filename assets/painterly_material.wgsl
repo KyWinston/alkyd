@@ -26,7 +26,6 @@ struct Painterly {
 @group(2) @binding(2) var s: sampler;
 @group(2) @binding(3) var brush_handle_normal: texture_2d<f32>;
 @group(2) @binding(4) var normal_sampler: sampler;
-// @group(2) @binding(5) var<storage, read_write> voro_cache: array<vec4<f32>>;
 
 @fragment
 fn fragment(
@@ -73,7 +72,6 @@ fn fragment(
         double_sided,
         is_front,
         Nt,
-        view.mip_bias
     );
     #else
     pbr_input.N = normalize(pbr_input.world_normal);
