@@ -7,40 +7,22 @@ description = "bevy crate for handling procedural textures and shaders"
 publish = true
 
 [dependencies]
-bevy.workspace = true
+bevy = { workspace = true}
 bevy-inspector-egui.workspace = true
-bevy_xpbd_3d.workspace = true
 bytemuck.workspace = true
 parking_lot = "0.12.1"
-codespan-reporting = "0.11.1"
 futures-lite = "1.13.0"
-bevy_third_person_camera.workspace = true
 naga = { version = "0.20.0", features = ["wgsl-in"] }
-wgpu = { version = "0.20.0", features = ["naga"] }
-naga_oil = { version = "0.14,0", default-features = false, features = [
-    "test_shader",
-] }
-
+wgpu = { version = "0.20.1", features = ["naga"] }
+naga_oil = { version = "0.14.0"}
+bevy_third_person_camera.workspace = true
+cc = "1.0.73"
 
 [dependencies.bitflags]
 version = "2.5.0"
 
+[dev-dependencies]
+
 [lib]
 name = "alkyd"
 path = "src/lib.rs"
-
-[dev-dependencies]
-bevy.workspace = true
-
-# Enable only a small amount of optimization in debug mode
-[profile.dev]
-opt-level = 1
-
-[profile.dev.package."*"]
-opt-level = "z"
-
-[profile.release]
-codegen-units = 1
-opt-level = "z"
-strip = true
-lto = true
