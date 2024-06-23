@@ -2,7 +2,6 @@ use alkyd::{
     materials::painterly::{
         components::Showcase, painterly::PainterlyMaterial, resources::VoronoiImage,
     },
-    utilities::systems::LoadNoise,
     AlkydPlugin,
 };
 
@@ -60,8 +59,7 @@ fn init_camera(mut commands: Commands) {
     ));
 }
 
-fn init_scene(mut commands: Commands, mut ev: EventWriter<LoadNoise>) {
-    ev.send(LoadNoise);
+fn init_scene(mut commands: Commands) {
     commands.spawn(DirectionalLightBundle {
         directional_light: DirectionalLight::default(),
         transform: Transform::from_xyz(-4.0, 5.0, 2.0).looking_at(Vec3::ZERO, Vec3::Y),

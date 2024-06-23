@@ -13,11 +13,11 @@ pub mod worker_builder;
 // Since these are always used when using this crate
 pub use bevy::render::render_resource::{ShaderRef, ShaderType};
 
-pub(crate) fn process_pipeline_queue_system(mut pipeline_cache: ResMut<AppPipelineCache>) {
+pub fn process_pipeline_queue_system(mut pipeline_cache: ResMut<AppPipelineCache>) {
     pipeline_cache.process_queue();
 }
 
-pub(crate) fn extract_shaders(
+pub fn extract_shaders(
     mut pipeline_cache: ResMut<AppPipelineCache>,
     shaders: Res<Assets<Shader>>,
     mut events: EventReader<AssetEvent<Shader>>,

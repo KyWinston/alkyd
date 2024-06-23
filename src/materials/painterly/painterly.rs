@@ -6,7 +6,8 @@ use bevy::{
         mesh::MeshVertexBufferLayoutRef,
         render_asset::RenderAssets,
         render_resource::{
-            AsBindGroup, AsBindGroupShaderType, Face, RenderPipelineDescriptor, ShaderRef, ShaderType, SpecializedMeshPipelineError
+            AsBindGroup, AsBindGroupShaderType, Face, RenderPipelineDescriptor, ShaderRef,
+            ShaderType, SpecializedMeshPipelineError,
         },
         texture::GpuImage,
     },

@@ -1,10 +1,6 @@
 use bevy::prelude::*;
 
-use super::{
-    components::Showcase,
-    painterly::PainterlyMaterial,
-    resources::{MaterialsInspector, VoronoiImage},
-};
+use super::{components::Showcase, painterly::PainterlyMaterial, resources::{MaterialsInspector, VoronoiImage}};
 
 pub fn update_material(
     mut my_res: ResMut<MaterialsInspector>,

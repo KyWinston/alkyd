@@ -3,15 +3,16 @@ use crate::{
         traits::{ComputeShader, ComputeWorker},
         worker::AppComputeWorker,
         worker_builder::AppComputeWorkerBuilder,
-    }, NOISE_FUNCTIONS_HANDLE, NOISE_GEN_UTILS_HANDLE, SIMPLEX_4D_HANDLE, SIMPLEX_HANDLE, VORONOI_SHADER_HANDLE
+    },
+    NOISE_FUNCTIONS_HANDLE, NOISE_GEN_UTILS_HANDLE, SIMPLEX_4D_HANDLE, SIMPLEX_HANDLE,
+    VORONOI_SHADER_HANDLE,
 };
 use bevy::{
     asset::load_internal_asset,
     prelude::*,
     render::render_resource::{ShaderRef, ShaderType},
 };
-
-use self::systems::{read_data, run_worker};
+use systems::{read_data, run_worker};
 
 pub mod systems;
 

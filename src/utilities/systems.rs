@@ -23,16 +23,20 @@ pub fn read_data(
         return;
     };
 
-    if let Ok(result) = compute_worker.read_vec("centroids").as_slice().try_into() {
-        let mut new_vec: [Vec4; 100] = result;
+    if let Ok(res) = compute_worker
+        .read_vec("centroids")
+        .as_slice()
+        .try_into()
+    {
+        let mut new_vec: [Vec4; 100] = res;
         for v_ix in 0..9 {
             for v_iy in 0..9 {
                 new_vec[v_ix as usize + v_iy as usize * 10] =
-                    smallest_dist(&mut result.to_vec(), v_ix, v_iy);
+                    smallest_dist(&mut res.to_vec(), v_ix, v_iy);
             }
         }
         voro_img.0 = new_vec;
-    }else{
+    } else {
         load_ev.send(LoadNoise);
     }
 }

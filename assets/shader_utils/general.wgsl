@@ -4,8 +4,8 @@
 #import bevy_pbr::prepass_utils::{prepass_depth,prepass_normal};
 #import bevy_pbr::mesh_view_bindings::{globals,view,View};
 
-
 @group(2) @binding(5) var<storage, read_write> voro_cache: array<vec4<f32>>;
+
 fn hash2(p: vec2<f32>) -> vec2<f32> {
     // Dave Hoskin's hash as in https://www.shadertoy.com/view/4djSRW
     var p3 = fract(vec3<f32>(p.xyx) * vec3<f32>(.1031, .1030, .0973));

@@ -1,7 +1,6 @@
 use bevy::{color::palettes::css::GRAY, prelude::*};
-use bevy_inspector_egui::prelude::*;
 
-#[derive(Reflect, Default, Resource, Debug, InspectorOptions)]
+#[derive(Reflect, Default, Resource, Debug)]
 #[reflect(Resource)]
 pub struct MaterialsInspector {
     pub turn_table: bool,
@@ -11,7 +10,7 @@ pub struct MaterialsInspector {
 #[derive(Resource, Debug)]
 pub struct VoronoiImage(pub [Vec4; 100]);
 
-#[derive(Reflect, Resource, Debug, InspectorOptions)]
+#[derive(Reflect, Resource, Debug)]
 #[reflect(Resource)]
 pub struct PainterlyInspector {
     pub diffuse_color: Color,

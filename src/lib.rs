@@ -1,17 +1,13 @@
 use bevy::prelude::*;
-use bevy_inspector_egui::quick::ResourceInspectorPlugin;
-use compute::plugin::{AppComputePlugin, AppComputeWorkerPlugin};
+// use compute::plugin::{AppComputePlugin, AppComputeWorkerPlugin};
 
+use crate::materials::painterly::{painterly::PainterlyMaterial, MaterialSwatchPlugin};
+use compute::plugin::{AppComputePlugin, AppComputeWorkerPlugin};
 use materials::{
     galaxyfog::{galaxy::GalaxyFogMaterial, GalaxyFogPlugin},
-    painterly::resources::{MaterialsInspector, VoronoiImage},
+    painterly::resources::VoronoiImage,
 };
-use utilities::{UtilitiesPlugin, VoronoiWorker};
-
-use crate::{
-    materials::painterly::{painterly::PainterlyMaterial, MaterialSwatchPlugin},
-    utilities::systems::LoadNoise,
-};
+use utilities::{systems::LoadNoise, UtilitiesPlugin, VoronoiWorker};
 
 pub struct AlkydPlugin {
     pub debug: bool,
@@ -37,18 +33,17 @@ pub const SIMPLEX_4D_HANDLE: Handle<Shader> = Handle::weak_from_u128(34071823465
 
 impl Plugin for AlkydPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((
-            MaterialSwatchPlugin { debug: self.debug },
-            GalaxyFogPlugin { debug: self.debug },
-            MaterialPlugin::<PainterlyMaterial>::default(),
-            MaterialPlugin::<GalaxyFogMaterial>::default(),
-            UtilitiesPlugin,
-            AppComputePlugin,
-            AppComputeWorkerPlugin::<VoronoiWorker>::default(),
-        ));
-
         app.add_event::<LoadNoise>()
             .insert_resource::<VoronoiImage>(VoronoiImage([Vec4::ZERO; 100]))
-            .insert_resource::<Debug>(Debug(self.debug));
+            .insert_resource::<Debug>(Debug(self.debug))
+            .add_plugins((
+                MaterialSwatchPlugin { debug: self.debug },
+                GalaxyFogPlugin { debug: self.debug },
+                MaterialPlugin::<PainterlyMaterial>::default(),
+                MaterialPlugin::<GalaxyFogMaterial>::default(),
+                UtilitiesPlugin,
+                AppComputePlugin,
+                AppComputeWorkerPlugin::<VoronoiWorker>::default(),
+            ));
     }
 }

@@ -1,27 +1,31 @@
 [package]
 name = "alkyd"
-version = "0.1.32"
+version = "0.1.31"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 description = "bevy crate for handling procedural textures and shaders"
 publish = true
 
 [dependencies]
-bevy = { workspace = true}
-bevy-inspector-egui.workspace = true
+naga_oil = { version = "0.14.*", default-features = false }
+bevy = { workspace = true, default-features = false, features = [
+    "bevy_asset",         # Assets management
+    "bevy_scene",         # Scenes management
+    "bevy_core_pipeline",
+    "bevy_render",
+    "bevy_winit",         # Window management (cross-platform Winit backend)
+    "bevy_pbr",
+    "tonemapping_luts",
+] }
 bytemuck.workspace = true
-parking_lot = "0.12.1"
-futures-lite = "1.13.0"
-naga = { version = "0.20.0", features = ["wgsl-in"] }
-wgpu = { version = "0.20.1", features = ["naga"] }
-naga_oil = { version = "0.14.0"}
+bevy-inspector-egui.workspace = true
 bevy_third_person_camera.workspace = true
-cc = "1.0.73"
+wgpu = { version = "0.20.1", features = ["naga"] }
+naga = { version = "0.20.0", features = ["wgsl-in"] }
+parking_lot = "0.12.3"
 
 [dependencies.bitflags]
 version = "2.5.0"
-
-[dev-dependencies]
 
 [lib]
 name = "alkyd"
