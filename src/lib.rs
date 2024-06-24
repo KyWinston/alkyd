@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-// use compute::plugin::{AppComputePlugin, AppComputeWorkerPlugin};
+use patterns::PatternWfcPlugin;
 
 use crate::materials::painterly::{painterly::PainterlyMaterial, MaterialSwatchPlugin};
 use compute::plugin::{AppComputePlugin, AppComputeWorkerPlugin};
@@ -22,6 +22,7 @@ pub struct Showcase;
 pub mod compute;
 pub mod materials;
 pub mod utilities;
+pub mod patterns;
 
 pub const PAINTERLY_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1708033355537029744);
 pub const GALAXYFOG_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1508032910437029714);
@@ -30,6 +31,7 @@ pub const NOISE_FUNCTIONS_HANDLE: Handle<Shader> = Handle::weak_from_u128(940713
 pub const NOISE_GEN_UTILS_HANDLE: Handle<Shader> = Handle::weak_from_u128(94071345065837501137);
 pub const SIMPLEX_HANDLE: Handle<Shader> = Handle::weak_from_u128(34071823065847501137);
 pub const SIMPLEX_4D_HANDLE: Handle<Shader> = Handle::weak_from_u128(34071823465847412137);
+pub const PATTERN_SHADER_WFC_HANDLE: Handle<Shader> = Handle::weak_from_u128(34071123465409412137);
 
 impl Plugin for AlkydPlugin {
     fn build(&self, app: &mut App) {
@@ -43,6 +45,7 @@ impl Plugin for AlkydPlugin {
                 MaterialPlugin::<GalaxyFogMaterial>::default(),
                 UtilitiesPlugin,
                 AppComputePlugin,
+                PatternWfcPlugin,
                 AppComputeWorkerPlugin::<VoronoiWorker>::default(),
             ));
     }
