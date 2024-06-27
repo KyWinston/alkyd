@@ -12,9 +12,7 @@ use bevy::{
     prelude::*,
     render::texture::{ImageAddressMode, ImageSamplerDescriptor},
 };
-use bevy_third_person_camera::{
-    camera::Zoom, ThirdPersonCamera, ThirdPersonCameraPlugin, ThirdPersonCameraTarget,
-};
+use bevy_third_person_camera::{camera::Zoom, ThirdPersonCamera, ThirdPersonCameraPlugin, ThirdPersonCameraTarget};
 
 fn main() {
     App::new()
