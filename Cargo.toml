@@ -8,7 +8,7 @@ publish = true
 
 [dependencies]
 naga_oil = { version = "0.14.*", default-features = false }
-bevy = { workspace = true, default-features = false, features = [
+bevy = { workspace = true, version = "0.14.0-rc.4", default-features = false, features = [
     "bevy_asset",         # Assets management
     "bevy_scene",         # Scenes management
     "bevy_core_pipeline",
@@ -17,8 +17,7 @@ bevy = { workspace = true, default-features = false, features = [
     "bevy_pbr",
     "tonemapping_luts",
 ] }
-bytemuck.workspace = true
-bevy_third_person_camera.workspace = true
+bytemuck = { workspace = true, version = "0.16" }
 wgpu = { version = "0.20.1", features = ["naga"] }
 naga = { version = "0.20.0", features = ["wgsl-in"] }
 parking_lot = "0.12.3"
@@ -34,6 +33,7 @@ bevy = { workspace = true, default-features = false, features = [
     "wgpu_trace",
     "tonemapping_luts",
 ] }
+bevy_third_person_camera = { workspace = true }
 bevy-inspector-egui.workspace = true
 
 [dependencies.bitflags]
