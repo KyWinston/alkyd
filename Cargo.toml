@@ -7,8 +7,7 @@ description = "bevy crate for handling procedural textures and shaders"
 publish = true
 
 [dependencies]
-naga_oil = { version = "0.14.*", default-features = false }
-bevy = { workspace = true, version = "0.14.0-rc.4", default-features = false, features = [
+bevy = { version = "0.14.0-rc.4", workspace = true, default-features = false, features = [
     "bevy_asset",         # Assets management
     "bevy_scene",         # Scenes management
     "bevy_core_pipeline",
@@ -17,13 +16,14 @@ bevy = { workspace = true, version = "0.14.0-rc.4", default-features = false, fe
     "bevy_pbr",
     "tonemapping_luts",
 ] }
-bytemuck = { workspace = true, version = "0.16" }
+naga_oil = { version = "0.14.*", default-features = false }
+bytemuck = { version = "0.16", workspace = true }
 wgpu = { version = "0.20.1", features = ["naga"] }
 naga = { version = "0.20.0", features = ["wgsl-in"] }
 parking_lot = "0.12.3"
 
 [dev-dependencies]
-bevy = { workspace = true, default-features = false, features = [
+bevy = { version = "0.14.0-rc.4", workspace = true, default-features = false, features = [
     "bevy_asset",         # Assets management
     "bevy_scene",         # Scenes management
     "bevy_core_pipeline",
