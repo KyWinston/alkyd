@@ -1,0 +1,47 @@
+[package]
+name = "alkyd"
+version = "0.1.32"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "bevy crate for handling procedural textures and shaders"
+publish = true
+
+[dependencies]
+bevy = { version = "0.14.0", default-features = false, features = [
+    "bevy_core_pipeline",
+    "bevy_pbr",
+    "bevy_asset",
+] }
+bevy_app_compute = { git = "https://github.com/KyWinston/bevy_app_compute", branch = "main" }
+bytemuck = "1.2.0-alpha.1"
+bevy_quill = { version = "0.1.2", optional = true }
+bevy_quill_obsidian = { version = "0.1.0", optional = true }
+bevy_quill_obsidian_inspect = { version = "0.1.0", optional = true }
+bevy_mod_stylebuilder = { version = "0.1.1", optional = true }
+bevy_mod_picking = { version = "0.20.1", optional = true }
+bevy_panorbit_camera = { version = "0.19.1", optional = true }
+cfg-if = "1.0.0"
+
+[dev-dependencies]
+bevy = { version = "0.14.0", default-features = false, features = [
+    "bevy_core_pipeline",
+    "bevy_asset",
+    "bevy_pbr",
+    "wgpu_trace",
+] }
+
+[dependencies.bitflags]
+version = "2.5.0"
+
+[features]
+editor = [
+    "dep:bevy_quill",
+    "dep:bevy_quill_obsidian",
+    "dep:bevy_mod_stylebuilder",
+    "dep:bevy_mod_picking",
+    "dep:bevy_panorbit_camera"
+]
+
+[lib]
+name = "alkyd"
+path = "src/lib.rs"
