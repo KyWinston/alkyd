@@ -46,6 +46,7 @@ impl Plugin for AlkydPlugin {
             MaterialPlugin::<PainterlyMaterial>::default(),
             MaterialPlugin::<GalaxyFogMaterial>::default(),
             // MaterialPlugin::<PatternGenFunc>::default(),
+
             #[cfg(feature = "editor")]
             EditorPlugin,
             UtilitiesPlugin,

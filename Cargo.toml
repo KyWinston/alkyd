@@ -42,6 +42,7 @@ editor = [
     "dep:bevy_panorbit_camera"
 ]
 
+
 [lib]
 name = "alkyd"
 path = "src/lib.rs"
