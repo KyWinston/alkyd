@@ -2,22 +2,14 @@ use crate::{
     GLOBAL_VALUES_HANDLE, NOISE_FUNCTIONS_HANDLE, NOISE_GEN_UTILS_HANDLE, SIMPLEX_4D_HANDLE,
     SIMPLEX_HANDLE, TEX_GEN_HANDLE, VORONOI_SHADER_HANDLE,
 };
-use bevy::{
-    asset::load_internal_asset, ecs::schedule::ScheduleLabel, prelude::*,
-    render::render_resource::ShaderType,
-};
-use stepper::{DebugSchedule, SteppingPlugin};
+use bevy::{asset::load_internal_asset, prelude::*};
+// use stepper::{DebugSchedule, SteppingPlugin};
 
 #[derive(TypePath)]
 pub struct VoronoiShader;
 
 #[derive(TypePath)]
 pub struct TexGenerator;
-
-#[derive(ShaderType)]
-struct Properties {
-    cell_number: f32,
-}
 
 #[derive(Resource)]
 pub struct VoronoiWorker;
@@ -26,7 +18,7 @@ pub struct VoronoiWorker;
 pub struct TexGenWorker;
 
 pub struct UtilitiesPlugin;
-pub mod stepper;
+// pub mod stepper;
 
 impl Plugin for UtilitiesPlugin {
     fn build(&self, app: &mut App) {
@@ -39,7 +31,7 @@ impl Plugin for UtilitiesPlugin {
         load_internal_asset!(
             app,
             VORONOI_SHADER_HANDLE,
-            "../../assets/noise.wgsl",
+            "../../assets/noise/noise.wgsl",
             Shader::from_wgsl
         );
         load_internal_asset!(
@@ -72,10 +64,10 @@ impl Plugin for UtilitiesPlugin {
             "../../assets/shader_utils/noise_gen.wgsl",
             Shader::from_wgsl
         );
-        app.add_plugins(SteppingPlugin {
-            schedule_labels: vec![ScheduleLabel::intern(&DebugSchedule)],
-            top: Val::Px(100.0),
-            left: Val::Px(100.0),
-        });
+        // app.add_plugins(SteppingPlugin {
+        //     schedule_labels: vec![ScheduleLabel::intern(&DebugSchedule)],
+        //     top: Val::Px(100.0),
+        //     left: Val::Px(100.0),
+        // });
     }
 }

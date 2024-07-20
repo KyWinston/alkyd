@@ -1,5 +1,5 @@
 use alkyd::{
-    materials::{galaxyfog::galaxy::{GalaxyFogMaterial, NoiseProperties}, painterly::resources::NoiseImages},
+    materials::{galaxyfog::galaxy::{GalaxyFogMaterial, NoiseProperties}, painterly::resources::NoiseImage},
     AlkydPlugin, Showcase,
 };
 
@@ -33,7 +33,7 @@ fn main() {
             Update,
             (
                 rotate_mesh,
-                create_cube.run_if(resource_added::<NoiseImages>),
+                create_cube.run_if(resource_added::<NoiseImage>),
             ),
         )
         .run();

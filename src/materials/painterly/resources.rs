@@ -1,4 +1,4 @@
-use bevy::{asset::Handle, prelude::Resource, render::texture::Image, utils::HashMap};
+use bevy::{asset::Handle, prelude::Resource, render::texture::Image};
 
 #[derive(Resource)]
-pub struct NoiseImages(pub HashMap<String, [Handle<Image>; 2]>);
+pub struct NoiseImage(pub Handle<Image>);

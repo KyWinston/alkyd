@@ -1,70 +1,113 @@
-use std::borrow::Cow;
-
 use bevy::{
     prelude::*,
     render::{
         extract_resource::ExtractResource,
         render_resource::{
-            binding_types::texture_storage_2d, BindGroup, BindGroupLayout, BindGroupLayoutEntries,
-            CachedComputePipelineId, ComputePipelineDescriptor, PipelineCache, ShaderStages,
-            StorageTextureAccess, TextureFormat,
+            BindGroup, BindGroupLayout, BindGroupLayoutEntry, BindingType, CachedComputePipelineId,
+            SamplerBindingType, ShaderStages, StorageTextureAccess, TextureFormat,
+            TextureViewDimension,
         },
         renderer::RenderDevice,
     },
-    utils::HashMap,
 };
 
-use super::SHADER_ASSET_PATH;
-
 #[derive(Resource, Clone, ExtractResource)]
-pub struct NoiseImages(pub HashMap<String, [Handle<Image>;2]>);
+pub struct NoiseImage(pub Handle<Image>);
+
+#[derive(Clone, Resource, ExtractResource)]
+pub struct ShaderHandles {
+    pub image_shader: Handle<Shader>,
+    pub texture_a_shader: Handle<Shader>,
+    pub texture_b_shader: Handle<Shader>,
+    pub texture_c_shader: Handle<Shader>,
+    pub texture_d_shader: Handle<Shader>,
+}
 
 #[derive(Resource)]
-pub struct NoiseGeneratorBindGroups(pub [BindGroup; 2]);
+pub struct NoiseGeneratorBindGroup {
+    pub noise_gen_bind_group: BindGroup,
+    pub init_pipeline: CachedComputePipelineId,
+    pub update_pipeline: CachedComputePipelineId,
+}
 
 #[derive(Resource)]
 pub struct NoiseGeneratorPipeline {
     pub texture_bind_group_layout: BindGroupLayout,
-    pub init_pipeline: CachedComputePipelineId,
-    pub update_pipeline: CachedComputePipelineId,
+    pub texture_group_layout: BindGroupLayout,
+}
+
+impl NoiseGeneratorPipeline {
+    pub fn make_texture_layout(binding: u32) -> BindGroupLayoutEntry {
+        BindGroupLayoutEntry {
+            binding,
+            visibility: ShaderStages::COMPUTE,
+            ty: BindingType::StorageTexture {
+                access: StorageTextureAccess::ReadWrite,
+                format: TextureFormat::Rgba32Float,
+                view_dimension: TextureViewDimension::D2,
+            },
+            count: None,
+        }
+    }
+    pub fn new(render_device: &RenderDevice) -> Self {
+        let abcd_group_layout = render_device.create_bind_group_layout(
+            Some("abcd_layout"),
+            &[
+                NoiseGeneratorPipeline::make_texture_layout(0),
+                NoiseGeneratorPipeline::make_texture_layout(1),
+                NoiseGeneratorPipeline::make_texture_layout(2),
+                NoiseGeneratorPipeline::make_texture_layout(3),
+            ],
+        );
+
+        let main_image_group_layout = render_device.create_bind_group_layout(
+            Some("main_layout"),
+            &[
+                NoiseGeneratorPipeline::make_texture_layout(0),
+                NoiseGeneratorPipeline::make_texture_layout(1),
+                NoiseGeneratorPipeline::make_texture_layout(2),
+                NoiseGeneratorPipeline::make_texture_layout(3),
+                BindGroupLayoutEntry {
+                    binding: 4,
+                    visibility: ShaderStages::COMPUTE,
+                    ty: BindingType::StorageTexture {
+                        access: StorageTextureAccess::ReadWrite,
+                        format: TextureFormat::Rgba32Float,
+                        view_dimension: TextureViewDimension::D2,
+                    },
+                    count: None,
+                },
+                BindGroupLayoutEntry {
+                    binding: 5,
+                    visibility: ShaderStages::COMPUTE,
+                    ty: BindingType::Sampler(SamplerBindingType::Filtering),
+                    count: None,
+                },
+                BindGroupLayoutEntry {
+                    binding: 6,
+                    visibility: ShaderStages::COMPUTE,
+                    ty: BindingType::Sampler(SamplerBindingType::Filtering),
+                    count: None,
+                },
+                BindGroupLayoutEntry {
+                    binding: 10,
+                    visibility: ShaderStages::COMPUTE,
+                    ty: BindingType::Sampler(SamplerBindingType::Filtering),
+                    count: None,
+                },
+            ],
+        );
+
+        NoiseGeneratorPipeline {
+            texture_bind_group_layout: main_image_group_layout,
+            texture_group_layout: abcd_group_layout,
+        }
+    }
 }
 
 impl FromWorld for NoiseGeneratorPipeline {
     fn from_world(world: &mut World) -> Self {
         let render_device = world.resource::<RenderDevice>();
-        let texture_bind_group_layout = render_device.create_bind_group_layout(
-            "noise",
-            &BindGroupLayoutEntries::sequential(
-                ShaderStages::COMPUTE,
-                (
-                    texture_storage_2d(TextureFormat::R32Float, StorageTextureAccess::ReadOnly),
-                    texture_storage_2d(TextureFormat::R32Float, StorageTextureAccess::WriteOnly),
-                ),
-            ),
-        );
-
-        let shader = world.load_asset(SHADER_ASSET_PATH);
-        let pipeline_cache = world.resource::<PipelineCache>();
-        let init_pipeline = pipeline_cache.queue_compute_pipeline(ComputePipelineDescriptor {
-            label: None,
-            layout: vec![texture_bind_group_layout.clone()],
-            push_constant_ranges: Vec::new(),
-            shader: shader.clone(),
-            shader_defs: vec![],
-            entry_point: Cow::from("init"),
-        });
-        let update_pipeline = pipeline_cache.queue_compute_pipeline(ComputePipelineDescriptor {
-            label: None,
-            layout: vec![texture_bind_group_layout.clone()],
-            push_constant_ranges: Vec::new(),
-            shader,
-            shader_defs: vec![],
-            entry_point: Cow::from("update"),
-        });
-        NoiseGeneratorPipeline {
-            texture_bind_group_layout,
-            init_pipeline,
-            update_pipeline,
-        }
+        NoiseGeneratorPipeline::new(render_device)
     }
 }
