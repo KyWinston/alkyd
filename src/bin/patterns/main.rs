@@ -1,4 +1,4 @@
-use alkyd::{pattern_wfc::shader::PatternGenFunc, utilities::systems::LoadPattern, AlkydPlugin};
+use alkyd::{pattern_wfc::shader::PatternGenFunc, AlkydPlugin};
 use bevy::{
     prelude::*,
     render::{
@@ -9,7 +9,7 @@ use bevy::{
 
 fn main() {
     let mut app = App::new();
-    app.add_event::<LoadPattern>().add_plugins((
+    app.add_plugins((
         DefaultPlugins.set(ImagePlugin {
             default_sampler: ImageSamplerDescriptor {
                 address_mode_u: ImageAddressMode::Repeat,

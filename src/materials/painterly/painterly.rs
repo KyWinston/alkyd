@@ -44,8 +44,6 @@ pub struct PainterlyMaterial {
     pub color_varience: f32,
     pub scale: Vec3,
     pub distort: f32,
-    #[storage(5)]
-    pub voro_cache: [Vec4; 100],
     pub influence: f32,
     pub border: f32,
     pub dist_falloff: f32,
@@ -71,7 +69,6 @@ impl Default for PainterlyMaterial {
             border: 0.02,
             dist_falloff: 30.0,
             detail_cutoff: 1.7,
-            voro_cache: [Vec4::ZERO; 100],
             brush_handle: None,
             brush_handle_normal: None,
         }
@@ -90,7 +87,6 @@ pub struct PainterlyUniform {
     pub border: f32,
     pub dist_falloff: f32,
     pub detail_cutoff: f32,
-    pub voro_cache: [Vec4; 100],
 }
 
 impl Material for PainterlyMaterial {
@@ -105,18 +101,7 @@ impl Material for PainterlyMaterial {
         _key: MaterialPipelineKey<Self>,
     ) -> Result<(), SpecializedMeshPipelineError> {
         descriptor.primitive.cull_mode = Some(Face::Back);
-        // if key.bind_group_data.normal_texture {
-        //     fragment.shader_defs.push("NORMAL_TEXTURE".into());
-        // }
-        // if key.bind_group_data.metallic_roughness {
-        //     fragment.shader_defs.push("METALLIC_ROUGHNESS".into());
-        // }
-        // if key.bind_group_data.normal_texture {
-        //     fragment.shader_defs.push("BRUSH_TEXTURE".into());
-        // }
-        // if key.bind_group_data.metallic_roughness {
-        //     fragment.shader_defs.push("VARIANCE".into());
-        // }
+
         Ok(())
     }
 }
@@ -134,16 +119,8 @@ impl AsBindGroupShaderType<PainterlyUniform> for PainterlyMaterial {
             border: self.border,
             dist_falloff: self.dist_falloff,
             detail_cutoff: self.detail_cutoff,
-            voro_cache: self.voro_cache,
         }
     }
-}
-
-#[derive(ShaderType, Clone)]
-pub struct VoronoiUniform {
-    pub scale: f32,
-    pub distort: f32,
-    pub influence: f32,
 }
 
 #[derive(Eq, PartialEq, Hash, Clone)]

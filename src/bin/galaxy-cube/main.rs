@@ -1,8 +1,5 @@
 use alkyd::{
-    materials::{
-        galaxyfog::galaxy::{GalaxyFogMaterial, NoiseProperties},
-        painterly::resources::VoronoiImage,
-    },
+    materials::{galaxyfog::galaxy::{GalaxyFogMaterial, NoiseProperties}, painterly::resources::NoiseImages},
     AlkydPlugin, Showcase,
 };
 
@@ -12,7 +9,6 @@ use bevy::{
     prelude::*,
     render::texture::{ImageAddressMode, ImageSamplerDescriptor},
 };
-use bevy_third_person_camera::{camera::Zoom, ThirdPersonCamera, ThirdPersonCameraPlugin, ThirdPersonCameraTarget};
 
 fn main() {
     App::new()
@@ -30,7 +26,6 @@ fn main() {
                     watch_for_changes_override: Some(true),
                     ..default()
                 }),
-            ThirdPersonCameraPlugin,
             AlkydPlugin { debug: true },
         ))
         .add_systems(Startup, (init_camera.before(init_scene), init_scene))
@@ -38,7 +33,7 @@ fn main() {
             Update,
             (
                 rotate_mesh,
-                create_cube.run_if(resource_added::<VoronoiImage>),
+                create_cube.run_if(resource_added::<NoiseImages>),
             ),
         )
         .run();
@@ -51,16 +46,7 @@ fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<Time
 }
 
 fn init_camera(mut commands: Commands) {
-    commands.spawn((
-        Camera3dBundle::default(),
-        ThirdPersonCamera {
-            sensitivity: Vec2::new(10.0, 10.0),
-            zoom: Zoom::new(4.0, 20.0),
-            ..default()
-        },
-        DepthPrepass,
-        NormalPrepass,
-    ));
+    commands.spawn((Camera3dBundle::default(), DepthPrepass, NormalPrepass));
 }
 
 fn init_scene(mut commands: Commands) {
@@ -103,12 +89,9 @@ pub fn create_cube(
     });
 
     let mesh = meshes.add(Cuboid::from_size(Vec3::splat(6.0)));
-    commands.spawn((
-        MaterialMeshBundle {
-            mesh,
-            material,
-            ..default()
-        },
-        ThirdPersonCameraTarget,
-    ));
+    commands.spawn((MaterialMeshBundle {
+        mesh,
+        material,
+        ..default()
+    },));
 }

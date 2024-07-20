@@ -1,8 +1,3 @@
-
-
-
-
-
 use bevy::{
     color::palettes::css::BLUE,
     pbr::{MaterialPipeline, MaterialPipelineKey},
@@ -109,20 +104,7 @@ impl Material for PainterlyMaterial {
         _layout: &MeshVertexBufferLayoutRef,
         key: MaterialPipelineKey<Self>,
     ) -> Result<(), SpecializedMeshPipelineError> {
-        let fragment = descriptor.fragment.as_mut().unwrap();
         descriptor.primitive.cull_mode = Some(Face::Back);
-        if key.bind_group_data.normal_texture {
-            fragment.shader_defs.push("NORMAL_TEXTURE".into());
-        }
-        if key.bind_group_data.metallic_roughness {
-            fragment.shader_defs.push("METALLIC_ROUGHNESS".into());
-        }
-        if key.bind_group_data.normal_texture {
-            fragment.shader_defs.push("BRUSH_TEXTURE".into());
-        }
-        if key.bind_group_data.metallic_roughness {
-            fragment.shader_defs.push("VARIANCE".into());
-        }
         Ok(())
     }
 }

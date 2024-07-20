@@ -4,11 +4,9 @@
 #import bevy_pbr::prepass_utils::{prepass_depth,prepass_normal};
 #import bevy_pbr::mesh_view_bindings::{globals,view,View};
 
-
-@group(2) @binding(5) var<storage, read_write> voro_cache: array<vec4<f32>>;
+@group(2) @binding(5) var voro_cache:  texture_storage_2d<r32float,read>;
 
 fn hash2(p: vec2<f32>) -> vec2<f32> {
-    // Dave Hoskin's hash as in https://www.shadertoy.com/view/4djSRW
     var p3 = fract(vec3<f32>(p.xyx) * vec3<f32>(.1031, .1030, .0973));
     p3 += dot(p3, p3.yzx + 19.19);
     let o = fract(vec2((p3.x + p3.y) * p3.z, (p3.x + p3.z) * p3.y));
@@ -36,7 +34,6 @@ fn rand22(n: vec2<f32>) -> f32 { return fract(sin(dot(n, vec2(12.9898, 4.1414)))
 
 fn fade3(t: vec3f) -> vec3f { return t * t * t * (t * (t * 6. - 15.) + 10.); }
 fn rand11(n: f32) -> f32 { return fract(sin(n) * 43758.5453123); }
-
 
 fn apply_hue(col: vec3<f32>, hueAdjust: f32) -> vec3<f32> {
     let k = vec3(0.57735, 0.57735, 0.57735);
@@ -106,7 +103,6 @@ fn raymarch_clip(position: vec4<f32>, center: vec3<f32>, radius: f32, color: vec
 fn cut_sphere_hit(p: vec3<f32>, c: vec3<f32>, r: f32) -> f32 {
     return max(-distance(p, c - vec3(0.2)) - (r + 0.2), distance(p, c) - r);
 }
-
 
 fn raymarch_hit(position: vec4<f32>, center: vec3<f32>, radius: f32, fog_color: vec4<f32>, steps: u32, prec: f32) -> vec4<f32> {
     var ro: vec3<f32> = view.world_position;
@@ -287,7 +283,6 @@ fn pmod3(in: vec3f, size: vec3f) -> vec3f {
 fn sd_sphere(p: vec3f, radius: f32) -> f32 {
     return (length(p) - radius);
 }
-
 
 // fn fade(col: vec4f, uv: vec2f) {
 //     let fade = max(abs(uv.x), abs(uv.y)) - 1.0 ; // This is really cool.

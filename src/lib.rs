@@ -1,16 +1,8 @@
 use bevy::prelude::*;
 
-// use compute::{AppComputePlugin, AppComputeWorkerPlugin};
-use materials::{
-    galaxyfog::{galaxy::GalaxyFogMaterial, GalaxyFogPlugin},
-    painterly::resources::VoronoiImage,
-};
+use materials::galaxyfog::{galaxy::GalaxyFogMaterial, GalaxyFogPlugin};
 use utilities::UtilitiesPlugin;
 use workers::WorkersPlugin;
-// use utilities::{
-//     // systems::{LoadNoise, LoadPattern},
-//     TexGenWorker, UtilitiesPlugin, VoronoiWorker,
-// };
 
 use crate::materials::painterly::{painterly::PainterlyMaterial, MaterialSwatchPlugin};
 
@@ -20,11 +12,11 @@ pub struct Debug(pub bool);
 #[derive(Component)]
 pub struct Showcase;
 
+pub mod components;
 pub mod materials;
 pub mod pattern_wfc;
 pub mod utilities;
 pub mod workers;
-
 
 pub const PAINTERLY_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1708033355537029744);
 pub const GALAXYFOG_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1508032910437029714);
@@ -44,21 +36,18 @@ pub struct AlkydPlugin {
 
 impl Plugin for AlkydPlugin {
     fn build(&self, app: &mut App) {
+        app.insert_resource::<Debug>(Debug(self.debug));
         app.add_plugins((
+            UtilitiesPlugin,
             MaterialSwatchPlugin { debug: self.debug },
             GalaxyFogPlugin { debug: self.debug },
             MaterialPlugin::<PainterlyMaterial>::default(),
             MaterialPlugin::<GalaxyFogMaterial>::default(),
+            WorkersPlugin,
             // MaterialPlugin::<PatternGenFunc>::default(),
             #[cfg(feature = "editor")]
             EditorPlugin,
-            UtilitiesPlugin,
-            WorkersPlugin
+     
         ));
-
-        // app.add_event::<LoadNoise>()
-        //     .add_event::<LoadPattern>()
-        app.insert_resource::<VoronoiImage>(VoronoiImage([Vec4::ZERO; 100]))
-            .insert_resource::<Debug>(Debug(self.debug));
     }
 }
