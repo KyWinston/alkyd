@@ -13,8 +13,9 @@ use bevy::{
 use std::borrow::Cow;
 
 use crate::workers::{
-    resources::NoiseGeneratorPipeline, systems::NoiseGeneratorState, SHADER_ASSET_PATH, SIZE,
-    WORKGROUP_SIZE,
+    resources::{NoiseGeneratorPipeline, ShaderHandles},
+    systems::NoiseGeneratorState,
+    SIZE, WORKGROUP_SIZE,
 };
 
 use super::{texture_a::TextureA, texture_b::TextureB, texture_c::TextureC};
@@ -41,24 +42,23 @@ pub fn queue_bind_group_d(
     texture_c_image: Res<TextureC>,
     texture_d_image: Res<TextureD>,
     render_device: Res<RenderDevice>,
-    asset_server: Res<AssetServer>,
+    all_shader_handles: Res<ShaderHandles>,
     pipeline_cache: ResMut<PipelineCache>,
 ) {
-    let shader = asset_server.load(SHADER_ASSET_PATH);
     let init_pipeline = pipeline_cache.queue_compute_pipeline(ComputePipelineDescriptor {
         label: None,
-        layout: vec![pipeline.texture_bind_group_layout.clone()],
+        layout: vec![pipeline.texture_group_layout.clone()],
         push_constant_ranges: vec![],
-        shader: shader.clone(),
+        shader: all_shader_handles.texture_d_shader.clone(),
         shader_defs: vec!["INIT".to_string().into()],
-        entry_point: Cow::from("update"),
+        entry_point: Cow::from("init"),
     });
 
     let update_pipeline = pipeline_cache.queue_compute_pipeline(ComputePipelineDescriptor {
         label: None,
-        layout: vec![pipeline.texture_bind_group_layout.clone()],
+        layout: vec![pipeline.texture_group_layout.clone()],
         push_constant_ranges: vec![],
-        shader,
+        shader: all_shader_handles.texture_d_shader.clone(),
         shader_defs: vec![],
         entry_point: Cow::from("update"),
     });
@@ -70,7 +70,7 @@ pub fn queue_bind_group_d(
 
     let texture_d_bind_group = render_device.create_bind_group(
         None,
-        &pipeline.texture_bind_group_layout,
+        &pipeline.texture_group_layout,
         &[
             BindGroupEntry {
                 binding: 0,
@@ -90,7 +90,7 @@ pub fn queue_bind_group_d(
             },
         ],
     );
-
+    info!("binding d");
     commands.insert_resource(TextureDBindGroup {
         texture_d_bind_group,
         init_pipeline: init_pipeline.clone(),
@@ -134,16 +134,18 @@ impl render_graph::Node for TextureDNode {
 
         match self.state {
             NoiseGeneratorState::Loading => {
-                if let CachedPipelineState::Ok(_) =
+                if let CachedPipelineState::Ok(pipeline) =
                     pipeline_cache.get_compute_pipeline_state(init_pipeline_cache)
                 {
+                    info!("{:?}", pipeline);
                     self.state = NoiseGeneratorState::Init
                 }
             }
             NoiseGeneratorState::Init => {
-                if let CachedPipelineState::Ok(_) =
+                if let CachedPipelineState::Ok(pipeline) =
                     pipeline_cache.get_compute_pipeline_state(update_pipeline_cache)
                 {
+                    info!("{:?}", pipeline);
                     self.state = NoiseGeneratorState::Update
                 }
             }
@@ -157,6 +159,8 @@ impl render_graph::Node for TextureDNode {
         render_context: &mut RenderContext,
         world: &World,
     ) -> Result<(), render_graph::NodeRunError> {
+        info!("running d");
+
         let bind_group = world.resource::<TextureDBindGroup>();
 
         let texture_d_bind_group = &bind_group.texture_d_bind_group;
@@ -172,10 +176,8 @@ impl render_graph::Node for TextureDNode {
 
         pass.set_bind_group(0, texture_d_bind_group, &[]);
 
-        // select the pipeline based on the current state
         match self.state {
             NoiseGeneratorState::Loading => {}
-
             NoiseGeneratorState::Init => {
                 let init_pipeline = pipeline_cache
                     .get_compute_pipeline(init_pipeline_cache)

@@ -3,7 +3,6 @@ use bevy::{asset::load_internal_asset, prelude::*};
 use crate::PAINTERLY_SHADER_HANDLE;
 
 pub mod painterly;
-pub mod resources;
 
 pub struct MaterialSwatchPlugin {
     pub debug: bool,

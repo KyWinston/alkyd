@@ -1,6 +1,5 @@
 use alkyd::{
-    materials::{galaxyfog::galaxy::{GalaxyFogMaterial, NoiseProperties}, painterly::resources::NoiseImage},
-    AlkydPlugin, Showcase,
+    materials::galaxyfog::galaxy::{GalaxyFogMaterial, NoiseProperties}, workers::resources::NoiseImage, AlkydPlugin, Showcase
 };
 
 use bevy::{

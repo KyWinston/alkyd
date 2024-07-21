@@ -62,14 +62,12 @@ impl Plugin for WorkersPlugin {
             .init_resource::<NoiseGeneratorPipeline>()
             .add_systems(
                 Render,
-                (
-                    queue_bind_group,
-                    queue_bind_group_a,
-                    queue_bind_group_b,
-                    queue_bind_group_c,
-                    queue_bind_group_d,
-                )
-                    .in_set(RenderSet::Queue),
+                (queue_bind_group
+                    .pipe(queue_bind_group_a)
+                    .pipe(queue_bind_group_b)
+                    .pipe(queue_bind_group_c)
+                    .pipe(queue_bind_group_d))
+                .in_set(RenderSet::Queue),
             );
     }
 }

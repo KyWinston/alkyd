@@ -16,8 +16,9 @@ use bevy::{
 };
 
 use crate::workers::{
-    resources::NoiseGeneratorPipeline, systems::NoiseGeneratorState, SHADER_ASSET_PATH, SIZE,
-    WORKGROUP_SIZE,
+    resources::{NoiseGeneratorPipeline, ShaderHandles},
+    systems::NoiseGeneratorState,
+    SIZE, WORKGROUP_SIZE,
 };
 
 use super::{texture_b::TextureB, texture_c::TextureC, texture_d::TextureD};
@@ -44,30 +45,27 @@ pub fn queue_bind_group_a(
     texture_c: Res<TextureC>,
     texture_d: Res<TextureD>,
     render_device: Res<RenderDevice>,
-    asset_server: Res<AssetServer>,
+    all_shader_handles: Res<ShaderHandles>,
     pipeline_cache: ResMut<PipelineCache>,
 ) {
-    let shader = asset_server.load(SHADER_ASSET_PATH);
-
     let init_pipeline = pipeline_cache.queue_compute_pipeline(ComputePipelineDescriptor {
         label: None,
-        layout: vec![pipeline.texture_bind_group_layout.clone()],
+        layout: vec![pipeline.texture_group_layout.clone()],
         push_constant_ranges: vec![],
-        shader: shader.clone(),
+        shader: all_shader_handles.texture_a_shader.clone(),
         shader_defs: vec!["INIT".to_string().into()],
-        entry_point: Cow::from("init"),
+        entry_point: Cow::from("update"),
     });
 
     let update_pipeline = pipeline_cache.queue_compute_pipeline(ComputePipelineDescriptor {
         label: None,
-        layout: vec![pipeline.texture_bind_group_layout.clone()],
+        layout: vec![pipeline.texture_group_layout.clone()],
         push_constant_ranges: vec![],
-        shader,
+        shader: all_shader_handles.texture_a_shader.clone(),
         shader_defs: vec![],
         entry_point: Cow::from("update"),
     });
 
-    // let texture_a_view = &gpu_images[&texture_a.0];
     let view_a = gpu_images.get(&texture_a.0).unwrap();
     let view_b = gpu_images.get(&texture_b.0).unwrap();
     let view_c = gpu_images.get(&texture_c.0).unwrap();
@@ -75,7 +73,7 @@ pub fn queue_bind_group_a(
 
     let texture_a_bind_group = render_device.create_bind_group(
         Some("texture_a_bind_group"),
-        &pipeline.texture_bind_group_layout,
+        &pipeline.texture_group_layout,
         &[
             BindGroupEntry {
                 binding: 0,
@@ -95,6 +93,7 @@ pub fn queue_bind_group_a(
             },
         ],
     );
+    info!("binding a");
     commands.insert_resource(TextureABindGroup {
         texture_a_bind_group,
         init_pipeline,
@@ -148,6 +147,7 @@ impl Node for TextureANode {
         render_context: &mut RenderContext,
         world: &World,
     ) -> Result<(), NodeRunError> {
+        info!("running a");
         let bind_group = world.resource::<TextureABindGroup>();
 
         let texture_a_bind_group = &bind_group.texture_a_bind_group;

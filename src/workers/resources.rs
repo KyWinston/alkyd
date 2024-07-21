@@ -4,8 +4,7 @@ use bevy::{
         extract_resource::ExtractResource,
         render_resource::{
             BindGroup, BindGroupLayout, BindGroupLayoutEntry, BindingType, CachedComputePipelineId,
-            SamplerBindingType, ShaderStages, StorageTextureAccess, TextureFormat,
-            TextureViewDimension,
+            ShaderStages, StorageTextureAccess, TextureFormat, TextureViewDimension,
         },
         renderer::RenderDevice,
     },
@@ -67,34 +66,8 @@ impl NoiseGeneratorPipeline {
                 NoiseGeneratorPipeline::make_texture_layout(1),
                 NoiseGeneratorPipeline::make_texture_layout(2),
                 NoiseGeneratorPipeline::make_texture_layout(3),
-                BindGroupLayoutEntry {
-                    binding: 4,
-                    visibility: ShaderStages::COMPUTE,
-                    ty: BindingType::StorageTexture {
-                        access: StorageTextureAccess::ReadWrite,
-                        format: TextureFormat::Rgba32Float,
-                        view_dimension: TextureViewDimension::D2,
-                    },
-                    count: None,
-                },
-                BindGroupLayoutEntry {
-                    binding: 5,
-                    visibility: ShaderStages::COMPUTE,
-                    ty: BindingType::Sampler(SamplerBindingType::Filtering),
-                    count: None,
-                },
-                BindGroupLayoutEntry {
-                    binding: 6,
-                    visibility: ShaderStages::COMPUTE,
-                    ty: BindingType::Sampler(SamplerBindingType::Filtering),
-                    count: None,
-                },
-                BindGroupLayoutEntry {
-                    binding: 10,
-                    visibility: ShaderStages::COMPUTE,
-                    ty: BindingType::Sampler(SamplerBindingType::Filtering),
-                    count: None,
-                },
+                NoiseGeneratorPipeline::make_texture_layout(4),
+
             ],
         );
 

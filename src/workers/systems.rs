@@ -11,7 +11,7 @@ use bevy::{
     },
 };
 
-use crate::materials::painterly::resources::NoiseImage;
+use crate::workers::resources::NoiseImage;
 
 use super::{
     resources::{NoiseGeneratorBindGroup, NoiseGeneratorPipeline, ShaderHandles},
@@ -42,14 +42,23 @@ pub fn setup(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
             depth_or_array_layers: 1,
         },
         TextureDimension::D2,
-        &[0, 0, 0, 0],
+        &[0; SIZE.0 as usize * SIZE.1 as usize * 16],
         TextureFormat::Rgba32Float,
         RenderAssetUsages::RENDER_WORLD,
     );
     image.texture_descriptor.usage =
         TextureUsages::COPY_DST | TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
-
     let image = images.add(image);
+
+    commands.spawn(SpriteBundle {
+        sprite: Sprite {
+            custom_size: Some(Vec2::new(SIZE.0 as f32, SIZE.1 as f32)),
+            ..default()
+        },
+        texture: image.clone(),
+
+        ..default()
+    });
     commands.insert_resource(NoiseImage(image.clone()));
 
     info!("loading a slot");
@@ -60,7 +69,7 @@ pub fn setup(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
             depth_or_array_layers: 1,
         },
         TextureDimension::D2,
-        &[0, 0, 0, 0],
+        &[0; SIZE.0 as usize * SIZE.1 as usize * 16],
         TextureFormat::Rgba32Float,
         RenderAssetUsages::RENDER_WORLD,
     );
@@ -68,6 +77,16 @@ pub fn setup(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
         TextureUsages::COPY_DST | TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
 
     let texture_a = images.add(texture_a);
+
+    commands.spawn(SpriteBundle {
+        sprite: Sprite {
+            custom_size: Some(Vec2::new(SIZE.0 as f32, SIZE.1 as f32)),
+            ..default()
+        },
+        texture: texture_a.clone(),
+
+        ..default()
+    });
 
     commands.insert_resource(TextureA(texture_a));
     info!("loading b slot");
@@ -79,7 +98,7 @@ pub fn setup(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
             depth_or_array_layers: 1,
         },
         TextureDimension::D2,
-        &[0, 0, 0, 0],
+        &[0; SIZE.0 as usize * SIZE.1 as usize * 4],
         TextureFormat::Rgba32Float,
         RenderAssetUsages::RENDER_WORLD,
     );
@@ -87,6 +106,16 @@ pub fn setup(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
         TextureUsages::COPY_DST | TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
 
     let texture_b = images.add(texture_b);
+
+    commands.spawn(SpriteBundle {
+        sprite: Sprite {
+            custom_size: Some(Vec2::new(SIZE.0 as f32, SIZE.1 as f32)),
+            ..default()
+        },
+        texture: texture_b.clone(),
+
+        ..default()
+    });
 
     commands.insert_resource(TextureB(texture_b));
     info!("loading c slot");
@@ -98,7 +127,7 @@ pub fn setup(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
             depth_or_array_layers: 1,
         },
         TextureDimension::D2,
-        &[0, 0, 0, 0],
+        &[0; SIZE.0 as usize * SIZE.1 as usize * 4],
         TextureFormat::Rgba32Float,
         RenderAssetUsages::RENDER_WORLD,
     );
@@ -106,7 +135,14 @@ pub fn setup(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
         TextureUsages::COPY_DST | TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
 
     let texture_c = images.add(texture_c);
-
+    commands.spawn(SpriteBundle {
+        sprite: Sprite {
+            custom_size: Some(Vec2::new(SIZE.0 as f32, SIZE.1 as f32)),
+            ..default()
+        },
+        texture: texture_c.clone(),
+        ..default()
+    });
     commands.insert_resource(TextureC(texture_c));
     info!("loading d slot");
 
@@ -117,7 +153,7 @@ pub fn setup(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
             depth_or_array_layers: 1,
         },
         TextureDimension::D2,
-        &[0, 0, 0, 0],
+        &[0; SIZE.0 as usize * SIZE.1 as usize * 4],
         TextureFormat::Rgba32Float,
         RenderAssetUsages::RENDER_WORLD,
     );
@@ -126,15 +162,25 @@ pub fn setup(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
 
     let texture_d = images.add(texture_d);
 
+    commands.spawn(SpriteBundle {
+        sprite: Sprite {
+            custom_size: Some(Vec2::new(SIZE.0 as f32, SIZE.1 as f32)),
+            ..default()
+        },
+        texture: image.clone(),
+
+        ..default()
+    });
+
     commands.insert_resource(TextureD(texture_d));
 }
 
 pub fn make_and_load_shaders(asset_server: &Res<AssetServer>) -> ShaderHandles {
-    let image_shader_handle = asset_server.load("./shaders/{}/image.wgsl");
-    let texture_a_shader = asset_server.load("./shaders/{}/buffer_a.wgsl");
-    let texture_b_shader = asset_server.load("./shaders/{}/buffer_b.wgsl");
-    let texture_c_shader = asset_server.load("./shaders/{}/buffer_c.wgsl");
-    let texture_d_shader = asset_server.load("./shaders/{}/buffer_d.wgsl");
+    let image_shader_handle = asset_server.load("shaders/{}/image.wgsl");
+    let texture_a_shader = asset_server.load("shaders/{}/buffer_a.wgsl");
+    let texture_b_shader = asset_server.load("shaders/{}/buffer_b.wgsl");
+    let texture_c_shader = asset_server.load("shaders/{}/buffer_c.wgsl");
+    let texture_d_shader = asset_server.load("shaders/{}/buffer_d.wgsl");
 
     ShaderHandles {
         image_shader: image_shader_handle,
@@ -146,14 +192,14 @@ pub fn make_and_load_shaders(asset_server: &Res<AssetServer>) -> ShaderHandles {
 }
 
 pub fn make_and_load_shaders2(asset_server: &Res<AssetServer>) -> ShaderHandles {
-    let image_shader_handle = asset_server.load("./noisenoise.wgsl");
+    let image_shader = asset_server.load("./noise/noise.wgsl");
     let texture_a_shader = asset_server.load("./noise/slot_a.wgsl");
     let texture_b_shader = asset_server.load("./noise/slot_b.wgsl");
     let texture_c_shader = asset_server.load("./noise/slot_c.wgsl");
     let texture_d_shader = asset_server.load("./noise/slot_d.wgsl");
 
     ShaderHandles {
-        image_shader: image_shader_handle,
+        image_shader,
         texture_a_shader,
         texture_b_shader,
         texture_c_shader,
@@ -306,6 +352,8 @@ impl render_graph::Node for NoiseGeneratorNode {
         render_context: &mut RenderContext,
         world: &World,
     ) -> Result<(), render_graph::NodeRunError> {
+        info!("running main");
+
         let bind_group = world.resource::<NoiseGeneratorBindGroup>();
 
         let init_pipeline_cache = bind_group.init_pipeline;

@@ -1,5 +1,11 @@
-use alkyd::{materials::painterly::painterly::PainterlyMaterial, Showcase};
-use bevy::{color::palettes::css::BLUE, core_pipeline::prepass::{DepthPrepass, NormalPrepass}, prelude::*};
+use alkyd::{
+    materials::painterly::painterly::PainterlyMaterial, workers::{resources::ShaderHandles, systems::make_and_load_shaders2}, Showcase,
+};
+use bevy::{
+    color::palettes::css::BLUE,
+    core_pipeline::prepass::{DepthPrepass, NormalPrepass},
+    prelude::*,
+};
 
 pub fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<Time>) {
     if let Ok(mut mesh) = mesh_q.get_single_mut() {
@@ -7,7 +13,10 @@ pub fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<
     }
 }
 
-pub fn init_scene(mut commands: Commands) {
+pub fn init_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let all_shader_handles: ShaderHandles = make_and_load_shaders2(&asset_server);
+
+    commands.insert_resource(all_shader_handles);
     commands.spawn(DirectionalLightBundle {
         directional_light: DirectionalLight::default(),
         transform: Transform::from_xyz(-4.0, 5.0, 2.0).looking_at(Vec3::ZERO, Vec3::Y),

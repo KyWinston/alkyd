@@ -12,7 +12,7 @@ use bevy::{
 
 use std::borrow::Cow;
 
-use crate::workers::SHADER_ASSET_PATH;
+use crate::workers::resources::ShaderHandles;
 use crate::workers::{resources::NoiseGeneratorPipeline, WORKGROUP_SIZE};
 use crate::workers::{systems::NoiseGeneratorState, SIZE};
 
@@ -40,25 +40,23 @@ pub fn queue_bind_group_c(
     texture_c_image: Res<TextureC>,
     texture_d_image: Res<TextureD>,
     render_device: Res<RenderDevice>,
-    asset_server: Res<AssetServer>,
+    all_shader_handles: Res<ShaderHandles>,
     pipeline_cache: ResMut<PipelineCache>,
 ) {
-    let shader = asset_server.load(SHADER_ASSET_PATH);
-
     let init_pipeline = pipeline_cache.queue_compute_pipeline(ComputePipelineDescriptor {
         label: None,
-        layout: vec![pipeline.texture_bind_group_layout.clone()],
+        layout: vec![pipeline.texture_group_layout.clone()],
         push_constant_ranges: vec![],
-        shader: shader.clone(),
+        shader: all_shader_handles.texture_c_shader.clone(),
         shader_defs: vec!["INIT".to_string().into()],
-        entry_point: Cow::from("update"),
+        entry_point: Cow::from("init"),
     });
 
     let update_pipeline = pipeline_cache.queue_compute_pipeline(ComputePipelineDescriptor {
         label: None,
-        layout: vec![pipeline.texture_bind_group_layout.clone()],
+        layout: vec![pipeline.texture_group_layout.clone()],
         push_constant_ranges: vec![],
-        shader,
+        shader: all_shader_handles.texture_c_shader.clone(),
         shader_defs: vec![],
         entry_point: Cow::from("update"),
     });
@@ -70,7 +68,7 @@ pub fn queue_bind_group_c(
 
     let texture_c_bind_group = render_device.create_bind_group(
         Some("bind_group_c"),
-        &pipeline.texture_bind_group_layout,
+        &pipeline.texture_group_layout,
         &[
             BindGroupEntry {
                 binding: 0,
@@ -90,7 +88,7 @@ pub fn queue_bind_group_c(
             },
         ],
     );
-
+    info!("binding c");
     commands.insert_resource(TextureCBindGroup {
         texture_c_bind_group,
         init_pipeline,
@@ -144,6 +142,8 @@ impl render_graph::Node for TextureCNode {
         render_context: &mut RenderContext,
         world: &World,
     ) -> Result<(), render_graph::NodeRunError> {
+        info!("running c");
+
         let bind_group = world.resource::<TextureCBindGroup>();
 
         let texture_c_bind_group = &bind_group.texture_c_bind_group;
