@@ -36,7 +36,6 @@ bevy = { version = "0.14.0", default-features = false, features = [
     "bevy_pbr",
     "bevy_asset",
     "png",
-    "bevy_debug_stepping",
 ] }
 bytemuck = "1.5"
 rand = "0.8"
@@ -50,7 +49,6 @@ bevy = { version = "0.14.0", default-features = false, features = [
     "bevy_debug_stepping",
     "bevy_dev_tools",
     "bevy_ci_testing",
-    "dynamic_linking",
 ] }
 rand = "0.8"
 rand_pcg = "0.3"
