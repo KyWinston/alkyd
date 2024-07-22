@@ -2,6 +2,8 @@ use bevy::prelude::*;
 
 use materials::galaxyfog::{galaxy::GalaxyFogMaterial, GalaxyFogPlugin};
 use utilities::UtilitiesPlugin;
+
+#[cfg(feature = "compute")]
 use workers::WorkersPlugin;
 
 use crate::materials::painterly::{painterly::PainterlyMaterial, MaterialSwatchPlugin};
@@ -43,6 +45,7 @@ impl Plugin for AlkydPlugin {
             GalaxyFogPlugin { debug: self.debug },
             MaterialPlugin::<PainterlyMaterial>::default(),
             MaterialPlugin::<GalaxyFogMaterial>::default(),
+            #[cfg(feature = "compute")]
             WorkersPlugin,
             // MaterialPlugin::<PatternGenFunc>::default(),
             #[cfg(feature = "editor")]
