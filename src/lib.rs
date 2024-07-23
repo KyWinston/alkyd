@@ -50,7 +50,7 @@ impl Plugin for AlkydPlugin {
             // MaterialPlugin::<PatternGenFunc>::default(),
             #[cfg(feature = "editor")]
             EditorPlugin,
-     
+            
         ));
     }
 }
