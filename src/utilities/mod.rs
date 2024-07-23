@@ -28,6 +28,7 @@ impl Plugin for UtilitiesPlugin {
             "../../assets/shader_utils/consts/globs.wgsl",
             Shader::from_wgsl
         );
+        #[cfg(feature = "compute")]
         load_internal_asset!(
             app,
             VORONOI_SHADER_HANDLE,
@@ -64,10 +65,5 @@ impl Plugin for UtilitiesPlugin {
             "../../assets/shader_utils/noise_gen.wgsl",
             Shader::from_wgsl
         );
-        // app.add_plugins(SteppingPlugin {
-        //     schedule_labels: vec![ScheduleLabel::intern(&DebugSchedule)],
-        //     top: Val::Px(100.0),
-        //     left: Val::Px(100.0),
-        // });
     }
 }

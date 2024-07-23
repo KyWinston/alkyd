@@ -4,9 +4,7 @@ use crate::PAINTERLY_SHADER_HANDLE;
 
 pub mod painterly;
 
-pub struct MaterialSwatchPlugin {
-    pub debug: bool,
-}
+pub struct MaterialSwatchPlugin;
 
 impl Plugin for MaterialSwatchPlugin {
     fn build(&self, app: &mut App) {

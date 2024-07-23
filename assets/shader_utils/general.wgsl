@@ -4,7 +4,6 @@
 #import bevy_pbr::prepass_utils::{prepass_depth,prepass_normal};
 #import bevy_pbr::mesh_view_bindings::{globals,view,View};
 
-@group(2) @binding(5) var voro_cache:  texture_storage_2d<r32float,read>;
 
 fn hash2(p: vec2<f32>) -> vec2<f32> {
     var p3 = fract(vec3<f32>(p.xyx) * vec3<f32>(.1031, .1030, .0973));
@@ -146,49 +145,49 @@ fn map(value: vec3f, min1: vec3f, max1: vec3f, min2: vec3f, max2: vec3f) -> f32 
     return length(min2 + (value - min1) * (max2 - min2) / (max1 - min1));
 }
 
-fn voronoi(p: vec2<f32>, depth: f32, dist_fn: u32, exp: f32) -> vec3<f32> {
-    var md = 10.0;
-    var med = 10.0;
-    var tcc: vec2<f32>;
-    var cc: vec2<f32>;
-    let n = floor(p);
-    var cell_id = 0.0;
+// fn voronoi(p: vec2<f32>, depth: f32, dist_fn: u32, exp: f32) -> vec3<f32> {
+//     var md = 10.0;
+//     var med = 10.0;
+//     var tcc: vec2<f32>;
+//     var cc: vec2<f32>;
+//     let n = floor(p);
+//     var cell_id = 0.0;
 
-    for (var x = -1; x <= 1; x++) {
-        for (var y = -1; y <= 1; y++) {
-            let g = n + vec2(f32(x), f32(y));
-            let cache = voro_cache[i32(g.x) + (i32(g.y) * 10)];
-            let o = g + cache.xy;
-            let r = o - p;
-            var d: f32 = length(r);
-            if dist_fn == 1u {
-                d = abs(o.x - p.x) + abs(o.y - p.y);
-            } else if dist_fn == 2u {
-                d = max(abs(o.x - p.x), abs(o.y - p.y));
-            } else if dist_fn >= 3u {
-                d = pow(pow(abs(o.x - p.x), exp) + pow(abs(o.y - p.y), exp), 1.0 / exp);
-            }            if depth < 0.0015 {
-                let dcc = abs(cc - g);
-                if !(dcc.x + dcc.y < 0.05) {
-                    let tc = (tcc + r) * 0.5;
-                    let cd = normalize(r - tcc);
-                    let ed = dot(tc, cd);
-                    med = min(med, ed);
-                }
-            }
-            if d < md {
-                md = d;
-                cc = g;
-                tcc = r;
-                cell_id = cache.z;
-                if dist_fn == 0u && d < cache.w {
-                    break;
-                }
-            }
-        }
-    }
-    return vec3<f32>(md, cell_id, med);
-}
+//     for (var x = -1; x <= 1; x++) {
+//         for (var y = -1; y <= 1; y++) {
+//             let g = n + vec2(f32(x), f32(y));
+//             let cache = voro_cache[i32(g.x) + (i32(g.y) * 10)];
+//             let o = g + cache.xy;
+//             let r = o - p;
+//             var d: f32 = length(r);
+//             if dist_fn == 1u {
+//                 d = abs(o.x - p.x) + abs(o.y - p.y);
+//             } else if dist_fn == 2u {
+//                 d = max(abs(o.x - p.x), abs(o.y - p.y));
+//             } else if dist_fn >= 3u {
+//                 d = pow(pow(abs(o.x - p.x), exp) + pow(abs(o.y - p.y), exp), 1.0 / exp);
+//             }            if depth < 0.0015 {
+//                 let dcc = abs(cc - g);
+//                 if !(dcc.x + dcc.y < 0.05) {
+//                     let tc = (tcc + r) * 0.5;
+//                     let cd = normalize(r - tcc);
+//                     let ed = dot(tc, cd);
+//                     med = min(med, ed);
+//                 }
+//             }
+//             if d < md {
+//                 md = d;
+//                 cc = g;
+//                 tcc = r;
+//                 cell_id = cache.z;
+//                 if dist_fn == 0u && d < cache.w {
+//                     break;
+//                 }
+//             }
+//         }
+//     }
+//     return vec3<f32>(md, cell_id, med);
+// }
 
 fn sincosbundle(val: f32) -> f32 {
     return sin(cos(2. * val) + sin(4. * val) - cos(5. * val) + sin(3. * val)) * 0.05;
@@ -240,8 +239,6 @@ fn brick_texture(uv: vec2f) -> f32 {
     }
     return 1.0;
 }
-
-
 
 fn trace(origin: vec3f, r: vec3f) -> f32 {
     var t = 0.0;
