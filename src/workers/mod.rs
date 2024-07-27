@@ -4,11 +4,15 @@ use bevy::{
     app::ScheduleRunnerPlugin,
     prelude::*,
     render::{
-        extract_resource::ExtractResourcePlugin, graph::CameraDriverLabel,
-        render_graph::RenderGraph, Render, RenderApp, RenderSet,
+        extract_resource::ExtractResourcePlugin,
+        graph::CameraDriverLabel,
+        render_graph::RenderGraph,
+        render_resource::{BufferDescriptor, BufferUsages},
+        renderer::RenderDevice,
+        Render, RenderApp, RenderSet,
     },
 };
-use resources::{NoiseGeneratorPipeline, NoiseImage, ShaderHandles};
+use resources::{Canvas, CommonUniformMeta, NoiseGeneratorPipeline, NoiseImage, ShaderHandles};
 use systems::{queue_bind_group, setup, NoiseGeneratorLabel, NoiseGeneratorNode};
 use texture_slots::{
     texture_a::{queue_bind_group_a, TextureA, TextureALabel, TextureANode},
@@ -37,9 +41,20 @@ impl Plugin for WorkersPlugin {
             ExtractResourcePlugin::<TextureD>::default(),
             ExtractResourcePlugin::<NoiseImage>::default(),
             ExtractResourcePlugin::<ShaderHandles>::default(),
+            ExtractResourcePlugin::<Canvas>::default(),
         ))
         .add_systems(Startup, setup);
         let render_app = app.sub_app_mut(RenderApp);
+
+        render_app.add_systems(
+            Render,
+            (queue_bind_group
+                .pipe(queue_bind_group_a)
+                .pipe(queue_bind_group_b)
+                .pipe(queue_bind_group_c)
+                .pipe(queue_bind_group_d))
+            .in_set(RenderSet::Queue),
+        );
 
         let mut render_graph = render_app
             .world_mut()
@@ -58,16 +73,18 @@ impl Plugin for WorkersPlugin {
     }
     fn finish(&self, app: &mut App) {
         let render_app = app.sub_app_mut(RenderApp);
+        let render_device = render_app.world().resource::<RenderDevice>();
+
+        let buffer = render_device.create_buffer(&BufferDescriptor {
+            label: Some("common uniform buffer"),
+            size: std::mem::size_of::<f32>() as u64 * 25,
+            usage: BufferUsages::UNIFORM | BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
         render_app
             .init_resource::<NoiseGeneratorPipeline>()
-            .add_systems(
-                Render,
-                (queue_bind_group
-                    .pipe(queue_bind_group_a)
-                    .pipe(queue_bind_group_b)
-                    .pipe(queue_bind_group_c)
-                    .pipe(queue_bind_group_d))
-                .in_set(RenderSet::Queue),
-            );
+            .insert_resource(CommonUniformMeta {
+                buffer: buffer.clone(),
+            });
     }
 }

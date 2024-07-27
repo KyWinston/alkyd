@@ -172,7 +172,6 @@ impl render_graph::Node for TextureBNode {
                 pass.set_pipeline(init_pipeline);
                 pass.dispatch_workgroups(SIZE.0 / WORKGROUP_SIZE, SIZE.1 / WORKGROUP_SIZE, 1);
             }
-
             NoiseGeneratorState::Update => {
                 let update_pipeline = pipeline_cache
                     .get_compute_pipeline(update_pipeline_cache)

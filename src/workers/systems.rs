@@ -9,9 +9,10 @@ use bevy::{
         renderer::{RenderContext, RenderDevice},
         texture::GpuImage,
     },
+    window::PrimaryWindow,
 };
 
-use crate::workers::resources::NoiseImage;
+use crate::workers::resources::{CommonUniform, NoiseImage};
 
 use super::{
     resources::{NoiseGeneratorBindGroup, NoiseGeneratorPipeline, ShaderHandles},
@@ -24,15 +25,11 @@ use super::{
 #[derive(Debug, Hash, PartialEq, Eq, Clone, RenderLabel)]
 pub struct NoiseGeneratorLabel;
 
-pub fn setup(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
-    commands.spawn(Camera2dBundle {
-        camera: Camera {
-            order: 2,
-            is_active: false,
-            ..default()
-        },
-        ..default()
-    });
+pub fn setup(
+    mut commands: Commands,
+    mut images: ResMut<Assets<Image>>,
+    windows: Query<&Window, With<PrimaryWindow>>,
+) {
     info!("loading main slot");
 
     let mut image = Image::new_fill(
@@ -50,16 +47,23 @@ pub fn setup(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
         TextureUsages::COPY_DST | TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
     let image = images.add(image);
 
-    commands.spawn(SpriteBundle {
-        sprite: Sprite {
-            custom_size: Some(Vec2::new(SIZE.0 as f32, SIZE.1 as f32)),
+    #[cfg(feature = "editor")]
+    commands.spawn(Camera2dBundle {
+        camera: Camera {
+            target: RenderTarget::Image(image.clone()),
             ..default()
         },
-        texture: image.clone(),
-
         ..default()
     });
+
     commands.insert_resource(NoiseImage(image.clone()));
+
+    let window = windows.get_single().unwrap();
+    let mut common_uniform = CommonUniform::new();
+
+    common_uniform.i_resolution.x = window.width();
+    common_uniform.i_resolution.y = window.height();
+    commands.insert_resource(common_uniform);
 
     info!("loading a slot");
     let mut texture_a = Image::new_fill(
@@ -245,7 +249,7 @@ pub fn queue_bind_group(
         push_constant_ranges: vec![],
         shader: shader.clone(),
         shader_defs: vec!["INIT".to_string().into()],
-        entry_point: Cow::from("update"),
+        entry_point: Cow::from("init"),
     });
 
     let update_pipeline = pipeline_cache.queue_compute_pipeline(ComputePipelineDescriptor {
