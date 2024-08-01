@@ -1,5 +1,5 @@
 use alkyd::{
-    materials::galaxyfog::galaxy::{GalaxyFogMaterial, NoiseProperties}, workers::resources::NoiseImage, AlkydPlugin, Showcase
+    components::Showcase, materials::galaxyfog::galaxy::{GalaxyFogMaterial, NoiseProperties}, workers::resources::NoiseImage, AlkydPlugin
 };
 
 use bevy::{

@@ -12,6 +12,7 @@ use bevy::{
         Render, RenderApp, RenderSet,
     },
 };
+#[cfg(feature = "compute")]
 use resources::{Canvas, CommonUniformMeta, NoiseGeneratorPipeline, NoiseImage, ShaderHandles};
 use systems::{queue_bind_group, setup, NoiseGeneratorLabel, NoiseGeneratorNode};
 use texture_slots::{
@@ -26,13 +27,14 @@ pub mod systems;
 pub mod texture_slots;
 pub struct WorkersPlugin;
 
-pub const SHADER_ASSET_PATH: &str = "noise/noise.wgsl";
+pub const SHADER_ASSET_PATH: &str = "shaders/noise/noise.wgsl";
 pub const DISPLAY_FACTOR: u32 = 4;
-pub const SIZE: (u32, u32) = (2048 / DISPLAY_FACTOR, 2048 / DISPLAY_FACTOR);
+pub const SIZE: (u32, u32) = (1920 / DISPLAY_FACTOR, 1080 / DISPLAY_FACTOR);
 pub const WORKGROUP_SIZE: u32 = 8;
 
 impl Plugin for WorkersPlugin {
     fn build(&self, app: &mut App) {
+        #[cfg(feature = "compute")]
         app.add_plugins((
             ScheduleRunnerPlugin::run_loop(Duration::from_secs_f64(1.0 / 120.0)),
             ExtractResourcePlugin::<TextureA>::default(),
@@ -45,7 +47,6 @@ impl Plugin for WorkersPlugin {
         ))
         .add_systems(Startup, setup);
         let render_app = app.sub_app_mut(RenderApp);
-
         render_app.add_systems(
             Render,
             (queue_bind_group
@@ -81,6 +82,7 @@ impl Plugin for WorkersPlugin {
             usage: BufferUsages::UNIFORM | BufferUsages::COPY_DST,
             mapped_at_creation: false,
         });
+        #[cfg(feature = "compute")]
         render_app
             .init_resource::<NoiseGeneratorPipeline>()
             .insert_resource(CommonUniformMeta {

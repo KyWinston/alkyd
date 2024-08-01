@@ -15,12 +15,6 @@ pub mod systems;
 fn main() {
     App::new()
         .insert_resource(ClearColor(GRAY.into()))
-        .insert_resource(Canvas {
-            width: 1920.0 as u32,
-            height: 1080.0 as u32,
-            borders: 0.0,
-            position: Vec3::ZERO,
-        })
         .add_plugins((
             DefaultPlugins
                 .set(LogPlugin {

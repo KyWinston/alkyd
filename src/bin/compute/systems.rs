@@ -1,7 +1,4 @@
-use alkyd::{
-    workers::{resources::ShaderHandles, systems::make_and_load_shaders2},
-    Showcase,
-};
+use alkyd::{components::Showcase, workers::{resources::ShaderHandles, systems::make_and_load_shaders}};
 use bevy::{
     color::palettes::css::BROWN,
     core_pipeline::prepass::{DepthPrepass, NormalPrepass},
@@ -17,7 +14,7 @@ pub fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<
 }
 
 pub fn init_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let all_shader_handles: ShaderHandles = make_and_load_shaders2(&asset_server);
+    let all_shader_handles: ShaderHandles = make_and_load_shaders(&asset_server);
     commands.insert_resource(all_shader_handles);
 
     commands.spawn(DirectionalLightBundle {
@@ -49,7 +46,6 @@ pub fn create_cube(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
-  
     let material = materials.add(ExtendedMaterial {
         base: StandardMaterial::default(),
         extension: TextureOutputMaterial {

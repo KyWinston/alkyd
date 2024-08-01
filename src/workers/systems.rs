@@ -44,7 +44,7 @@ pub fn setup(
         RenderAssetUsages::RENDER_WORLD,
     );
     image.texture_descriptor.usage =
-        TextureUsages::COPY_DST | TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
+        TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
     let image = images.add(image);
 
     #[cfg(feature = "editor")]
@@ -78,7 +78,7 @@ pub fn setup(
         RenderAssetUsages::RENDER_WORLD,
     );
     texture_a.texture_descriptor.usage =
-        TextureUsages::COPY_DST | TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
+        TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
 
     let texture_a = images.add(texture_a);
 
@@ -107,7 +107,7 @@ pub fn setup(
         RenderAssetUsages::RENDER_WORLD,
     );
     texture_b.texture_descriptor.usage =
-        TextureUsages::COPY_DST | TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
+        TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
 
     let texture_b = images.add(texture_b);
 
@@ -136,7 +136,7 @@ pub fn setup(
         RenderAssetUsages::RENDER_WORLD,
     );
     texture_c.texture_descriptor.usage =
-        TextureUsages::COPY_DST | TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
+        TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
 
     let texture_c = images.add(texture_c);
     commands.spawn(SpriteBundle {
@@ -162,7 +162,7 @@ pub fn setup(
         RenderAssetUsages::RENDER_WORLD,
     );
     texture_d.texture_descriptor.usage =
-        TextureUsages::COPY_DST | TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
+        TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
 
     let texture_d = images.add(texture_d);
 
@@ -179,28 +179,28 @@ pub fn setup(
     commands.insert_resource(TextureD(texture_d));
 }
 
+// pub fn make_and_load_shaders(asset_server: &Res<AssetServer>) -> ShaderHandles {
+//     let image_shader_handle = asset_server.load("shaders/{}/image.wgsl");
+//     let texture_a_shader = asset_server.load("shaders/{}/buffer_a.wgsl");
+//     let texture_b_shader = asset_server.load("shaders/{}/buffer_b.wgsl");
+//     let texture_c_shader = asset_server.load("shaders/{}/buffer_c.wgsl");
+//     let texture_d_shader = asset_server.load("shaders/{}/buffer_d.wgsl");
+
+//     ShaderHandles {
+//         image_shader: image_shader_handle,
+//         texture_a_shader,
+//         texture_b_shader,
+//         texture_c_shader,
+//         texture_d_shader,
+//     }
+// }
+
 pub fn make_and_load_shaders(asset_server: &Res<AssetServer>) -> ShaderHandles {
-    let image_shader_handle = asset_server.load("shaders/{}/image.wgsl");
-    let texture_a_shader = asset_server.load("shaders/{}/buffer_a.wgsl");
-    let texture_b_shader = asset_server.load("shaders/{}/buffer_b.wgsl");
-    let texture_c_shader = asset_server.load("shaders/{}/buffer_c.wgsl");
-    let texture_d_shader = asset_server.load("shaders/{}/buffer_d.wgsl");
-
-    ShaderHandles {
-        image_shader: image_shader_handle,
-        texture_a_shader,
-        texture_b_shader,
-        texture_c_shader,
-        texture_d_shader,
-    }
-}
-
-pub fn make_and_load_shaders2(asset_server: &Res<AssetServer>) -> ShaderHandles {
-    let image_shader = asset_server.load("./noise/noise.wgsl");
-    let texture_a_shader = asset_server.load("./noise/slot_a.wgsl");
-    let texture_b_shader = asset_server.load("./noise/slot_b.wgsl");
-    let texture_c_shader = asset_server.load("./noise/slot_c.wgsl");
-    let texture_d_shader = asset_server.load("./noise/slot_d.wgsl");
+    let image_shader = asset_server.load("./shaders/noise/noise.wgsl");
+    let texture_a_shader = asset_server.load("./shaders/noise/slot_a.wgsl");
+    let texture_b_shader = asset_server.load("./shaders/noise/slot_b.wgsl");
+    let texture_c_shader = asset_server.load("./shaders/noise/slot_c.wgsl");
+    let texture_d_shader = asset_server.load("./shaders/noise/slot_d.wgsl");
 
     ShaderHandles {
         image_shader,
@@ -242,7 +242,7 @@ pub fn queue_bind_group(
     asset_server: Res<AssetServer>,
     render_device: Res<RenderDevice>,
 ) {
-    let shader = asset_server.load(SHADER_ASSET_PATH);
+    let shader = asset_server.load("shaders/noise/noise.wgsl");
     let init_pipeline = pipeline_cache.queue_compute_pipeline(ComputePipelineDescriptor {
         label: None,
         layout: vec![pipeline.texture_bind_group_layout.clone()],
