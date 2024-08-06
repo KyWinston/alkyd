@@ -24,6 +24,9 @@ pub struct SpritelyMaterial {
     #[texture(3)]
     #[sampler(4)]
     pub color_uv: Option<Handle<Image>>,
+    #[texture(5)]
+    #[sampler(6)]
+    pub normals: Option<Handle<Image>>,
 }
 
 /// the properties necessary to make an animated sprite
@@ -35,11 +38,12 @@ impl Default for SpritelyMaterial {
             viewing_direction: Dir3::X,
             looking_direction: Dir2::X,
             current_frame: 0,
-            frames: 50,
+            frames: 43,
             frames_per_second: 24,
             uv_scale: 4,
             sheet_depth_uv_mask: None,
             color_uv: None,
+            normals:None
         }
     }
 }

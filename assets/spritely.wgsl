@@ -21,6 +21,8 @@ struct Spritely {
 @group(2) @binding(2) var s: sampler;
 @group(2) @binding(3) var uv: texture_2d<f32>;
 @group(2) @binding(4) var uv_sampler: sampler;
+@group(2) @binding(5) var normals: texture_2d<f32>;
+@group(2) @binding(6) var s_norm: sampler;
 
 @fragment
 fn fragment(
@@ -38,12 +40,12 @@ fn fragment(
     let angle = degrees(atan2(dot, det));
     var offset: f32 = (f32(step(45.0, abs(angle)) + step(90.0, abs(angle)) + step(135.0, abs(angle))));
     var anim_idx = in.uv.x;
-    let backface = abs(angle) <= 180.0 && abs(angle) > 175.0;
-    let mirror = angle < -44.0 && angle > -174.0;
+    let backface = abs(angle) >= -180.0 && abs(angle) < -170.0;
+    let mirror = angle > 44.0 && angle < 170.0;
     var uv_offset: u32 = 0u;
 
     if backface {
-        offset = 0.0;
+        anim_idx = 0.0;
     }
 
     if backface || mirror {
@@ -55,8 +57,15 @@ fn fragment(
     anim_idx /= f32(material.viewing_directions);
 
     let frame = vec2<f32>(anim_idx + f32(offset) / f32(material.viewing_directions), in.uv.y / (-1.0 * f32(material.frames)) + y_offset);
+
+    let normals = textureSample(normals, s_norm, frame);
+    let sprite = textureSample(sprite_sheet, s, frame);
+    let sprite_uv_raw: vec2<f32> = vec2(sprite.r, sprite.g) * 255.0;
+    let sprite_uv: vec2<u32> = vec2(u32(floor(sprite_uv_raw.r)) / material.uv_scale + uv_offset, u32(floor(sprite_uv_raw.g)) / material.uv_scale);
+    let color_map = vec4(vec3(textureLoad(uv, sprite_uv, 0).rg, 0.0), sprite.a);
+
     pbr_input.world_normal = fns::prepare_world_normal(
-        in.world_normal,
+        normals.rgb,
         double_sided,
         is_front,
     );
@@ -69,19 +78,16 @@ fn fragment(
         TBN,
         double_sided,
         is_front,
-        in.world_normal.rgb,
+        pbr_input.world_normal.rgb,
     );
-
     #endif
+
     pbr_input.frag_coord = in.position;
     pbr_input.world_position = in.world_position;
 
-    let sprite = textureSample(sprite_sheet, s, frame);
-    let sprite_uv_raw: vec2<f32> = vec2(sprite.r, sprite.g) * 255.0;
-    let sprite_uv: vec2<u32> = vec2(u32(floor(sprite_uv_raw.r)) / material.uv_scale + uv_offset, u32(floor(sprite_uv_raw.g)) / material.uv_scale);
-    let color_map = vec4(vec3(textureLoad(uv, sprite_uv, 0).rg, 0.0), sprite.a);
-    
+
     pbr_input.material.base_color = color_map;
+    pbr_input.material.perceptual_roughness = 0.5;
     pbr_input.is_orthographic = true;
     pbr_input.V = fns::calculate_view(in.world_position, pbr_input.is_orthographic);
 

@@ -7,7 +7,7 @@ description = "bevy crate for handling procedural textures and shaders"
 publish = true
 
 [dependencies]
-bevy = { version = "0.14.0", default-features = false, features = [
+bevy = { version = "0.14.1", default-features = false, features = [
     "bevy_winit",
     "bevy_render",
     "bevy_core_pipeline",
@@ -39,7 +39,7 @@ crevice = { version = "0.16.0" }
 version = "2.5.0"
 
 [dev-dependencies]
-bevy = { version = "0.14.0", default-features = false, features = [
+bevy = { version = "0.14.1", default-features = false, features = [
     "bevy_winit",
     "bevy_render",
     "bevy_core_pipeline",
@@ -58,7 +58,7 @@ cfg-if = "1.0.0"
 crevice = "0.16.0"
 
 [target.'cfg(debug)'.build-dependencies]
-bevy = { version = "0.14.0", default-features = false, features = [
+bevy = { version = "0.14.1", default-features = false, features = [
     "bevy_dev_tools",
     "bevy_ci_testing",
     "bevy_winit",
