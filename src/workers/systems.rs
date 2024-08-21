@@ -3,11 +3,7 @@ use std::borrow::Cow;
 use bevy::{
     prelude::*,
     render::{
-        render_asset::{RenderAssetUsages, RenderAssets},
-        render_graph::{self, RenderLabel},
-        render_resource::*,
-        renderer::{RenderContext, RenderDevice},
-        texture::GpuImage,
+        camera::RenderTarget, render_asset::{RenderAssetUsages, RenderAssets}, render_graph::{self, RenderLabel}, render_resource::*, renderer::{RenderContext, RenderDevice}, texture::GpuImage
     },
     window::PrimaryWindow,
 };

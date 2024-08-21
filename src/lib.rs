@@ -1,5 +1,6 @@
 use bevy::{pbr::ExtendedMaterial, prelude::*};
-
+#[cfg(feature = "editor")]
+use editor::EditorPlugin;
 use materials::{
     galaxyfog::{galaxy::GalaxyFogMaterial, GalaxyFogPlugin},
     irridescant::{shader::IrridescantMaterial, IrridescantMaterialPlugin},
@@ -20,7 +21,12 @@ pub mod components;
 pub mod materials;
 pub mod pattern_wfc;
 pub mod utilities;
+#[cfg(feature = "compute")]
 pub mod workers;
+#[cfg(feature = "editor")]
+pub mod editor;
+
+
 
 pub const IRRIDESCANT_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1708033355542929744);
 pub const PAINTERLY_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1708033355537029744);

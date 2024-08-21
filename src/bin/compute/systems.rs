@@ -1,4 +1,8 @@
-use alkyd::{components::Showcase, workers::{resources::ShaderHandles, systems::make_and_load_shaders}};
+#[cfg(feature = "compute")]
+use alkyd::{
+    components::Showcase,
+    workers::{resources::ShaderHandles, systems::make_and_load_shaders},
+};
 use bevy::{
     color::palettes::css::BROWN,
     core_pipeline::prepass::{DepthPrepass, NormalPrepass},
@@ -6,12 +10,14 @@ use bevy::{
     prelude::*,
     render::render_resource::{AsBindGroup, ShaderRef},
 };
+#[cfg(feature = "compute")]
 
 pub fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<Time>) {
     if let Ok(mut mesh) = mesh_q.get_single_mut() {
         mesh.rotate_y(1.0 * time.delta_seconds());
     }
 }
+#[cfg(feature = "compute")]
 
 pub fn init_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
     let all_shader_handles: ShaderHandles = make_and_load_shaders(&asset_server);
@@ -52,8 +58,9 @@ pub fn create_cube(
             color: BROWN.to_vec4(),
         },
     });
-
+    #[cfg(feature = "compute")]
     let mesh = meshes.add(Cuboid::from_size(Vec3::splat(4.0)));
+    #[cfg(feature = "compute")]
     commands.spawn((
         MaterialMeshBundle {
             mesh,

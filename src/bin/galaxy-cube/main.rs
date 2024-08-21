@@ -1,5 +1,10 @@
+use alkyd::{components::Showcase, materials::galaxyfog::galaxy::{GalaxyFogMaterial, NoiseProperties}};
+#[cfg(feature = "compute")]
 use alkyd::{
-    components::Showcase, materials::galaxyfog::galaxy::{GalaxyFogMaterial, NoiseProperties}, workers::resources::NoiseImage, AlkydPlugin
+    components::Showcase,
+    materials::galaxyfog::galaxy::{GalaxyFogMaterial, NoiseProperties},
+    workers::resources::NoiseImage,
+    AlkydPlugin,
 };
 
 use bevy::{
@@ -25,10 +30,12 @@ fn main() {
                     watch_for_changes_override: Some(true),
                     ..default()
                 }),
+            #[cfg(feature = "compute")]
             AlkydPlugin { debug: true },
         ))
-        .add_systems(Startup, (init_camera.before(init_scene), init_scene))
-        .add_systems(
+        .add_systems(Startup, (init_camera.before(init_scene), init_scene));
+        #[cfg(feature = "compute")]
+        app.add_systems(
             Update,
             (
                 rotate_mesh,

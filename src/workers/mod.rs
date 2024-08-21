@@ -12,7 +12,6 @@ use bevy::{
         Render, RenderApp, RenderSet,
     },
 };
-#[cfg(feature = "compute")]
 use resources::{Canvas, CommonUniformMeta, NoiseGeneratorPipeline, NoiseImage, ShaderHandles};
 use systems::{queue_bind_group, setup, NoiseGeneratorLabel, NoiseGeneratorNode};
 use texture_slots::{

@@ -1,3 +1,4 @@
+#[cfg(feature = "compute")]
 use alkyd::{workers::resources::Canvas, AlkydPlugin};
 
 use bevy::{
@@ -7,7 +8,7 @@ use bevy::{
     prelude::*,
     render::texture::{ImageAddressMode, ImageSamplerDescriptor},
 };
-
+#[cfg(feature = "compute")]
 use systems::{create_cube, init_scene, rotate_mesh};
 
 pub mod systems;
@@ -37,11 +38,14 @@ fn main() {
                         ..Default::default()
                     },
                 }),
+            #[cfg(feature = "compute")]
             AlkydPlugin { debug: false },
             FrameTimeDiagnosticsPlugin::default(),
             LogDiagnosticsPlugin::default(),
-        ))
-        .add_systems(Startup, init_scene)
-        .add_systems(Update, rotate_mesh.after(create_cube))
+        ));
+        #[cfg(feature = "compute")]
+        app.add_systems(Startup, init_scene);
+        #[cfg(feature = "compute")]
+        app.add_systems(Update, rotate_mesh.after(create_cube))
         .run();
 }

@@ -1,3 +1,4 @@
+#[cfg(feature = "compute")]
 use alkyd::{workers::resources::Canvas, AlkydPlugin};
 
 use bevy::{
@@ -7,14 +8,16 @@ use bevy::{
     render::texture::{ImageAddressMode, ImageSamplerDescriptor},
 };
 
+#[cfg(feature = "compute")]
 use systems::{create_cube, init_scene, rotate_mesh};
 
 pub mod systems;
 
 fn main() {
     App::new()
-        .insert_resource(ClearColor(GRAY.into()))
-        .insert_resource(Canvas {
+        .insert_resource(ClearColor(GRAY.into()));
+        #[cfg(feature = "compute")]
+        app.insert_resource(Canvas {
             width: 1920.0 as u32,
             height: 1080.0 as u32,
             borders: 0.0,
