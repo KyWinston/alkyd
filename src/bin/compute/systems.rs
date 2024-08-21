@@ -5,7 +5,6 @@ use alkyd::{
 };
 use bevy::{
     color::palettes::css::BROWN,
-    core_pipeline::prepass::{DepthPrepass, NormalPrepass},
     pbr::{ExtendedMaterial, MaterialExtension},
     prelude::*,
     render::render_resource::{AsBindGroup, ShaderRef},
@@ -49,10 +48,8 @@ pub fn init_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 pub fn create_cube(
     mut materials: ResMut<Assets<ExtendedMaterial<StandardMaterial, TextureOutputMaterial>>>,
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
 ) {
-    let material = materials.add(ExtendedMaterial {
+    let _material = materials.add(ExtendedMaterial {
         base: StandardMaterial::default(),
         extension: TextureOutputMaterial {
             color: BROWN.to_vec4(),

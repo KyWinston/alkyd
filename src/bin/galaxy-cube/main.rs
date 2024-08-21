@@ -1,4 +1,7 @@
-use alkyd::{components::Showcase, materials::galaxyfog::galaxy::{GalaxyFogMaterial, NoiseProperties}};
+use alkyd::{
+    components::Showcase,
+    materials::galaxyfog::galaxy::{GalaxyFogMaterial, NoiseProperties},
+};
 #[cfg(feature = "compute")]
 use alkyd::{
     components::Showcase,
@@ -34,17 +37,17 @@ fn main() {
             AlkydPlugin { debug: true },
         ))
         .add_systems(Startup, (init_camera.before(init_scene), init_scene));
-        #[cfg(feature = "compute")]
-        app.add_systems(
-            Update,
-            (
-                rotate_mesh,
-                create_cube.run_if(resource_added::<NoiseImage>),
-            ),
-        )
-        .run();
+    #[cfg(feature = "compute")]
+    app.add_systems(
+        Update,
+        (
+            rotate_mesh,
+            create_cube.run_if(resource_added::<NoiseImage>),
+        ),
+    )
+    .run();
 }
-
+#[allow(dead_code)]
 fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<Time>) {
     if let Ok(mut mesh) = mesh_q.get_single_mut() {
         mesh.rotate_y(1.0 * time.delta_seconds());
@@ -89,7 +92,6 @@ pub fn create_cube(
             frequency: 1.0,
             gain: 0.5,
             amplitude: 1.0,
-            ..default()
         },
         ..default()
     });

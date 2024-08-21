@@ -25,7 +25,7 @@ fn main() {
                 })
                 .set(WindowPlugin {
                     primary_window: Some(Window {
-                        resolution: (1920 as f32, 1080 as f32).into(),
+                        resolution: (1920_f32, 1080_f32).into(),
                         ..default()
                     }),
                     ..default()
@@ -40,12 +40,12 @@ fn main() {
                 }),
             #[cfg(feature = "compute")]
             AlkydPlugin { debug: false },
-            FrameTimeDiagnosticsPlugin::default(),
+            FrameTimeDiagnosticsPlugin,
             LogDiagnosticsPlugin::default(),
         ));
-        #[cfg(feature = "compute")]
-        app.add_systems(Startup, init_scene);
-        #[cfg(feature = "compute")]
-        app.add_systems(Update, rotate_mesh.after(create_cube))
+    #[cfg(feature = "compute")]
+    app.add_systems(Startup, init_scene);
+    #[cfg(feature = "compute")]
+    app.add_systems(Update, rotate_mesh.after(create_cube))
         .run();
 }

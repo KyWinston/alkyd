@@ -4,8 +4,8 @@ use editor::EditorPlugin;
 use materials::{
     galaxyfog::{galaxy::GalaxyFogMaterial, GalaxyFogPlugin},
     irridescant::{shader::IrridescantMaterial, IrridescantMaterialPlugin},
+    painterly::{resources::PainterlyMaterial, MaterialSwatchPlugin},
     spritely::{shader::SpritelyMaterial, SpritelyPlugin},
-    painterly::{painterly::PainterlyMaterial, MaterialSwatchPlugin}
 };
 use utilities::UtilitiesPlugin;
 
@@ -18,24 +18,22 @@ use workers::WorkersPlugin;
 pub struct Debug(pub bool);
 
 pub mod components;
+#[cfg(feature = "editor")]
+pub mod editor;
 pub mod materials;
 pub mod pattern_wfc;
 pub mod utilities;
 #[cfg(feature = "compute")]
 pub mod workers;
-#[cfg(feature = "editor")]
-pub mod editor;
 
-
-
-pub const IRRIDESCANT_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1708033355542929744);
-pub const PAINTERLY_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1708033355537029744);
+pub const IRRIDESCANT_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1208033355542926744);
+pub const PAINTERLY_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1908033355537029744);
 pub const GALAXYFOG_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1508032910437029714);
 pub const PROC_TEXTURE_HANDLE: Handle<Shader> = Handle::weak_from_u128(1708033355537473489);
 pub const PROC_TEXTURE_HANDLE_A: Handle<Shader> = Handle::weak_from_u128(1708033356723473489);
 pub const PROC_TEXTURE_HANDLE_B: Handle<Shader> = Handle::weak_from_u128(1708994455537473489);
 pub const PROC_TEXTURE_HANDLE_C: Handle<Shader> = Handle::weak_from_u128(1708033353718453747);
-pub const PROC_TEXTURE_HANDLE_D: Handle<Shader> = Handle::weak_from_u128(0333555337168973489);
+pub const PROC_TEXTURE_HANDLE_D: Handle<Shader> = Handle::weak_from_u128(4333555337168973489);
 pub const NOISE_FUNCTIONS_HANDLE: Handle<Shader> = Handle::weak_from_u128(94071345065644201137);
 pub const NOISE_GEN_UTILS_HANDLE: Handle<Shader> = Handle::weak_from_u128(94071345065837501137);
 pub const SIMPLEX_HANDLE: Handle<Shader> = Handle::weak_from_u128(34071823065847501137);
