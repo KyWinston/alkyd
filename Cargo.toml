@@ -3,6 +3,7 @@ name = "alkyd"
 version = "0.1.41"
 edition = "2021"
 license = "MIT OR Apache-2.0"
+excludes = ["**/assets", "**/bin","**/wgpu_trace"]
 description = "bevy crate for handling procedural textures and shaders"
 publish = true
 

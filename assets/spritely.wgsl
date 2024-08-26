@@ -5,14 +5,15 @@
     pbr_functions as fns
 }
 
- 
 struct Spritely {
+    sheet_dimension_x: u32,
+    sheet_dimension_y: u32,
     viewing_directions: u32,
     viewing_angle: vec3<f32>,
     player_angle: vec2<f32>,
     current_frame: u32,
-    frames: i32,
-    frames_per_second: u32,
+    frame_start: vec2<f32>,
+    animation_length: u32,
     uv_scale: u32,
 }
 
@@ -38,10 +39,11 @@ fn fragment(
     let det = dir1.x * dir2.y - dir1.y * dir2.x;
 
     let angle = degrees(atan2(dot, det));
-    var offset: f32 = (f32(step(45.0, abs(angle)) + step(90.0, abs(angle)) + step(135.0, abs(angle))));
+    var offset: f32 = material.frame_start.x + (f32(step(45.0, abs(angle)) + step(90.0, abs(angle)) + step(135.0, abs(angle))));
     var anim_idx = in.uv.x;
     let backface = abs(angle) >= -180.0 && abs(angle) < -170.0;
     let mirror = angle > 44.0 && angle < 170.0;
+
     var uv_offset: u32 = 0u;
 
     if backface {
@@ -53,10 +55,10 @@ fn fragment(
         uv_offset = u32(ceil(127.0 / f32(material.uv_scale)));
     }
 
-    let y_offset: f32 = f32(material.current_frame) / f32(material.frames);
-    anim_idx /= f32(material.viewing_directions);
+    let y_offset: f32 = (material.frame_start.y + f32(material.current_frame)) / f32(material.sheet_dimension_y);
+    anim_idx /= f32(material.sheet_dimension_x);
 
-    let frame = vec2<f32>(anim_idx + f32(offset) / f32(material.viewing_directions), in.uv.y / (-1.0 * f32(material.frames)) + y_offset);
+    let frame = vec2<f32>(anim_idx + f32(offset) / f32(material.sheet_dimension_x), in.uv.y / (-1.0 * f32(material.sheet_dimension_y)) + y_offset);
 
     let normals = textureSample(normals, s_norm, frame);
     let sprite = textureSample(sprite_sheet, s, frame);
@@ -69,6 +71,7 @@ fn fragment(
         double_sided,
         is_front,
     );
+
     #ifdef VERTEX_TANGENTS
     let TBN = fns::calculate_tbn_mikktspace(pbr_input.world_normal.rgb,
         in.world_tangent);
@@ -85,9 +88,7 @@ fn fragment(
     pbr_input.frag_coord = in.position;
     pbr_input.world_position = in.world_position;
 
-
     pbr_input.material.base_color = color_map;
-    pbr_input.material.perceptual_roughness = 0.5;
     pbr_input.is_orthographic = true;
     pbr_input.V = fns::calculate_view(in.world_position, pbr_input.is_orthographic);
 

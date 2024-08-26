@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, utils::HashMap};
 
 #[derive(Component)]
 pub struct AnimSprite {
@@ -13,24 +13,20 @@ impl Default for AnimSprite {
     }
 }
 
-#[derive(Component, Clone, Copy)]
+#[derive(Component, Clone)]
 pub struct AnimationIndices {
+    pub frame_dimensions: [u32; 2],
     pub facing_angles: usize,
     pub current_facing: Dir2,
-    pub animations: AnimationStates,
+    pub animations: HashMap<String, Animation>,
+    pub current_animation: String,
     pub current_frame: usize,
-}
-
-#[derive(Copy, Clone)]
-pub struct AnimationStates {
-    pub idle: Animation,
-    pub movement: Option<Animation>,
 }
 
 #[derive(Copy, Clone)]
 pub struct Animation {
     pub start_indices: [usize; 2],
-    pub anim_length: usize,
+    pub anim_length: u32,
 }
 
 #[derive(Component, Deref, DerefMut)]
@@ -43,12 +39,19 @@ pub struct AnimationBundle {
 }
 
 impl AnimationBundle {
-    pub fn new(facing_angles: usize, animations: AnimationStates, frame_rate: u32) -> Self {
+    pub fn new(
+        frame_dimensions: [u32; 2],
+        facing_angles: usize,
+        animations: HashMap<String, Animation>,
+        frame_rate: u32,
+    ) -> Self {
         Self {
             indices: AnimationIndices {
+                frame_dimensions,
                 facing_angles,
                 current_facing: Dir2::X,
                 animations,
+                current_animation: "idle".to_string(),
                 current_frame: 0,
             },
             timer: AnimationTimer(Timer::from_seconds(
@@ -58,4 +61,3 @@ impl AnimationBundle {
         }
     }
 }
-
