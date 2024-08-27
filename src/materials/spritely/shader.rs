@@ -21,16 +21,15 @@ pub struct SpritelyMaterial {
     pub looking_direction: Dir2,
     pub current_frame: u32,
     pub animation_indices: [u32; 4],
-    pub uv_scale: u32,
     #[texture(1)]
     #[sampler(2)]
-    pub sheet_depth_uv_mask: Option<Handle<Image>>,
+    pub sheet_mask: Option<Handle<Image>>,
     #[texture(3)]
     #[sampler(4)]
     pub color_uv: Option<Handle<Image>>,
     #[texture(5)]
     #[sampler(6)]
-    pub normals: Option<Handle<Image>>,
+    pub normal_map: Option<Handle<Image>>,
 }
 
 /// the properties necessary to make an animated sprite
@@ -43,10 +42,9 @@ impl Default for SpritelyMaterial {
             looking_direction: Dir2::X,
             current_frame: 0,
             animation_indices: [0, 0, 8, 43],
-            uv_scale: 4,
-            sheet_depth_uv_mask: None,
+            sheet_mask: None,
             color_uv: None,
-            normals: None,
+            normal_map: None,
         }
     }
 }
@@ -60,7 +58,6 @@ pub struct SpritelyUniform {
     pub looking_direction: Vec2,
     pub current_frame: u32,
     pub start_frame: Vec2,
-    pub uv_scale: u32,
 }
 
 impl Material for SpritelyMaterial {
@@ -85,7 +82,6 @@ impl AsBindGroupShaderType<SpritelyUniform> for SpritelyMaterial {
                 self.animation_indices[0] as f32,
                 self.animation_indices[1] as f32,
             ),
-            uv_scale: self.uv_scale,
         }
     }
 }

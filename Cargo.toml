@@ -10,6 +10,7 @@ publish = true
 [dependencies]
 bevy = { version = "0.14.1", default-features = false, features = [
     "bevy_render",
+    "bevy_core_pipeline",
     "bevy_pbr",
     "bevy_asset",
     "png",

@@ -16,7 +16,6 @@ struct Spritely {
     current_frame: u32,
     frame_start: vec2<f32>,
     animation_length: u32,
-    uv_scale: u32,
 }
 
 @group(2) @binding(0) var<uniform> material:Spritely;
@@ -24,8 +23,8 @@ struct Spritely {
 @group(2) @binding(2) var s: sampler;
 @group(2) @binding(3) var uv: texture_2d<f32>;
 @group(2) @binding(4) var uv_sampler: sampler;
-@group(2) @binding(5) var depth: texture_2d<f32>;
-@group(2) @binding(6) var s_depth: sampler;
+@group(2) @binding(5) var normals: texture_2d<f32>;
+@group(2) @binding(6) var s_normals: sampler;
 
 @fragment
 fn fragment(
@@ -34,7 +33,10 @@ fn fragment(
 ) -> @location(0) vec4<f32> {
     var pbr_input: PbrInput = pbr_input_new();
     let double_sided = (pbr_input.material.flags & STANDARD_MATERIAL_FLAGS_DOUBLE_SIDED_BIT) != 0u;
-    
+
+    pbr_input.frag_coord = in.position;
+    pbr_input.world_position = in.world_position;
+
     let dir1 = material.player_angle;
     let dir2 = material.viewing_angle.xz;
     let dot = dir1.x * dir2.x + dir1.y * dir2.y;
@@ -63,12 +65,16 @@ fn fragment(
 
     let sprite = textureSample(sprite_sheet, s, frame);
     let color_map = vec4(vec3(textureSample(uv, uv_sampler, sprite.rg).rgb), sprite.a);
+    pbr_input.frag_coord = in.position;
+    pbr_input.world_position = in.world_position;
 
     pbr_input.world_normal = fns::prepare_world_normal(
-        hsv2rgb(vec3<f32>(sprite.b,1.0,0.5)),
+        textureSample(normals,s_normals,frame).rgb,
         double_sided,
         is_front,
     );
+
+    pbr_input.N = pbr_input.world_normal;
 
     #ifdef VERTEX_TANGENTS
     let TBN = fns::calculate_tbn_mikktspace(pbr_input.world_normal.rgb,
@@ -83,12 +89,11 @@ fn fragment(
     );
     #endif
 
-    pbr_input.frag_coord = in.position;
-    pbr_input.world_position = in.world_position;
-
+   
+  
     pbr_input.material.base_color = color_map;
-    pbr_input.is_orthographic = true;
-    pbr_input.V = fns::calculate_view(in.world_position, pbr_input.is_orthographic);
+    pbr_input.is_orthographic = false;
+    pbr_input.V = fns::calculate_view(in.position, pbr_input.is_orthographic);
 
     return fns::apply_pbr_lighting(pbr_input);
 }
