@@ -1,16 +1,15 @@
 [package]
 name = "alkyd"
-version = "0.1.42"
+version = "0.1.41"
 edition = "2021"
 license = "MIT OR Apache-2.0"
-excludes = ["**/assets", "**/bin","**/wgpu_trace"]
+exclude = ["**/bin", "**/wgpu_trace"]
 description = "bevy crate for handling procedural textures and shaders"
 publish = true
 
 [dependencies]
 bevy = { version = "0.14.1", default-features = false, features = [
     "bevy_render",
-    "bevy_core_pipeline",
     "bevy_pbr",
     "bevy_asset",
     "png",
@@ -26,7 +25,6 @@ bevy_mod_picking = { version = "0.20.1", optional = true }
 bevy_panorbit_camera = { version = "0.19.1" }
 crevice = { version = "0.16.0", optional = true }
 sickle_ui = { version = "0.2.1", optional = true }
-
 bitflags = "2.5.0"
 
 [dev-dependencies]
@@ -44,7 +42,6 @@ cargo-husky = { version = "1", features = [
     "run-cargo-clippy",
 ] }
 
-
 [features]
 editor = [
     "dep:sickle_ui",
@@ -54,6 +51,7 @@ editor = [
     "compute",
 ]
 compute = ["dep:crevice"]
+debug = ["bevy/wgpu_trace"]
 default = []
 
 [lib]

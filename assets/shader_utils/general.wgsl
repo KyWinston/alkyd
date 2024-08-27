@@ -296,6 +296,8 @@ fn hsv2rgb(c: vec3f) -> vec3f {
     return c.z * mix(vec3f(1.0), rgb, c.y);
 }
 
+
+
 fn gradient(t: f32) -> vec3f {
     let h: f32 = 0.6666 * (1.0 - t * t);
     let s: f32 = 0.75;

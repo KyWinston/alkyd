@@ -1,4 +1,4 @@
-#import bevy_pbr::forward_io::{VertexOutput,FragmentOutput}; 
+#import bevy_pbr::forward_io::{VertexOutput,FragmentOutput};
 #import bevy::core_pipeline::fullscreen_vertex_shader::FullScreenVertexOutput;
 #import utils::{noise2,grid_texture};
 #import noise_gen::{FBN};
