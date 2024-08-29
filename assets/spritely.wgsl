@@ -1,8 +1,8 @@
 #import bevy_pbr::{
     forward_io::VertexOutput,
-    mesh_view_bindings::view,
+    mesh_view_bindings::{view,lights},
     pbr_types::{STANDARD_MATERIAL_FLAGS_DOUBLE_SIDED_BIT, PbrInput, pbr_input_new},
-    pbr_functions as fns
+    pbr_functions as fns,
 }
 
 #import utils::{hsv2rgb}
@@ -25,6 +25,10 @@ struct Spritely {
 @group(2) @binding(4) var uv_sampler: sampler;
 @group(2) @binding(5) var normals: texture_2d<f32>;
 @group(2) @binding(6) var s_normals: sampler;
+@group(2) @binding(7) var occlusion: texture_2d<f32>;
+@group(2) @binding(8) var s_occ: sampler;
+@group(2) @binding(9) var volume: texture_2d<f32>;
+@group(2) @binding(10) var s_vol: sampler;
 
 @fragment
 fn fragment(
@@ -32,10 +36,6 @@ fn fragment(
     @builtin(front_facing) is_front: bool
 ) -> @location(0) vec4<f32> {
     var pbr_input: PbrInput = pbr_input_new();
-    let double_sided = (pbr_input.material.flags & STANDARD_MATERIAL_FLAGS_DOUBLE_SIDED_BIT) != 0u;
-
-    pbr_input.frag_coord = in.position;
-    pbr_input.world_position = in.world_position;
 
     let dir1 = material.player_angle;
     let dir2 = material.viewing_angle.xz;
@@ -62,38 +62,16 @@ fn fragment(
     anim_idx /= f32(material.sheet_dimension_x);
 
     let frame = vec2<f32>(anim_idx + f32(offset) / f32(material.sheet_dimension_x), in.uv.y / (-1.0 * f32(material.sheet_dimension_y)) + y_offset);
-
     let sprite = textureSample(sprite_sheet, s, frame);
     let color_map = vec4(vec3(textureSample(uv, uv_sampler, sprite.rg).rgb), sprite.a);
-    pbr_input.frag_coord = in.position;
-    pbr_input.world_position = in.world_position;
+    let vol = textureSample(volume,s_vol,frame);
 
-    pbr_input.world_normal = fns::prepare_world_normal(
-        textureSample(normals,s_normals,frame).rgb,
-        double_sided,
-        is_front,
-    );
-
-    pbr_input.N = pbr_input.world_normal;
-
-    #ifdef VERTEX_TANGENTS
-    let TBN = fns::calculate_tbn_mikktspace(pbr_input.world_normal.rgb,
-        in.world_tangent);
-
-    pbr_input.N = fns::apply_normal_mapping(
-        pbr_input.material.flags,
-        TBN,
-        double_sided,
-        is_front,
-        pbr_input.world_normal.rgb,
-    );
-    #endif
-
-   
-  
+    pbr_input.frag_coord = (in.position - 0.5 + vol) * 2.0;
+    pbr_input.world_position = (in.world_position - 0.5 + vol) * 2.0;
     pbr_input.material.base_color = color_map;
-    pbr_input.is_orthographic = false;
-    pbr_input.V = fns::calculate_view(in.position, pbr_input.is_orthographic);
 
-    return fns::apply_pbr_lighting(pbr_input);
+    let ao =  normalize(lights.ambient_color.rgb) * textureSample(occlusion,s_occ,frame).rgb;
+    pbr_input.V = fns::calculate_view(pbr_input.frag_coord,false);
+    let diffuse = fns::apply_pbr_lighting(pbr_input);
+    return vec4<f32>(diffuse.rgb * ao, diffuse.a);
 }

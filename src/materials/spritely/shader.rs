@@ -30,6 +30,12 @@ pub struct SpritelyMaterial {
     #[texture(5)]
     #[sampler(6)]
     pub normal_map: Option<Handle<Image>>,
+    #[texture(7)]
+    #[sampler(8)]
+    pub ao_map: Option<Handle<Image>>,
+    #[texture(9)]
+    #[sampler(10)]
+    pub volume_map: Option<Handle<Image>>
 }
 
 /// the properties necessary to make an animated sprite
@@ -45,6 +51,8 @@ impl Default for SpritelyMaterial {
             sheet_mask: None,
             color_uv: None,
             normal_map: None,
+            ao_map: None,
+            volume_map: None,
         }
     }
 }
