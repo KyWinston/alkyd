@@ -64,7 +64,7 @@ fn fragment(
     let frame = vec2<f32>(anim_idx + f32(offset) / f32(material.sheet_dimension_x), in.uv.y / (-1.0 * f32(material.sheet_dimension_y)) + y_offset);
     let sprite = textureSample(sprite_sheet, s, frame);
     let color_map = vec4(vec3(textureSample(uv, uv_sampler, sprite.rg).rgb), sprite.a);
-    let vol = textureSample(volume,s_vol,frame).rbg;
+    let vol = textureSample(volume,s_vol,frame);
 
     pbr_input.frag_coord = (in.position - 0.5 + vol) * 2.0;
     pbr_input.world_position = (in.world_position - 0.5 + vol) * 2.0;
