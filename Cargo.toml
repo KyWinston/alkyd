@@ -24,8 +24,7 @@ bevy_panorbit_camera = { version = "0.19.1" }
 crevice = { version = "0.16.0", optional = true }
 sickle_ui = { version = "0.2.1", optional = true }
 bitflags = "2.5.0"
-bevy_easy_compute = { path = "../bevy_easy_compute" }
-# bevy_easy_compute = "0.14.0"
+bevy_easy_compute = "0.14.0"
 
 [dev-dependencies]
 bevy = { version = "0.14.2", default-features = false, features = [
