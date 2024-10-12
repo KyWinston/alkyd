@@ -1,9 +1,14 @@
 #define_import_path utils
 
+#import bevy_pbr::pbr_functions as fns;
 #import noise_gen::FBN;
+#import bevy_pbr::forward_io::{VertexOutput,FragmentOutput}; 
+#import bevy_pbr::pbr_types::{STANDARD_MATERIAL_FLAGS_DOUBLE_SIDED_BIT, PbrInput, pbr_input_new};
 #import bevy_pbr::prepass_utils::{prepass_depth,prepass_normal};
 #import bevy_pbr::mesh_view_bindings::{globals,view,View};
 
+
+@group(2) @binding(1) var<storage, read_write> voro_cache: array<vec4<f32>>;
 
 fn hash2(p: vec2<f32>) -> vec2<f32> {
     var p3 = fract(vec3<f32>(p.xyx) * vec3<f32>(.1031, .1030, .0973));
@@ -145,49 +150,60 @@ fn map(value: vec3f, min1: vec3f, max1: vec3f, min2: vec3f, max2: vec3f) -> f32 
     return length(min2 + (value - min1) * (max2 - min2) / (max1 - min1));
 }
 
-// fn voronoi(p: vec2<f32>, depth: f32, dist_fn: u32, exp: f32) -> vec3<f32> {
-//     var md = 10.0;
-//     var med = 10.0;
-//     var tcc: vec2<f32>;
-//     var cc: vec2<f32>;
-//     let n = floor(p);
-//     var cell_id = 0.0;
+fn voronoi(p: vec2<f32>, depth: f32, dist_fn: u32, exp: f32) -> vec3<f32> {
+    var md = 100.0;
+    var med = 100.0;
+    var tcc: vec2<f32>;
+    var cc: vec2<f32>;
+    let n = floor(p);
+    var cell_id = 0.0;
 
-//     for (var x = -1; x <= 1; x++) {
-//         for (var y = -1; y <= 1; y++) {
-//             let g = n + vec2(f32(x), f32(y));
-//             let cache = voro_cache[i32(g.x) + (i32(g.y) * 10)];
-//             let o = g + cache.xy;
-//             let r = o - p;
-//             var d: f32 = length(r);
-//             if dist_fn == 1u {
-//                 d = abs(o.x - p.x) + abs(o.y - p.y);
-//             } else if dist_fn == 2u {
-//                 d = max(abs(o.x - p.x), abs(o.y - p.y));
-//             } else if dist_fn >= 3u {
-//                 d = pow(pow(abs(o.x - p.x), exp) + pow(abs(o.y - p.y), exp), 1.0 / exp);
-//             }            if depth < 0.0015 {
-//                 let dcc = abs(cc - g);
-//                 if !(dcc.x + dcc.y < 0.05) {
-//                     let tc = (tcc + r) * 0.5;
-//                     let cd = normalize(r - tcc);
-//                     let ed = dot(tc, cd);
-//                     med = min(med, ed);
-//                 }
-//             }
-//             if d < md {
-//                 md = d;
-//                 cc = g;
-//                 tcc = r;
-//                 cell_id = cache.z;
-//                 if dist_fn == 0u && d < cache.w {
-//                     break;
-//                 }
-//             }
-//         }
-//     }
-//     return vec3<f32>(md, cell_id, med);
-// }
+    for (var x = -1; x <= 1; x++) {
+        for (var y = -1; y <= 1; y++) {
+            let g = n + vec2(f32(x), f32(y));
+            let cache = voro_cache[i32(g.x) + (i32(g.y) * 100)];
+            let o = g + cache.xy;
+            let r = o - p;
+            var d: f32 = length(r);
+            if dist_fn == 1u {
+                d = abs(o.x - p.x) + abs(o.y - p.y); 
+            } else if dist_fn == 2u {
+                d = max(abs(o.x - p.x), abs(o.y - p.y));
+            } else if dist_fn >= 3u {
+                d = pow(pow(abs(o.x - p.x), exp) + pow(abs(o.y - p.y), exp), 1.0 / exp);
+            }
+
+            if d < md {
+                md = d;
+                cc = g;
+                tcc = r;
+                cell_id = cache.z;
+                if dist_fn == 0u && d < cache.w {
+                    break;
+                }
+            }
+        }
+    }
+    for (var x2 = -1; x2 <= 1; x2++) {
+        for (var y2 = -1; y2 <= 1; y2++) {
+            let g = n + vec2(f32(x2), f32(y2));
+            let cache = voro_cache[i32(g.x) + (i32(g.y) * 100)];
+            let o = g + cache.xy;
+            let r = o - p;
+
+            if depth < 0.0015 {
+                let dcc = abs(cc - g);
+                if !(dcc.x + dcc.y < 0.05) {
+                    let tc = (tcc + r) * 0.5;
+                    let cd = normalize(r - tcc);
+                    let ed = dot(tc, cd);
+                    med = min(med, ed);
+                }
+            }
+        }
+    }
+    return vec3<f32>(md, cell_id, med);
+}
 
 fn sincosbundle(val: f32) -> f32 {
     return sin(cos(2. * val) + sin(4. * val) - cos(5. * val) + sin(3. * val)) * 0.05;
@@ -222,17 +238,17 @@ fn hash3(p: vec2f) -> vec3f {
     return fract(sin(q) * 43758.5453);
 }
 
-fn brick_texture(uv: vec2f) -> f32 {
+fn brick_texture(uv: vec2f, gap: f32, ratio: f32, mortar: f32) -> f32 {
     let coord = floor(uv);
     let gv = fract(uv);
 
-    let movingValue = -sincosbundle(coord.y) * 2.0;
+    let movingValue = -sincosbundle(coord.y) * gap;
 
-    let offset = floor(uv.y % 2.0) * 1.5;
+    let offset = floor(uv.y % ratio) * movingValue;
     let verticalEdge = abs(cos(uv.x + offset));
 
-    let vrtEdge = step(1. - 0.01, verticalEdge) == 1.;
-    let hrtEdge = gv.y > (0.9) || gv.y < (0.1);
+    let vrtEdge = step(1. - mortar, verticalEdge) == 1.;
+    let hrtEdge = gv.y > (0.9) || gv.y < (mortar);
 
     if hrtEdge || vrtEdge {
         return 0.0;
@@ -296,8 +312,6 @@ fn hsv2rgb(c: vec3f) -> vec3f {
     return c.z * mix(vec3f(1.0), rgb, c.y);
 }
 
-
-
 fn gradient(t: f32) -> vec3f {
     let h: f32 = 0.6666 * (1.0 - t * t);
     let s: f32 = 0.75;
@@ -310,4 +324,59 @@ fn rotate2D(theta: f32) -> mat2x2<f32> {
     let c = cos(theta);
     let s = sin(theta);
     return mat2x2<f32>(c, s, -s, c);
+}
+
+struct ColorStop {
+    color: vec3f,
+    position: f32
+}
+
+fn color_ramp(color_stops: array<ColorStop,3>, factor: f32) -> vec3<f32> {
+    var index = 0;
+    var current: ColorStop;
+    var next: ColorStop;
+    var stops = color_stops;
+    for (var i = 0; i < 3; i++) {
+        current = stops[i];
+        next = stops[i + 1];
+
+        if current.position <= factor && factor <= next.position {
+            index = i;
+        }
+    }
+    current = stops[index];
+    next = stops[index + 1];
+
+    let range: f32 = next.position - current.position;
+    let lerp_factor = (factor - current.position) / range;
+    return mix(current.color, next.color, lerp_factor);
+}
+
+
+fn extend_pbr(in:VertexOutput,is_front:bool) -> PbrInput {
+    var pbrInput = pbr_input_new();
+    pbrInput.frag_coord = in.position;
+    pbrInput.world_position = in.world_position;
+
+    let double_sided = (pbrInput.material.flags & STANDARD_MATERIAL_FLAGS_DOUBLE_SIDED_BIT) != 0u;
+    pbrInput.world_normal = fns::prepare_world_normal(
+        in.world_normal,
+        double_sided,
+        is_front
+    );
+    #ifdef VERTEX_TANGENTS
+    let Nt = pbrInput.world_normal.rgb;
+    let TBN = fns::calculate_tbn_mikktspace(pbrInput.world_normal.rgb,
+        in.world_tangent);
+    pbrInput.N = fns::apply_normal_mapping(
+        pbr_input.material.flags,
+        TBN,
+        double_sided,
+        is_front,
+        Nt,
+    );
+    #else
+    pbrInput.N = normalize(pbrInput.world_normal);
+    #endif
+    return pbrInput;
 }

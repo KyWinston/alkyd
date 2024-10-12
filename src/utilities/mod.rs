@@ -1,24 +1,17 @@
 use crate::{
-    GLOBAL_VALUES_HANDLE, NOISE_FUNCTIONS_HANDLE, NOISE_GEN_UTILS_HANDLE, SIMPLEX_4D_HANDLE,
-    SIMPLEX_HANDLE, SPRITELY_HANDLE, TEX_GEN_HANDLE,
+    BLEND_MODES_HANDLE, CONVERTERS_HANDLE, GLOBAL_VALUES_HANDLE, NOISE_COMPUTE_HANDLE, NOISE_FUNCTIONS_HANDLE, NOISE_GEN_UTILS_HANDLE, SIMPLEX_4D_HANDLE, SIMPLEX_HANDLE, SOBEL_HANDLE, SPRITELY_HANDLE
 };
-use bevy::{asset::load_internal_asset, prelude::*};
-// use stepper::{DebugSchedule, SteppingPlugin};
 
-#[derive(TypePath)]
-pub struct VoronoiShader;
+use bevy::{asset::load_internal_asset, prelude::*};
+
 
 #[derive(TypePath)]
 pub struct TexGenerator;
 
 #[derive(Resource)]
-pub struct VoronoiWorker;
-
-#[derive(Resource)]
 pub struct TexGenWorker;
 
 pub struct UtilitiesPlugin;
-// pub mod stepper;
 
 impl Plugin for UtilitiesPlugin {
     fn build(&self, app: &mut App) {
@@ -30,8 +23,8 @@ impl Plugin for UtilitiesPlugin {
         );
         load_internal_asset!(
             app,
-            TEX_GEN_HANDLE,
-            "../../assets/shader_utils/tex_gen.wgsl",
+            NOISE_COMPUTE_HANDLE,
+            "../../assets/shader_utils/noise/noise_compute.wgsl",
             Shader::from_wgsl
         );
         load_internal_asset!(
@@ -49,19 +42,37 @@ impl Plugin for UtilitiesPlugin {
         load_internal_asset!(
             app,
             SIMPLEX_HANDLE,
-            "../../assets/shader_utils/simplex_3d.wgsl",
+            "../../assets/shader_utils/noise/simplex_3d.wgsl",
             Shader::from_wgsl
         );
         load_internal_asset!(
             app,
             SIMPLEX_4D_HANDLE,
-            "../../assets/shader_utils/simplex_4d.wgsl",
+            "../../assets/shader_utils/noise/simplex_4d.wgsl",
             Shader::from_wgsl
         );
         load_internal_asset!(
             app,
             NOISE_GEN_UTILS_HANDLE,
-            "../../assets/shader_utils/noise_gen.wgsl",
+            "../../assets/shader_utils/noise/noise_gen.wgsl",
+            Shader::from_wgsl
+        );
+        load_internal_asset!(
+            app,
+            SOBEL_HANDLE,
+            "../../assets/shader_utils/filters/sobel.wgsl",
+            Shader::from_wgsl
+        );
+        load_internal_asset!(
+            app,
+            BLEND_MODES_HANDLE,
+            "../../assets/shader_utils/color_functions/blend_modes.wgsl",
+            Shader::from_wgsl
+        );
+        load_internal_asset!(
+            app,
+            CONVERTERS_HANDLE,
+            "../../assets/shader_utils/color_functions/convert.wgsl",
             Shader::from_wgsl
         );
     }

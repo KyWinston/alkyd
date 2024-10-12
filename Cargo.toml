@@ -9,10 +9,7 @@ publish = true
 
 [dependencies]
 bevy = { version = "0.14.2", default-features = false, features = [
-    "bevy_render",
-    "bevy_core_pipeline",
     "bevy_pbr",
-    "bevy_asset",
     "png",
 ] }
 rand = { version = "0.8", optional = true }
@@ -27,16 +24,18 @@ bevy_panorbit_camera = { version = "0.19.1" }
 crevice = { version = "0.16.0", optional = true }
 sickle_ui = { version = "0.2.1", optional = true }
 bitflags = "2.5.0"
+bevy_easy_compute = { path = "../bevy_easy_compute" }
+# bevy_easy_compute = "0.14.0"
 
 [dev-dependencies]
 bevy = { version = "0.14.2", default-features = false, features = [
-    "bevy_render",
-    "bevy_core_pipeline",
     "bevy_pbr",
-    "bevy_asset",
-    "wgpu_trace",
+    "bevy_render",
+    "bevy_winit",
+    "trace",
     "png",
 ] }
+
 cargo-husky = { version = "1", features = [
     "precommit-hook",
     "run-cargo-test",
@@ -55,6 +54,10 @@ compute = ["dep:crevice"]
 debug = ["bevy/wgpu_trace"]
 default = []
 
+[target.'cfg(target_os = "linux")'.dev-dependencies.bevy]
+features = ["x11", "wayland"]
+version = "0.14.2"
+
 [lib]
 name = "alkyd"
 path = "src/lib.rs"
@@ -62,7 +65,29 @@ path = "src/lib.rs"
 # Enable a small amount of optimization in debug mode
 [profile.dev]
 opt-level = 1
+debug=1
 
 # Enable high optimizations for dependencies (incl. Bevy), but not for our code:
 [profile.dev.package."*"]
 opt-level = 3
+
+[profile.release]
+opt-level = 3
+debug = 0
+strip = true
+lto = "thin"
+codegen-units = 10
+
+# for Linux
+[target.x86_64-unknown-linux-gnu]
+linker = "clang"
+rustflags = ["-C", "link-arg=-fuse-ld=/usr/bin/mold"]
+
+
+[[example]]
+name = "cube"
+doc-scrape-examples = true
+
+[[example]]
+name = "stone"
+doc-scrape-examples = true

@@ -18,3 +18,11 @@ const SQRT_OF_3:f32 =   1.73205080756;
 
 // The golden ratio
 const PHI:f32 =         1.61803398874;
+
+struct NoiseProperties {
+    octaves: i32,
+    lacunarity: f32,
+    gain: f32,
+    amplitude: f32,
+    frequency: f32
+}
