@@ -1,7 +1,7 @@
 use alkyd::components::Showcase;
 use alkyd::workers::resources::NoiseComputeWorker;
 use alkyd::AlkydPlugin;
-use bevy::color::palettes::css::{BLACK, ORANGE_RED, SEA_GREEN, WHITE, YELLOW};
+use bevy::color::palettes::css::{BLACK, WHITE};
 use bevy::render::render_asset::RenderAssets;
 use bevy::render::render_resource::AsBindGroupShaderType;
 use bevy::render::texture::GpuImage;
