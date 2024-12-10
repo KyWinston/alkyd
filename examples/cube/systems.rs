@@ -3,29 +3,21 @@ use bevy::{color::palettes::css::WHITE, prelude::*};
 
 pub fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<Time>) {
     if let Ok(mut mesh) = mesh_q.get_single_mut() {
-        mesh.rotate_y(1.0 * time.delta_seconds());
+        mesh.rotate_y(1.0 * time.delta_secs());
     }
 }
 
 pub fn init_scene(mut commands: Commands) {
-    commands.spawn(DirectionalLightBundle {
-        directional_light: DirectionalLight::default(),
-        transform: Transform::from_xyz(-4.0, 5.0, 2.0).looking_at(Vec3::ZERO, Vec3::Y),
-        ..default()
-    });
-    commands.spawn(PointLightBundle {
-        transform: Transform::from_xyz(1.0, 3.0, -2.0),
-        ..default()
-    });
-    commands.spawn(PointLightBundle {
-        transform: Transform::from_xyz(-4.0, 0.5, -2.0),
-        ..default()
-    });
-
-    commands.spawn((Camera3dBundle {
-        transform: Transform::from_xyz(0.0, 5.0, 15.0).looking_at(Vec3::ZERO, Vec3::Y),
-        ..default()
-    },));
+    commands.spawn((
+        DirectionalLight::default(),
+        Transform::from_xyz(-4.0, 5.0, 2.0).looking_at(Vec3::ZERO, Vec3::Y),
+    ));
+    commands.spawn((PointLight::default(), Transform::from_xyz(1.0, 3.0, -2.0)));
+    commands.spawn((PointLight::default(), Transform::from_xyz(-4.0, 0.5, -2.0)));
+    commands.spawn((
+        Camera3d::default(),
+        Transform::from_xyz(0.0, 5.0, 15.0).looking_at(Vec3::ZERO, Vec3::Y),
+    ));
 }
 
 pub fn create_cube(
@@ -40,12 +32,5 @@ pub fn create_cube(
     });
 
     let mesh = meshes.add(Cuboid::from_size(Vec3::splat(4.0)));
-    commands.spawn((
-        MaterialMeshBundle {
-            mesh,
-            material,
-            ..default()
-        },
-        Showcase,
-    ));
+    commands.spawn((Mesh3d(mesh), MeshMaterial3d(material), Showcase));
 }

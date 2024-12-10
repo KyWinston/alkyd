@@ -11,10 +11,7 @@ use alkyd::{
 };
 
 use bevy::{
-    color::palettes::css::PURPLE,
-    core_pipeline::prepass::{DepthPrepass, NormalPrepass},
-    prelude::*,
-    render::texture::{ImageAddressMode, ImageSamplerDescriptor},
+    color::palettes::css::PURPLE, core_pipeline::prepass::{DepthPrepass, NormalPrepass}, image::{ImageAddressMode, ImageSamplerDescriptor}, prelude::*
 };
 
 fn main() {
@@ -50,29 +47,25 @@ fn main() {
 #[allow(dead_code)]
 fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<Time>) {
     if let Ok(mut mesh) = mesh_q.get_single_mut() {
-        mesh.rotate_y(1.0 * time.delta_seconds());
+        mesh.rotate_y(1.0 * time.delta_secs());
     }
 }
 
 fn init_camera(mut commands: Commands) {
-    commands.spawn((Camera3dBundle::default(), DepthPrepass, NormalPrepass));
+    commands.spawn((Camera3d::default(), DepthPrepass, NormalPrepass));
 }
 
 fn init_scene(mut commands: Commands) {
-    commands.spawn(DirectionalLightBundle {
-        directional_light: DirectionalLight::default(),
-        transform: Transform::from_xyz(-4.0, 5.0, 2.0).looking_at(Vec3::ZERO, Vec3::Y),
-        ..default()
-    });
+    commands.spawn((
+        DirectionalLight::default(),
+        Transform::from_xyz(-4.0, 5.0, 2.0).looking_at(Vec3::ZERO, Vec3::Y),
+    ));
     [
         Transform::from_xyz(1.0, 3.0, -2.0),
         Transform::from_xyz(-4.0, 0.5, -2.0),
     ]
     .map(|transform| {
-        commands.spawn(PointLightBundle {
-            transform,
-            ..default()
-        });
+        commands.spawn((PointLight::default(), transform));
     });
 }
 
@@ -95,11 +88,6 @@ pub fn create_cube(
         },
         ..default()
     });
-
     let mesh = meshes.add(Cuboid::from_size(Vec3::splat(6.0)));
-    commands.spawn((MaterialMeshBundle {
-        mesh,
-        material,
-        ..default()
-    },));
+    commands.spawn((Mesh3d(mesh), MeshMaterial3d(material)));
 }

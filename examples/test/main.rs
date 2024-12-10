@@ -1,16 +1,16 @@
 use alkyd::components::Showcase;
 use alkyd::workers::resources::NoiseComputeWorker;
 use alkyd::AlkydPlugin;
+use bevy::asset::RenderAssetUsages;
 use bevy::color::palettes::css::{BLACK, WHITE};
+use bevy::image::{ImageAddressMode, ImageSamplerDescriptor};
 use bevy::render::render_asset::RenderAssets;
 use bevy::render::render_resource::AsBindGroupShaderType;
+use bevy::render::storage::ShaderStorageBuffer;
 use bevy::render::texture::GpuImage;
 use bevy::{
     prelude::*,
-    render::{
-        render_resource::{AsBindGroup, ShaderRef, ShaderType},
-        texture::{ImageAddressMode, ImageSamplerDescriptor},
-    },
+    render::render_resource::{AsBindGroup, ShaderRef, ShaderType},
 };
 use bevy_easy_compute::prelude::AppComputeWorker;
 
@@ -19,13 +19,12 @@ use bevy_easy_compute::prelude::AppComputeWorker;
 pub struct RampMaterial {
     stops: [ColorStop; 3],
     #[storage(1)]
-    cache: [Vec4; 100],
+    cache: Handle<ShaderStorageBuffer>,
 }
 
 #[derive(Clone, ShaderType)]
 pub struct RampUniform {
     stops: [ColorStop; 3],
-    cache: [Vec4; 100],
 }
 
 #[derive(Asset, TypePath, AsBindGroup, Clone, ShaderType)]
@@ -35,7 +34,7 @@ struct ColorStop {
 }
 
 #[derive(Resource, Debug)]
-pub struct VoronoiImage(pub [Vec4; 100]);
+pub struct VoronoiImage(pub Handle<ShaderStorageBuffer>);
 
 impl Material for RampMaterial {
     fn fragment_shader() -> ShaderRef {
@@ -47,7 +46,6 @@ impl AsBindGroupShaderType<RampUniform> for RampMaterial {
     fn as_bind_group_shader_type(&self, _: &RenderAssets<GpuImage>) -> RampUniform {
         RampUniform {
             stops: self.stops.clone(),
-            cache: self.cache,
         }
     }
 }
@@ -77,38 +75,36 @@ fn main() {
             rotate_mesh,
         ),
     )
-    .insert_resource::<VoronoiImage>(VoronoiImage([Vec4::ZERO; 100]))
     .run();
 }
 #[allow(dead_code)]
 fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<Time>) {
     if let Ok(mut mesh) = mesh_q.get_single_mut() {
-        mesh.rotate_y(1.0 * time.delta_seconds());
+        mesh.rotate_y(1.0 * time.delta_secs());
     }
 }
 
-fn init_camera(mut commands: Commands) {
-    commands.spawn(Camera3dBundle {
-        transform: Transform::from_xyz(0.0, 5.0, 15.0).looking_at(Vec3::ZERO, Vec3::Y),
-        ..default()
-    });
+fn init_camera(mut commands: Commands, mut storage: ResMut<Assets<ShaderStorageBuffer>>) {
+    commands.insert_resource::<VoronoiImage>(VoronoiImage(
+        storage.add(ShaderStorageBuffer::from(&[Vec4::ZERO; 1000])),
+    ));
+    commands.spawn((
+        Camera3d::default(),
+        Transform::from_xyz(0.0, 5.0, 15.0).looking_at(Vec3::ZERO, Vec3::Y),
+    ));
 }
 
 fn init_scene(mut commands: Commands) {
-    commands.spawn(DirectionalLightBundle {
-        directional_light: DirectionalLight::default(),
-        transform: Transform::from_xyz(-4.0, 5.0, 2.0).looking_at(Vec3::ZERO, Vec3::Y),
-        ..default()
-    });
+    commands.spawn((
+        DirectionalLight::default(),
+        Transform::from_xyz(-4.0, 5.0, 2.0).looking_at(Vec3::ZERO, Vec3::Y),
+    ));
     [
         Transform::from_xyz(1.0, 3.0, -2.0),
         Transform::from_xyz(-4.0, 0.5, -2.0),
     ]
     .map(|transform| {
-        commands.spawn(PointLightBundle {
-            transform,
-            ..default()
-        });
+        commands.spawn((PointLight::default(), transform));
     });
 }
 
@@ -133,43 +129,42 @@ pub fn create_cube(
                 position: 1.0,
             },
         ],
-        cache: voronoi.0,
+        cache: voronoi.0.clone(),
     });
 
     let mesh = meshes.add(Cuboid::from_size(Vec3::splat(6.0)));
-    commands.spawn((
-        MaterialMeshBundle {
-            mesh,
-            material,
-            ..default()
-        },
-        Showcase,
-    ));
+    commands.spawn((Mesh3d(mesh), MeshMaterial3d(material), Showcase));
 }
 
 fn update_voronoi(
     mut voronoi: ResMut<VoronoiImage>,
     compute_worker: ResMut<AppComputeWorker<NoiseComputeWorker>>,
+    mut storage: ResMut<Assets<ShaderStorageBuffer>>,
     mut materials: ResMut<Assets<RampMaterial>>,
-    cube_q: Query<&Handle<RampMaterial>>,
+    cube_q: Query<&MeshMaterial3d<RampMaterial>>,
 ) {
     if !compute_worker.ready() {
         return;
     }
 
-    if let Ok(result) = compute_worker.read_vec("centroids").as_slice().try_into() {
-        let mut new_vec: [Vec4; 100] = result;
+    if let Ok(result) = compute_worker.try_read::<[Vec4; 1000]>("centroids") {
+        let mut new_vec: ShaderStorageBuffer =
+            ShaderStorageBuffer::new(&[0; 1000], RenderAssetUsages::MAIN_WORLD);
+        let mut v_data = [Vec4::ZERO; 1000];
+        // new_vec.set_data(result.to_vec());
         for v_ix in 0..9 {
             for v_iy in 0..9 {
-                new_vec[v_ix as usize + v_iy as usize * 10] =
+                v_data[v_ix as usize + v_iy as usize * 100] =
                     smallest_dist(&mut result.to_vec(), v_ix, v_iy);
             }
         }
-        voronoi.0 = new_vec;
+        new_vec.set_data(result);
+        voronoi.0 = storage.add(new_vec);
     }
+
     if let Ok(cube) = cube_q.get_single() {
         if let Some(cube_res) = materials.get_mut(cube.id()) {
-            cube_res.cache = voronoi.0;
+            cube_res.cache = voronoi.0.clone();
         }
     }
 }

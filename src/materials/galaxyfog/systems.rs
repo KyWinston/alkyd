@@ -3,7 +3,7 @@ use bevy::prelude::*;
 
 pub fn update_material(
     mut fog: ResMut<Assets<GalaxyFogMaterial>>,
-    alkyd_q: Query<(Entity, &Handle<GalaxyFogMaterial>)>,
+    alkyd_q: Query<(Entity, &MeshMaterial3d<GalaxyFogMaterial>)>,
     input: Res<ButtonInput<KeyCode>>,
 ) {
     if let Ok((_, alk_handle)) = alkyd_q.get_single() {

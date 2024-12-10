@@ -23,7 +23,7 @@ impl ComputeWorker for NoiseComputeWorker {
     fn build(world: &mut World) -> AppComputeWorker<Self> {
         let worker = AppComputeWorkerBuilder::new(world)
             .add_staging("centroids", &[Vec4::ZERO; 1000])
-            .add_pass::<NoiseCompute>([100, 100, 1], &[ "centroids"])
+            .add_pass::<NoiseCompute>([100, 100, 1], &["centroids"])
             .one_shot()
             .build();
         worker

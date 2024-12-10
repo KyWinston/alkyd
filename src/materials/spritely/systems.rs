@@ -9,7 +9,7 @@ pub fn animate(
     mut anim_q: Query<(
         &mut AnimationTimer,
         &AnimationIndices,
-        &mut Handle<SpritelyMaterial>,
+        &mut MeshMaterial3d<SpritelyMaterial>,
     )>,
     mut materials: ResMut<Assets<SpritelyMaterial>>,
     time: Res<Time>,

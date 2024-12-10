@@ -2,11 +2,7 @@
 use alkyd::{workers::resources::Canvas, AlkydPlugin};
 
 use bevy::{
-    color::palettes::css::GRAY,
-    diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
-    log::{Level, LogPlugin},
-    prelude::*,
-    render::texture::{ImageAddressMode, ImageSamplerDescriptor},
+    color::palettes::css::GRAY, diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin}, image::{ImageAddressMode, ImageSamplerDescriptor}, log::{Level, LogPlugin}, prelude::*
 };
 #[cfg(feature = "compute")]
 use systems::{create_cube, init_scene, rotate_mesh};

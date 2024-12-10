@@ -1,6 +1,6 @@
 use bevy::prelude::*;
-use bevy_easy_compute::prelude::{AppComputeWorker, AppComputeWorkerPlugin};
 use resources::NoiseComputeWorker;
+use bevy_easy_compute::prelude::{AppComputeWorker, AppComputeWorkerPlugin};
 
 pub mod resources;
 pub mod systems;

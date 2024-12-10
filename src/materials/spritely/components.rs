@@ -32,13 +32,13 @@ pub struct Animation {
 #[derive(Component, Deref, DerefMut)]
 pub struct AnimationTimer(pub Timer);
 
-#[derive(Bundle)]
-pub struct AnimationBundle {
-    indices: AnimationIndices,
-    timer: AnimationTimer,
+#[derive(Component)]
+pub struct AnimationData {
+    pub indices: AnimationIndices,
+    pub timer: AnimationTimer,
 }
 
-impl AnimationBundle {
+impl AnimationData {
     pub fn new(
         frame_dimensions: [u32; 2],
         facing_angles: usize,

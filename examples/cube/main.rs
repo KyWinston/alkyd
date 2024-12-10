@@ -1,10 +1,7 @@
 use alkyd::AlkydPlugin;
 
 use bevy::{
-    color::palettes::css::GRAY,
-    diagnostic::FrameTimeDiagnosticsPlugin,
-    prelude::*,
-    render::texture::{ImageAddressMode, ImageSamplerDescriptor},
+    color::palettes::css::GRAY, diagnostic::FrameTimeDiagnosticsPlugin, image::{ImageAddressMode, ImageSamplerDescriptor}, prelude::*
 };
 
 use systems::{create_cube, init_scene, rotate_mesh};

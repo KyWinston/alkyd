@@ -45,8 +45,6 @@ pub const SOBEL_HANDLE: Handle<Shader> = Handle::weak_from_u128(1748343643674965
 pub const BLEND_MODES_HANDLE: Handle<Shader> = Handle::weak_from_u128(184229632462351882081599150);
 pub const CONVERTERS_HANDLE: Handle<Shader> = Handle::weak_from_u128(522521912971636216150179);
 
-
-
 pub struct AlkydPlugin {
     pub debug: bool,
 }
@@ -62,12 +60,10 @@ impl Plugin for AlkydPlugin {
                 SpritelyPlugin,
                 MaterialPlugin::<PainterlyMaterial>::default(),
                 MaterialPlugin::<SpritelyMaterial>::default(),
-                MaterialPlugin::<ExtendedMaterial<StandardMaterial, IrridescantMaterial>>::default(
-                ),
+                MaterialPlugin::<ExtendedMaterial<StandardMaterial, IrridescantMaterial>>::default(),
                 AppComputePlugin,
                 MaterialPlugin::<GalaxyFogMaterial>::default(),
                 WorkersPlugin,
-                // MaterialPlugin::<PatternGenFunc>::default(),
                 #[cfg(feature = "editor")]
                 EditorPlugin,
             ));

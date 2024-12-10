@@ -1,11 +1,5 @@
 use alkyd::{pattern_wfc::shader::PatternGenFunc, AlkydPlugin};
-use bevy::{
-    prelude::*,
-    render::{
-        extract_component::ExtractComponentPlugin,
-        texture::{ImageAddressMode, ImageSamplerDescriptor},
-    },
-};
+use bevy::{image::{ImageAddressMode, ImageSamplerDescriptor}, prelude::*, render::extract_component::ExtractComponentPlugin};
 
 fn main() {
     let mut app = App::new();
@@ -26,8 +20,8 @@ fn main() {
 }
 
 fn init_camera(mut commands: Commands) {
-    commands.spawn(Camera3dBundle {
-        transform: Transform::from_xyz(0.0, 0.0, 0.0).looking_at(Vec3::ZERO, Vec3::Y),
-        ..default()
-    });
+    commands.spawn((
+        Camera3d::default(),
+        Transform::from_xyz(0.0, 0.0, 0.0).looking_at(Vec3::ZERO, Vec3::Y),
+    ));
 }
