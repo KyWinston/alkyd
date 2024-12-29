@@ -12,7 +12,6 @@ bevy = { version = "0.15.0", default-features = false, features = [
     "bevy_pbr",
     "png",
 ] }
-wgpu = { version = "*", features = ["trace"]}
 rand = { version = "0.8", optional = true }
 rand_pcg = { version = "0.3", optional = true }
 serde = { version = "1.0", features = ["derive"] }
@@ -20,13 +19,11 @@ anyhow = { version = "1.0", optional = true }
 ron = { version = "0.7", optional = true }
 bytemuck = { version = "1.2.0-alpha.1", optional = true }
 cfg-if = "1.0.0"
-bevy_mod_picking = { version = "0.20.1", optional = true }
 bevy_panorbit_camera = { version = "0.19.1" }
 crevice = { version = "0.16.0", optional = true }
 sickle_ui = { version = "0.2.1", optional = true }
 bitflags = "2.5.0"
 bevy_easy_compute = "0.15.0"
-nannou_wgpu = "0.19.0"
 
 [dev-dependencies]
 bevy = { version = "0.15.0", default-features = false, features = [
