@@ -1,7 +1,7 @@
 use bevy::{pbr::ExtendedMaterial, prelude::*};
 use bevy_easy_compute::prelude::AppComputePlugin;
-#[cfg(feature = "editor")]
-use editor::EditorPlugin;
+// #[cfg(feature = "editor")]
+// use editor::EditorPlugin;
 use materials::{
     galaxyfog::{galaxy::GalaxyFogMaterial, GalaxyFogPlugin},
     irridescant::{shader::IrridescantMaterial, IrridescantMaterialPlugin},
@@ -15,8 +15,8 @@ use workers::WorkersPlugin;
 pub struct Debug(pub bool);
 
 pub mod components;
-#[cfg(feature = "editor")]
-pub mod editor;
+// #[cfg(feature = "editor")]
+// pub mod editor;
 pub mod materials;
 pub mod pattern_wfc;
 pub mod utilities;
@@ -64,8 +64,8 @@ impl Plugin for AlkydPlugin {
                 AppComputePlugin,
                 MaterialPlugin::<GalaxyFogMaterial>::default(),
                 WorkersPlugin,
-                #[cfg(feature = "editor")]
-                EditorPlugin,
+                // #[cfg(feature = "editor")]
+                // EditorPlugin,
             ));
     }
 }
