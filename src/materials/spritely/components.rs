@@ -33,10 +33,7 @@ pub struct Animation {
 pub struct AnimationTimer(pub Timer);
 
 #[derive(Component)]
-pub struct AnimationData {
-    pub indices: AnimationIndices,
-    pub timer: AnimationTimer,
-}
+pub struct AnimationData;
 
 impl AnimationData {
     pub fn new(
@@ -44,9 +41,9 @@ impl AnimationData {
         facing_angles: usize,
         animations: HashMap<String, Animation>,
         frame_rate: u32,
-    ) -> Self {
-        Self {
-            indices: AnimationIndices {
+    ) -> (Self,AnimationIndices,AnimationTimer) {
+        (Self,
+            AnimationIndices {
                 frame_dimensions,
                 facing_angles,
                 current_facing: Dir2::X,
@@ -54,10 +51,10 @@ impl AnimationData {
                 current_animation: "idle".to_string(),
                 current_frame: 0,
             },
-            timer: AnimationTimer(Timer::from_seconds(
+            AnimationTimer(Timer::from_seconds(
                 1.0 / frame_rate as f32,
                 TimerMode::Repeating,
-            )),
-        }
+            ))
+        )
     }
 }
