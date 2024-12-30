@@ -25,7 +25,7 @@ pub fn animate(
                 dimensions[0],
                 dimensions[1],
             ];
-            mat.looking_direction = Dir2::new_unchecked(anim.current_facing.xy());
+            mat.looking_direction = Dir2::new_unchecked(anim.current_facing.normalize().xy());
             if timer.just_finished() {
                 mat.current_frame += 1;
                 if mat.current_frame >= anim.animations[&anim.current_animation].anim_length {
