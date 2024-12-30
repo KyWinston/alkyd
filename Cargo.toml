@@ -84,3 +84,8 @@ doc-scrape-examples = true
 [[example]]
 name = "stone"
 doc-scrape-examples = true
+
+
+[[example]]
+name = "sprite"
+doc-scrape-examples = true
