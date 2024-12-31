@@ -115,7 +115,7 @@ fn raymarch_hit(position: vec4<f32>, center: vec3<f32>, radius: f32, fog_color: 
     let tolerance = 1.0 / pow(10.0, f32(steps) / prec);
     var norm: vec3f;
     for (var x = 0; x < i32(steps); x++) {
-        let noise_offset = FBN(vec4f(vec3<f32>((ro)), globals.time / 4.0));
+        let noise_offset = FBN(vec4f(vec3<f32>((ro)), globals.time));
         dst = sphere_hit(ro + noise_offset, vec3<f32>(0.0), radius);
         ro += rd * dst;
         norm = get_ray_normal(ro);
@@ -166,7 +166,7 @@ fn voronoi(p: vec2<f32>, depth: f32, dist_fn: u32, exp: f32) -> vec3<f32> {
             let r = o - p;
             var d: f32 = length(r);
             if dist_fn == 1u {
-                d = abs(o.x - p.x) + abs(o.y - p.y); 
+                d = abs(o.x - p.x) + abs(o.y - p.y);
             } else if dist_fn == 2u {
                 d = max(abs(o.x - p.x), abs(o.y - p.y));
             } else if dist_fn >= 3u {
@@ -353,7 +353,7 @@ fn color_ramp(color_stops: array<ColorStop,3>, factor: f32) -> vec3<f32> {
 }
 
 
-fn extend_pbr(in:VertexOutput,is_front:bool) -> PbrInput {
+fn extend_pbr(in: VertexOutput, is_front: bool) -> PbrInput {
     var pbrInput = pbr_input_new();
     pbrInput.frag_coord = in.position;
     pbrInput.world_position = in.world_position;

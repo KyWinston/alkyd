@@ -1,7 +1,3 @@
-use alkyd::{
-    components::Showcase,
-    materials::galaxyfog::galaxy::{GalaxyFogMaterial, NoiseProperties},
-};
 #[cfg(feature = "compute")]
 use alkyd::{
     components::Showcase,
@@ -9,9 +5,18 @@ use alkyd::{
     workers::resources::NoiseImage,
     AlkydPlugin,
 };
+use alkyd::{
+    components::Showcase,
+    materials::galaxyfog::galaxy::{GalaxyFogMaterial, NoiseProperties},
+    AlkydPlugin,
+};
 
 use bevy::{
-    color::palettes::css::PURPLE, core_pipeline::prepass::{DepthPrepass, NormalPrepass}, image::{ImageAddressMode, ImageSamplerDescriptor}, prelude::*
+    color::palettes::css::PURPLE,
+    core_pipeline::prepass::{DepthPrepass, NormalPrepass},
+    image::{ImageAddressMode, ImageSamplerDescriptor},
+    math::VectorSpace,
+    prelude::*,
 };
 
 fn main() {
@@ -30,19 +35,14 @@ fn main() {
                     watch_for_changes_override: Some(true),
                     ..default()
                 }),
-            #[cfg(feature = "compute")]
             AlkydPlugin { debug: true },
         ))
-        .add_systems(Startup, (init_camera.before(init_scene), init_scene));
-    #[cfg(feature = "compute")]
-    app.add_systems(
-        Update,
-        (
-            rotate_mesh,
-            create_cube.run_if(resource_added::<NoiseImage>),
-        ),
-    )
-    .run();
+        .add_systems(
+            Startup,
+            (init_camera.before(init_scene), init_scene, create_cube),
+        )
+        .add_systems(Update, rotate_mesh)
+        .run();
 }
 #[allow(dead_code)]
 fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<Time>) {
@@ -52,7 +52,12 @@ fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<Time
 }
 
 fn init_camera(mut commands: Commands) {
-    commands.spawn((Camera3d::default(), DepthPrepass, NormalPrepass));
+    commands.spawn((
+        Transform::from_translation(Vec3::new(4.0, 2.0, 5.0)).looking_at(Vec3::ZERO, Vec3::Y),
+        Camera3d::default(),
+        DepthPrepass,
+        NormalPrepass,
+    ));
 }
 
 fn init_scene(mut commands: Commands) {
@@ -76,18 +81,18 @@ pub fn create_cube(
 ) {
     let material = materials.add(GalaxyFogMaterial {
         diffuse_color: Color::srgb_from_array(PURPLE.to_f32_array_no_alpha()),
-        radius: 2.0,
+        radius: 1.0,
         center: Vec3::ZERO,
-        steps: 50,
+        steps: 25,
         props: NoiseProperties {
-            octaves: 1,
-            lacunarity: 2.0,
+            octaves: 2,
+            lacunarity: 1.5,
             frequency: 1.0,
-            gain: 0.5,
+            gain: 0.2,
             amplitude: 1.0,
         },
         ..default()
     });
     let mesh = meshes.add(Cuboid::from_size(Vec3::splat(6.0)));
-    commands.spawn((Mesh3d(mesh), MeshMaterial3d(material)));
+    commands.spawn((Mesh3d(mesh), MeshMaterial3d(material), Showcase));
 }
