@@ -13,7 +13,7 @@ impl Plugin for GalaxyFogPlugin {
         load_internal_asset!(
             app,
             GALAXYFOG_SHADER_HANDLE,
-            "../../../assets/galaxyfog.wgsl",
+            "../../../assets/example_assets/galaxyfog.wgsl",
             Shader::from_wgsl
         );
         if app.world().resource::<Debug>().0 {

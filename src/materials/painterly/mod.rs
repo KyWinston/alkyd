@@ -9,7 +9,7 @@ impl Plugin for MaterialSwatchPlugin {
         load_internal_asset!(
             app,
             PAINTERLY_SHADER_HANDLE,
-            "../../../assets/painterly_material.wgsl",
+            "../../../assets/example_assets/painterly_material.wgsl",
             Shader::from_wgsl
         );
     }

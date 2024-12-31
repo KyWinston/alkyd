@@ -11,7 +11,7 @@ impl Plugin for IrridescantMaterialPlugin {
         load_internal_asset!(
             app,
             IRRIDESCANT_SHADER_HANDLE,
-            "../../../assets/irridescant.wgsl",
+            "../../../assets/example_assets/irridescant.wgsl",
             Shader::from_wgsl
         );
     }
