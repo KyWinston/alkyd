@@ -25,7 +25,7 @@ impl Plugin for UtilitiesPlugin {
         load_internal_asset!(
             app,
             SPRITELY_HANDLE,
-            "../../assets/example_assets/spritely.wgsl",
+            "../../assets/spritely.wgsl",
             Shader::from_wgsl
         );
         load_internal_asset!(
