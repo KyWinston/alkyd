@@ -16,7 +16,6 @@ pub mod workers;
 
 pub const IRRIDESCANT_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1208033355542926744);
 pub const PAINTERLY_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1908033355537029744);
-pub const GALAXYFOG_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1508032910437029714);
 pub const PROC_TEXTURE_HANDLE: Handle<Shader> = Handle::weak_from_u128(1708033355537473489);
 pub const PROC_TEXTURE_HANDLE_A: Handle<Shader> = Handle::weak_from_u128(1708033356723473489);
 pub const PROC_TEXTURE_HANDLE_B: Handle<Shader> = Handle::weak_from_u128(1708994455537473489);

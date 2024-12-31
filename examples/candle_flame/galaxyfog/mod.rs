@@ -1,6 +1,6 @@
 use bevy::{asset::load_internal_asset, prelude::*};
 
-use crate::GALAXYFOG_SHADER_HANDLE;
+pub const GALAXYFOG_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1508032910437029714);
 
 pub mod galaxy;
 pub mod systems;
@@ -11,7 +11,7 @@ impl Plugin for GalaxyFogPlugin {
         load_internal_asset!(
             app,
             GALAXYFOG_SHADER_HANDLE,
-            "../../../../assets/example_assets/galaxyfog.wgsl",
+            "../../../assets/example_assets/galaxyfog.wgsl",
             Shader::from_wgsl
         );
     }

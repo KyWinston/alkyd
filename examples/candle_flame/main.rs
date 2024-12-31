@@ -1,6 +1,4 @@
-use alkyd::{
-    components::Showcase, materials::example_mats::galaxyfog::{galaxy::{GalaxyFogMaterial, NoiseProperties}, GalaxyFogPlugin}, AlkydPlugin,
-};
+use alkyd::{components::Showcase, AlkydPlugin};
 
 use bevy::{
     color::palettes::css::ORANGE,
@@ -8,6 +6,9 @@ use bevy::{
     image::{ImageAddressMode, ImageSamplerDescriptor},
     prelude::*,
 };
+use galaxyfog::{galaxy::{GalaxyFogMaterial, NoiseProperties}, GalaxyFogPlugin};
+
+pub mod galaxyfog;
 
 fn main() {
     App::new()

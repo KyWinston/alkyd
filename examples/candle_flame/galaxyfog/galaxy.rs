@@ -8,7 +8,7 @@ use bevy::{
     },
 };
 
-use crate::GALAXYFOG_SHADER_HANDLE;
+use super::GALAXYFOG_SHADER_HANDLE;
 
 #[derive(Asset, TypePath, AsBindGroup, Clone)]
 #[uniform(0, GalaxyUniform)]
@@ -41,7 +41,7 @@ pub struct GalaxyUniform {
     pub center: Vec3,
     pub radius: f32,
     pub steps: u32,
-    pub precision:f32
+    pub precision: f32,
 }
 
 #[derive(Clone, ShaderType)]
@@ -93,7 +93,7 @@ impl AsBindGroupShaderType<GalaxyUniform> for GalaxyFogMaterial {
             center: self.center,
             radius: self.radius,
             steps: self.steps,
-            precision:self.precision
+            precision: self.precision,
         }
     }
 }
