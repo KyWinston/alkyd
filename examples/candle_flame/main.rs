@@ -12,10 +12,9 @@ use alkyd::{
 };
 
 use bevy::{
-    color::palettes::css::PURPLE,
+    color::palettes::css::ORANGE,
     core_pipeline::prepass::{DepthPrepass, NormalPrepass},
     image::{ImageAddressMode, ImageSamplerDescriptor},
-    math::VectorSpace,
     prelude::*,
 };
 
@@ -53,7 +52,7 @@ fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<Time
 
 fn init_camera(mut commands: Commands) {
     commands.spawn((
-        Transform::from_translation(Vec3::new(4.0, 2.0, 5.0)).looking_at(Vec3::ZERO, Vec3::Y),
+        Transform::from_translation(Vec3::new(5.0, 3.5, 6.0)).looking_at(Vec3::ZERO, Vec3::Y),
         Camera3d::default(),
         DepthPrepass,
         NormalPrepass,
@@ -80,13 +79,13 @@ pub fn create_cube(
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
     let material = materials.add(GalaxyFogMaterial {
-        diffuse_color: Color::srgb_from_array(PURPLE.to_f32_array_no_alpha()),
-        radius: 1.0,
+        diffuse_color: Color::srgb_from_array(ORANGE.to_f32_array_no_alpha()),
+        radius: 0.7,
         center: Vec3::ZERO,
-        steps: 25,
+        steps: 100,
         props: NoiseProperties {
             octaves: 2,
-            lacunarity: 1.5,
+            lacunarity: 2.0,
             frequency: 1.0,
             gain: 0.2,
             amplitude: 1.0,

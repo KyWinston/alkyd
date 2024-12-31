@@ -108,31 +108,44 @@ fn cut_sphere_hit(p: vec3<f32>, c: vec3<f32>, r: f32) -> f32 {
     return max(-distance(p, c - vec3(0.2)) - (r + 0.2), distance(p, c) - r);
 }
 
-fn raymarch_hit(position: vec4<f32>, center: vec3<f32>, radius: f32, fog_color: vec4<f32>, steps: u32, prec: f32) -> vec4<f32> {
-    var ro: vec3<f32> = view.world_position;
-    var dst: f32 = 999.0;
-    let rd: vec3<f32> = normalize(position - vec4(ro, 1.0)).xyz;
+
+//given an origin and signed distance function, march one step and return a new origin, distance from a surface
+fn raymarch(origin: vec3<f32>, direction: vec3<f32>, steps: u32, prec: f32, dst: f32) -> vec4<f32> {
+    var ro = origin;
+    var rd = direction;
     let tolerance = 1.0 / pow(10.0, f32(steps) / prec);
-    var norm: vec3f;
-    for (var x = 0; x < i32(steps); x++) {
-        let noise_offset = FBN(vec4f(vec3<f32>((ro)), globals.time));
-        dst = sphere_hit(ro + noise_offset, vec3<f32>(0.0), radius);
+
+    if dst < tolerance {
+        let norm = get_ray_normal(ro);
+        let darken_ramp = 1.0 - f32(dst) / f32(steps) * 2.0;
+        let diffuse_str = max(0.0, dot(normalize(vec3(5.0, 5.0, 0.0)), norm));
+        let falloff = darken_ramp * diffuse_str;
+        ro += rd * falloff;
+        return vec4(vec3f(ro), 0.0);
+    } else {
         ro += rd * dst;
-        norm = get_ray_normal(ro);
-        if dst < tolerance {
-            let darken_ramp = 1.0 - f32(x) / f32(steps) * 2.0;
-            let diffuse_str = max(0.0, dot(normalize(vec3(5.0, 5.0, 0.0)), norm));
-            let diffuse = darken_ramp * diffuse_str;
-            // let ref_source = normalize(reflect(-view.world_position, norm));
-            return vec4<f32>(fog_color.rgb * diffuse, 1.0);
-        }
-        if dst > 50.0 {
-            break;
-        }
     }
-    return vec4<f32>(10.0 - dst);
+    return vec4(vec3f(ro), dst);
 }
     
+
+
+fn sdf_cone(p: vec3f, r1: f32, r2: f32, h: f32) -> f32 {
+    let b = (r1 - r2) / h;
+    let a = sqrt(1.0 - b * b);
+
+    // if r1 == 0.0 {
+    //     let q = length(p.xz);
+    // } else {
+    //     let q = vec2f(length(p.xz), p.y);
+    // }
+    let q = vec2f(length(p.xz), p.y);
+
+    let k = dot(q, vec2f(-b, a));
+    if k < 0.0 {return length(q) - r1;}
+    if k > a * h {return length(q - vec2f(0.0, h)) - r2;}
+    return dot(q, vec2f(a, b)) - r1;
+}
 
 fn sphere_hit(p: vec3<f32>, c: vec3<f32>, r: f32) -> f32 {
     return distance(p, c) - r;
