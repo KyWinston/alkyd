@@ -94,10 +94,10 @@ pub fn create_cube(
         Mesh3d(mesh.clone()),
         AnimationData::new([8, 18], 8, animations, 12),
         MeshMaterial3d(sprite.add(SpritelyMaterial {
-            sheet_mask: Some(server.load("warrior/full_sheet.png")),
-            color_uv: Some(server.load("warrior/uv_sheet.png")),
-            normal_map: Some(server.load("warrior/normal_sheet.png")),
-            ao_map: Some(server.load("warrior/occlusion.png")),
+            sheet_mask: Some(server.load("example_assets/warrior/full_sheet.png")),
+            color_uv: Some(server.load("example_assets/warrior/uv_sheet.png")),
+            normal_map: Some(server.load("example_assets/warrior/normal_sheet.png")),
+            ao_map: Some(server.load("example_assets/warrior/occlusion.png")),
             ..default()
         })),
         // Showcase,
