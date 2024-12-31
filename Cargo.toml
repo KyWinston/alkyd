@@ -89,3 +89,7 @@ doc-scrape-examples = true
 [[example]]
 name = "sprite"
 doc-scrape-examples = true
+
+[[example]]
+name = "thick-smog"
+doc-scrape-examples = true
