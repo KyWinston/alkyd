@@ -60,18 +60,19 @@ fn fragment(
 
     let y_offset: f32 = (material.frame_start.y + f32(material.current_frame)) / f32(material.sheet_dimension_y);
     anim_idx /= f32(material.sheet_dimension_x);
- 
+
     let frame = vec2<f32>(anim_idx + f32(offset) / f32(material.sheet_dimension_x), in.uv.y / (-1.0 * f32(material.sheet_dimension_y)) + y_offset);
     let sprite = textureSample(sprite_sheet, s, frame);
     let color_map = vec4(vec3(textureSample(uv, uv_sampler, sprite.rg).rgb), sprite.a);
-    let vol = textureSample(volume,s_vol,frame);
+    let vol = textureSample(volume, s_vol, frame);
 
-    pbr_input.frag_coord = (in.position - 0.5 + vol) * 2.0;
-    pbr_input.world_position = (in.world_position - 0.5 + vol) * 2.0;
-    pbr_input.material.base_color = color_map;
+    pbr_input.frag_coord = in.position;
+    pbr_input.world_position = in.world_position * vol;
+    let ao = normalize(lights.ambient_color.rgb) * textureSample(occlusion, s_occ, frame).rgb;
 
-    let ao =  normalize(lights.ambient_color.rgb) * textureSample(occlusion,s_occ,frame).rgb;
-    pbr_input.V = fns::calculate_view(pbr_input.frag_coord,false);
+    pbr_input.material.base_color = vec4(vec3(color_map.rgb), color_map.a);
+
+    pbr_input.V = fns::calculate_view(pbr_input.frag_coord, false);
     let diffuse = fns::apply_pbr_lighting(pbr_input);
-    return vec4<f32>(diffuse.rgb * ao, diffuse.a);
+    return vec4f(vec3f(diffuse.rgb * ao), diffuse.a);
 }

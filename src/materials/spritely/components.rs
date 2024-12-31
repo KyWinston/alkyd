@@ -37,24 +37,26 @@ pub struct AnimationData;
 
 impl AnimationData {
     pub fn new(
+        current_animation: String,
         frame_dimensions: [u32; 2],
         facing_angles: usize,
         animations: HashMap<String, Animation>,
         frame_rate: u32,
-    ) -> (Self,AnimationIndices,AnimationTimer) {
-        (Self,
+    ) -> (Self, AnimationIndices, AnimationTimer) {
+        (
+            Self,
             AnimationIndices {
                 frame_dimensions,
                 facing_angles,
                 current_facing: Dir2::X,
                 animations,
-                current_animation: "idle".to_string(),
+                current_animation,
                 current_frame: 0,
             },
             AnimationTimer(Timer::from_seconds(
                 1.0 / frame_rate as f32,
                 TimerMode::Repeating,
-            ))
+            )),
         )
     }
 }
