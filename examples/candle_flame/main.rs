@@ -1,14 +1,5 @@
-#[cfg(feature = "compute")]
 use alkyd::{
-    components::Showcase,
-    materials::galaxyfog::galaxy::{GalaxyFogMaterial, NoiseProperties},
-    workers::resources::NoiseImage,
-    AlkydPlugin,
-};
-use alkyd::{
-    components::Showcase,
-    materials::galaxyfog::galaxy::{GalaxyFogMaterial, NoiseProperties},
-    AlkydPlugin,
+    components::Showcase, materials::example_mats::galaxyfog::{galaxy::{GalaxyFogMaterial, NoiseProperties}, GalaxyFogPlugin}, AlkydPlugin,
 };
 
 use bevy::{
@@ -34,6 +25,8 @@ fn main() {
                     watch_for_changes_override: Some(true),
                     ..default()
                 }),
+            GalaxyFogPlugin,
+            MaterialPlugin::<GalaxyFogMaterial>::default(),
             AlkydPlugin { debug: true },
         ))
         .add_systems(

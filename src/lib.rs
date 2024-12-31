@@ -1,13 +1,7 @@
-use bevy::{pbr::ExtendedMaterial, prelude::*};
+use bevy::prelude::*;
 use bevy_easy_compute::prelude::AppComputePlugin;
-// #[cfg(feature = "editor")]
-// use editor::EditorPlugin;
-use materials::{
-    galaxyfog::{galaxy::GalaxyFogMaterial, GalaxyFogPlugin},
-    irridescant::{shader::IrridescantMaterial, IrridescantMaterialPlugin},
-    painterly::{resources::PainterlyMaterial, MaterialSwatchPlugin},
-    spritely::{shader::SpritelyMaterial, SpritelyPlugin},
-};
+
+use materials::spritely::{shader::SpritelyMaterial, SpritelyPlugin};
 use utilities::UtilitiesPlugin;
 use workers::WorkersPlugin;
 
@@ -15,13 +9,10 @@ use workers::WorkersPlugin;
 pub struct Debug(pub bool);
 
 pub mod components;
-// #[cfg(feature = "editor")]
-// pub mod editor;
 pub mod materials;
-pub mod pattern_wfc;
+pub mod showcase;
 pub mod utilities;
 pub mod workers;
-pub mod showcase;
 
 pub const IRRIDESCANT_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1208033355542926744);
 pub const PAINTERLY_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1908033355537029744);
@@ -38,7 +29,6 @@ pub const SIMPLEX_HANDLE: Handle<Shader> = Handle::weak_from_u128(34071823065847
 pub const SIMPLEX_4D_HANDLE: Handle<Shader> = Handle::weak_from_u128(34071823465847412137);
 pub const GLOBAL_VALUES_HANDLE: Handle<Shader> = Handle::weak_from_u128(34071828566847501137);
 pub const TEX_GEN_HANDLE: Handle<Shader> = Handle::weak_from_u128(1508033515847412137);
-pub const PATTERN_WFC_HANDLE: Handle<Shader> = Handle::weak_from_u128(1708343657678895007029744);
 pub const PATTERN_FUNC_HANDLE: Handle<Shader> = Handle::weak_from_u128(17083435765920889029744);
 pub const SPRITELY_HANDLE: Handle<Shader> = Handle::weak_from_u128(1708343655899895001229744);
 pub const SOBEL_HANDLE: Handle<Shader> = Handle::weak_from_u128(1748343643674965476001229744);
@@ -54,18 +44,10 @@ impl Plugin for AlkydPlugin {
         app.insert_resource::<Debug>(Debug(self.debug))
             .add_plugins((
                 UtilitiesPlugin,
-                MaterialSwatchPlugin,
-                IrridescantMaterialPlugin,
-                GalaxyFogPlugin,
                 SpritelyPlugin,
-                MaterialPlugin::<PainterlyMaterial>::default(),
                 MaterialPlugin::<SpritelyMaterial>::default(),
-                MaterialPlugin::<ExtendedMaterial<StandardMaterial, IrridescantMaterial>>::default(),
                 AppComputePlugin,
-                MaterialPlugin::<GalaxyFogMaterial>::default(),
                 WorkersPlugin,
-                // #[cfg(feature = "editor")]
-                // EditorPlugin,
             ));
     }
 }
