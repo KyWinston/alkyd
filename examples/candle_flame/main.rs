@@ -1,12 +1,13 @@
 use alkyd::{components::Showcase, AlkydPlugin};
 
 use bevy::{
-    color::palettes::css::ORANGE,
-    core_pipeline::prepass::{DepthPrepass, NormalPrepass},
-    image::{ImageAddressMode, ImageSamplerDescriptor},
-    prelude::*,
+    color::palettes::css::ORANGE, core_pipeline::prepass::{DepthPrepass, NormalPrepass}, diagnostic::{EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin, SystemInformationDiagnosticsPlugin}, image::{ImageAddressMode, ImageSamplerDescriptor}, prelude::*
 };
-use galaxyfog::{galaxy::{GalaxyFogMaterial, NoiseProperties}, GalaxyFogPlugin};
+use galaxyfog::{
+    galaxy::{GalaxyFogMaterial, NoiseProperties},
+    GalaxyFogPlugin,
+};
+use iyes_perf_ui::{prelude::PerfUiDefaultEntries, PerfUiPlugin};
 
 pub mod galaxyfog;
 
@@ -26,7 +27,11 @@ fn main() {
                     watch_for_changes_override: Some(true),
                     ..default()
                 }),
+            FrameTimeDiagnosticsPlugin,
+            EntityCountDiagnosticsPlugin,
+            SystemInformationDiagnosticsPlugin,
             GalaxyFogPlugin,
+            PerfUiPlugin,
             MaterialPlugin::<GalaxyFogMaterial>::default(),
             AlkydPlugin { debug: true },
         ))
@@ -54,6 +59,7 @@ fn init_camera(mut commands: Commands) {
 }
 
 fn init_scene(mut commands: Commands) {
+    commands.spawn(PerfUiDefaultEntries::default());
     commands.spawn((
         DirectionalLight::default(),
         Transform::from_xyz(-4.0, 5.0, 2.0).looking_at(Vec3::ZERO, Vec3::Y),
@@ -76,7 +82,7 @@ pub fn create_cube(
         diffuse_color: Color::srgb_from_array(ORANGE.to_f32_array_no_alpha()),
         radius: 0.7,
         center: Vec3::ZERO,
-        steps: 100,
+        steps: 50,
         props: NoiseProperties {
             octaves: 2,
             lacunarity: 2.0,

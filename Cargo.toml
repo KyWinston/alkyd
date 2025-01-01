@@ -3,7 +3,7 @@ name = "alkyd"
 version = "0.3.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
-exclude = ["**/bin", "examples/*", "assets/example_assets/*","**/wgpu_trace"]
+exclude = ["**/bin", "examples/*", "assets/example_assets/*", "**/wgpu_trace"]
 description = "bevy crate for handling procedural textures and shaders"
 publish = true
 
@@ -25,6 +25,7 @@ bevy = { version = "0.15.0", default-features = false, features = [
     "trace",
     "png",
 ] }
+iyes_perf_ui = { git = "https://github.com/IyesGames/iyes_perf_ui", branch = "main" }
 
 cargo-husky = { version = "1", features = [
     "precommit-hook",
