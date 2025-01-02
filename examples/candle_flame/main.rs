@@ -99,12 +99,12 @@ pub fn create_cube(
         radius: 0.8,
         center: Vec3::ZERO,
         steps: 20,
-        precision: 20.0,
+        precision: 25.0,
         props: NoiseProperties {
             octaves: 2,
             lacunarity: 2.0,
-            frequency: 1.0,
-            gain: 0.2,
+            frequency: 1.2,
+            gain: 0.3,
             amplitude: 1.0,
         },
         ..default()
