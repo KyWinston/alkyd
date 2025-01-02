@@ -1,7 +1,15 @@
 use alkyd::{components::Showcase, AlkydPlugin};
 
 use bevy::{
-    color::palettes::css::ORANGE, core_pipeline::prepass::{DepthPrepass, NormalPrepass}, diagnostic::{EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin, SystemInformationDiagnosticsPlugin}, image::{ImageAddressMode, ImageSamplerDescriptor}, prelude::*
+    color::palettes::css::ORANGE,
+    core_pipeline::prepass::{DepthPrepass, NormalPrepass},
+    diagnostic::{
+        EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin,
+        SystemInformationDiagnosticsPlugin,
+    },
+    image::{ImageAddressMode, ImageSamplerDescriptor},
+    prelude::*,
+    window::WindowResolution,
 };
 use galaxyfog::{
     galaxy::{GalaxyFogMaterial, NoiseProperties},
@@ -22,6 +30,14 @@ fn main() {
                         address_mode_w: ImageAddressMode::Repeat,
                         ..Default::default()
                     },
+                })
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        resolution: WindowResolution::new(1920., 1080.)
+                            .with_scale_factor_override(1.0),
+                        ..default()
+                    }),
+                    ..default()
                 })
                 .set(AssetPlugin {
                     watch_for_changes_override: Some(true),
@@ -80,9 +96,10 @@ pub fn create_cube(
 ) {
     let material = materials.add(GalaxyFogMaterial {
         diffuse_color: Color::srgb_from_array(ORANGE.to_f32_array_no_alpha()),
-        radius: 0.7,
+        radius: 0.8,
         center: Vec3::ZERO,
-        steps: 50,
+        steps: 20,
+        precision: 20.0,
         props: NoiseProperties {
             octaves: 2,
             lacunarity: 2.0,
@@ -92,6 +109,6 @@ pub fn create_cube(
         },
         ..default()
     });
-    let mesh = meshes.add(Cuboid::from_size(Vec3::splat(6.0)));
-    commands.spawn((Mesh3d(mesh), MeshMaterial3d(material), Showcase));
+    let mesh = meshes.add(Cuboid::from_size(Vec3::splat(4.5)));
+    commands.spawn((Mesh3d(mesh), MeshMaterial3d(material)));
 }

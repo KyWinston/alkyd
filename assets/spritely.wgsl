@@ -69,7 +69,7 @@ fn fragment(
     pbr_input.frag_coord = in.position;
     pbr_input.world_position = in.world_position * vol;
     let ao = normalize(lights.ambient_color.rgb) * textureSample(occlusion, s_occ, frame).rgb;
-
+    
     pbr_input.material.base_color = vec4(vec3(color_map.rgb), color_map.a);
 
     pbr_input.V = fns::calculate_view(pbr_input.frag_coord, false);

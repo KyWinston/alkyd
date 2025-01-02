@@ -110,25 +110,15 @@ fn cut_sphere_hit(p: vec3<f32>, c: vec3<f32>, r: f32) -> f32 {
 
 
 //given an origin and signed distance function, march one step and return a new origin, distance from a surface
-fn raymarch(origin: vec3<f32>, direction: vec3<f32>, steps: u32, prec: f32, dst: f32) -> vec4<f32> {
+fn raymarch(origin: vec3<f32>, direction: vec3<f32>, dst: f32) -> vec4<f32> {
     var ro = origin;
     var rd = direction;
-    let tolerance = 1.0 / pow(10.0, f32(steps) / prec);
 
-    if dst < tolerance {
-        let norm = get_ray_normal(ro);
-        let darken_ramp = 1.0 - f32(dst) / f32(steps) * 2.0;
-        let diffuse_str = max(0.0, dot(normalize(vec3(5.0, 5.0, 0.0)), norm));
-        let falloff = darken_ramp * diffuse_str;
-        ro += rd * falloff;
-        return vec4(vec3f(ro), 0.0);
-    } else {
-        ro += rd * dst;
-    }
+    ro += rd * abs(dst);
+
     return vec4(vec3f(ro), dst);
 }
     
-
 
 fn sdf_cone(p: vec3f, r1: f32, r2: f32, h: f32) -> f32 {
     let b = (r1 - r2) / h;
@@ -377,6 +367,7 @@ fn extend_pbr(in: VertexOutput, is_front: bool) -> PbrInput {
         double_sided,
         is_front
     );
+    
     #ifdef VERTEX_TANGENTS
     let Nt = pbrInput.world_normal.rgb;
     let TBN = fns::calculate_tbn_mikktspace(pbrInput.world_normal.rgb,
