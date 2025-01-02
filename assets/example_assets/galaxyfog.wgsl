@@ -21,6 +21,13 @@ struct GalaxyFog {
 fn fragment(
     in: VertexOutput
 ) -> @location(0) vec4<f32> {
+    ///TODO: for cone marching, locate these values
+    //   u_camPos: { value: camera.position },
+    //   u_camToWorldMat: { value: camera.matrixWorld },
+    //   u_camInvProjMat: { value: camera.projectionMatrixInverse },
+    //   //-------New uniforms-------//
+    //   u_camTanFov: { value: Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) },
+    //   u_camPlaneSubdivisions: { value: 32 },
     var ro: vec3<f32> = view.world_position;
     var dist: f32 = 999.0;
     let tolerance = f32(material.steps) * material.prec;
