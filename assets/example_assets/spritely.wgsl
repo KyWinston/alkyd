@@ -5,8 +5,8 @@
     pbr_functions as fns,
 
 }
-import sprite::{read_spritesheet_rotation}
 
+#import sprite::{read_spritesheet_rotation}
 #import utils::{hsv2rgb}
 
 struct Spritely {
@@ -39,12 +39,16 @@ fn fragment(
 ) -> @location(0) vec4<f32> {
     var pbr_input: PbrInput = pbr_input_new();
 
-    var anim_idx = read_spritesheet_rotation(material.player_angle, material.viewing_angle, in.uv.x, material.frame_start);
-
+    var sprite_rotation:vec2<f32> = read_spritesheet_rotation(material.player_angle, material.viewing_angle, in.uv.x);
+    var angle = sprite_rotation.y;
     let y_offset: f32 = (material.frame_start.y + f32(material.current_frame)) / f32(material.sheet_dimension_y);
-    anim_idx /= f32(material.sheet_dimension_x);
 
-    let frame = vec2<f32>(anim_idx + f32(offset) / f32(material.sheet_dimension_x), in.uv.y / (-1.0 * f32(material.sheet_dimension_y)) + y_offset);
+    sprite_rotation.x /= f32(material.sheet_dimension_x);
+
+    var offset: f32 = material.frame_start.x + (f32(step(45.0, abs(angle)) + step(90.0, abs(angle)) + step(135.0, abs(angle))));
+    var uv_offset: u32 = 0u;
+
+    let frame = vec2<f32>(sprite_rotation.x + f32(offset) / f32(material.sheet_dimension_x), in.uv.y / (-1.0 * f32(material.sheet_dimension_y)) + y_offset);
     let sprite = textureSample(sprite_sheet, s, frame);
     let color_map = vec4(vec3(textureSample(uv, uv_sampler, sprite.rg).rgb), sprite.a);
     let vol = textureSample(volume, s_vol, frame);
