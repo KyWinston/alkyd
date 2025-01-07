@@ -3,7 +3,6 @@
     mesh_view_bindings::{view,lights},
     pbr_types::{STANDARD_MATERIAL_FLAGS_DOUBLE_SIDED_BIT, PbrInput, pbr_input_new},
     pbr_functions as fns,
-
 }
 
 #import sprite::{read_spritesheet_rotation}
