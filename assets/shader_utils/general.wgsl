@@ -119,22 +119,22 @@ fn raymarch(origin: vec3<f32>, direction: vec3<f32>, dst: f32) -> vec4<f32> {
     return vec4(vec3f(ro), dst);
 }
 
-// fn conemarch(cro: vec3f, crd: vec3f, dst: f32, t_dst:f32) -> vec4<f32> {
-//     var ro = cro;
-//     var rd = crd;
-//     var cd: f32; // current scene distance
-//     var ccr: f32; // current cone radius
+fn conemarch(cro: vec3f, crd: vec3f, dst: f32, t_dst:f32) -> vec4<f32> {
+    var ro = cro;
+    var rd = crd;
+    var cd: f32; // current scene distance
+    var ccr: f32; // current cone radius
 
-//     ro += t_dst * crd; // calculate new position
-//     ccr = (t_dst * tan(radians(45.0 / 2.0))) * 2. / 32.; // calculate cone radius
+    ro += t_dst * crd; // calculate new position
+    ccr = (t_dst * tan(radians(45.0 / 2.0))) * 2. / 32.; // calculate cone radius
         
-//     if (dst < ccr * 1.25 || t_dst >= 200.0) {
-//         return vec4f(ro,9999.0); // finally, return scene distance
-//     }
+    if (dst < ccr * 1.25 || t_dst >= 200.0) {
+        return vec4f(ro,9999.0); // finally, return scene distance
+    }
 
 
-//     return vec4f(ro,dst); // finally, return scene distance
-// }
+    return vec4f(ro,dst); // finally, return scene distance
+}
     
 
 fn sdf_cone(p: vec3f, r1: f32, r2: f32, h: f32) -> f32 {

@@ -1,6 +1,4 @@
 use alkyd::components::Showcase;
-use alkyd::materials::spritely::components::{Animation, AnimationData};
-use alkyd::materials::spritely::shader::SpritelyMaterial;
 
 use alkyd::AlkydPlugin;
 
@@ -9,6 +7,11 @@ use bevy::pbr::ScreenSpaceAmbientOcclusion;
 
 use bevy::prelude::*;
 use bevy::utils::hashbrown::HashMap;
+use spritely::components::{Animation, AnimationData};
+use spritely::shader::SpritelyMaterial;
+use spritely::SpritelyPlugin;
+
+pub mod spritely;
 
 fn main() {
     let mut app = App::new();
@@ -22,6 +25,8 @@ fn main() {
             },
         }),
         AlkydPlugin { debug: true },
+        SpritelyPlugin,
+        MaterialPlugin::<SpritelyMaterial>::default(),
     ))
     .add_systems(
         Startup,

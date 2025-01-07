@@ -9,22 +9,24 @@ description = "bevy crate for handling procedural textures and shaders"
 publish = true
 
 [dependencies]
-bevy = { version = "0.15.0", default-features = false, features = [
+bevy = { version = "0.15.1", default-features = false, features = [
     "bevy_pbr",
     "png",
 ] }
 cfg-if = "1.0.0"
 bitflags = "2.5.0"
-bevy_easy_compute = { version = "0.15.0", features = ["webgl"] }
+bevy_easy_compute = { version = "0.15.0" }
+
 
 [dev-dependencies]
-bevy = { version = "0.15.0", default-features = false, features = [
+bevy = { version = "0.15.1", default-features = false, features = [
     "bevy_pbr",
     "bevy_render",
     "bevy_winit",
     "trace",
     "png",
 ] }
+
 iyes_perf_ui = { git = "https://github.com/IyesGames/iyes_perf_ui", branch = "main" }
 
 cargo-husky = { version = "1", features = [
@@ -39,7 +41,7 @@ default = []
 
 [target.'cfg(target_os = "linux")'.dev-dependencies.bevy]
 features = ["x11", "wayland"]
-version = "0.15.0"
+version = "0.15.1"
 
 [lib]
 name = "alkyd"

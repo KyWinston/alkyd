@@ -1,7 +1,5 @@
 use bevy::prelude::*;
 use bevy_easy_compute::prelude::AppComputePlugin;
-
-use materials::spritely::{shader::SpritelyMaterial, SpritelyPlugin};
 use utilities::UtilitiesPlugin;
 use workers::WorkersPlugin;
 
@@ -9,18 +7,12 @@ use workers::WorkersPlugin;
 pub struct Debug(pub bool);
 
 pub mod components;
-pub mod materials;
 pub mod showcase;
 pub mod utilities;
 pub mod workers;
 
 pub const IRRIDESCANT_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1208033355542926744);
 pub const PAINTERLY_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1908033355537029744);
-pub const PROC_TEXTURE_HANDLE: Handle<Shader> = Handle::weak_from_u128(1708033355537473489);
-pub const PROC_TEXTURE_HANDLE_A: Handle<Shader> = Handle::weak_from_u128(1708033356723473489);
-pub const PROC_TEXTURE_HANDLE_B: Handle<Shader> = Handle::weak_from_u128(1708994455537473489);
-pub const PROC_TEXTURE_HANDLE_C: Handle<Shader> = Handle::weak_from_u128(1708033353718453747);
-pub const PROC_TEXTURE_HANDLE_D: Handle<Shader> = Handle::weak_from_u128(4333555337168973489);
 pub const NOISE_FUNCTIONS_HANDLE: Handle<Shader> = Handle::weak_from_u128(94071345065644201137);
 pub const NOISE_GEN_UTILS_HANDLE: Handle<Shader> = Handle::weak_from_u128(94071345065837501137);
 pub const NOISE_COMPUTE_HANDLE: Handle<Shader> = Handle::weak_from_u128(24071345358763528837);
@@ -41,12 +33,6 @@ pub struct AlkydPlugin {
 impl Plugin for AlkydPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource::<Debug>(Debug(self.debug))
-            .add_plugins((
-                UtilitiesPlugin,
-                SpritelyPlugin,
-                MaterialPlugin::<SpritelyMaterial>::default(),
-                AppComputePlugin,
-                WorkersPlugin,
-            ));
+            .add_plugins((UtilitiesPlugin, AppComputePlugin, WorkersPlugin));
     }
 }

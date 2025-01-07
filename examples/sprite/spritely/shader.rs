@@ -11,8 +11,6 @@ use bevy::{
     },
 };
 
-use crate::SPRITELY_HANDLE;
-
 #[derive(Asset, TypePath, AsBindGroup, Clone)]
 #[uniform(0, SpritelyUniform)]
 pub struct SpritelyMaterial {
@@ -35,7 +33,7 @@ pub struct SpritelyMaterial {
     pub ao_map: Option<Handle<Image>>,
     #[texture(9)]
     #[sampler(10)]
-    pub volume_map: Option<Handle<Image>>
+    pub volume_map: Option<Handle<Image>>,
 }
 
 /// the properties necessary to make an animated sprite
@@ -70,7 +68,7 @@ pub struct SpritelyUniform {
 
 impl Material for SpritelyMaterial {
     fn fragment_shader() -> ShaderRef {
-        SPRITELY_HANDLE.into()
+        "example_assets/spritely.wgsl".into()
     }
     fn alpha_mode(&self) -> AlphaMode {
         AlphaMode::Blend
