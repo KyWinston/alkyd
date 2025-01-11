@@ -11,13 +11,14 @@ use bevy::{
     prelude::*,
     window::WindowResolution,
 };
-use galaxyfog::{
-    galaxy::{GalaxyFogMaterial, NoiseProperties},
-    GalaxyFogPlugin,
+use bevy_third_person_camera::{ThirdPersonCamera, ThirdPersonCameraTarget, Zoom};
+use candle_flame::{
+    candle_flame::{CandleFlameMaterial, NoiseProperties},
+    CandleFlamePlugin,
 };
 use iyes_perf_ui::{prelude::PerfUiDefaultEntries, PerfUiPlugin};
 
-pub mod galaxyfog;
+pub mod candle_flame;
 
 fn main() {
     App::new()
@@ -46,31 +47,26 @@ fn main() {
             FrameTimeDiagnosticsPlugin,
             EntityCountDiagnosticsPlugin,
             SystemInformationDiagnosticsPlugin,
-            GalaxyFogPlugin,
+            CandleFlamePlugin,
             PerfUiPlugin,
-            MaterialPlugin::<GalaxyFogMaterial>::default(),
+            MaterialPlugin::<CandleFlameMaterial>::default(),
             AlkydPlugin { debug: true },
         ))
         .add_systems(
             Startup,
             (init_camera.before(init_scene), init_scene, create_cube),
         )
-        .add_systems(Update, rotate_mesh)
         .run();
-}
-#[allow(dead_code)]
-fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<Time>) {
-    if let Ok(mut mesh) = mesh_q.get_single_mut() {
-        mesh.rotate_y(1.0 * time.delta_secs());
-    }
 }
 
 fn init_camera(mut commands: Commands) {
     commands.spawn((
         Transform::from_translation(Vec3::new(5.0, 3.5, 6.0)).looking_at(Vec3::ZERO, Vec3::Y),
         Camera3d::default(),
-        DepthPrepass,
-        NormalPrepass,
+        ThirdPersonCamera {
+            zoom: Zoom::new(5.0, 30.0),
+            ..default()
+        },
     ));
 }
 
@@ -90,11 +86,11 @@ fn init_scene(mut commands: Commands) {
 }
 
 pub fn create_cube(
-    mut materials: ResMut<Assets<GalaxyFogMaterial>>,
+    mut materials: ResMut<Assets<CandleFlameMaterial>>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
-    let material = materials.add(GalaxyFogMaterial {
+    let material = materials.add(CandleFlameMaterial {
         diffuse_color: Color::srgb_from_array(ORANGE.to_f32_array_no_alpha()),
         radius: 0.8,
         center: Vec3::ZERO,
@@ -110,5 +106,9 @@ pub fn create_cube(
         ..default()
     });
     let mesh = meshes.add(Cuboid::from_size(Vec3::splat(4.5)));
-    commands.spawn((Mesh3d(mesh), MeshMaterial3d(material)));
+    commands.spawn((
+        Mesh3d(mesh),
+        MeshMaterial3d(material),
+        ThirdPersonCameraTarget,
+    ));
 }

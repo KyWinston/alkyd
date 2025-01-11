@@ -1,9 +1,9 @@
-use super::galaxy::GalaxyFogMaterial;
+use super::candle_flame::CandleFlameMaterial;
 use bevy::prelude::*;
 
 pub fn update_material(
-    mut fog: ResMut<Assets<GalaxyFogMaterial>>,
-    alkyd_q: Query<(Entity, &MeshMaterial3d<GalaxyFogMaterial>)>,
+    mut fog: ResMut<Assets<CandleFlameMaterial>>,
+    alkyd_q: Query<(Entity, &MeshMaterial3d<CandleFlameMaterial>)>,
     input: Res<ButtonInput<KeyCode>>,
 ) {
     if let Ok((_, alk_handle)) = alkyd_q.get_single() {

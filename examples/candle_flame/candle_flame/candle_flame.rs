@@ -11,8 +11,8 @@ use bevy::{
 use super::GALAXYFOG_SHADER_HANDLE;
 
 #[derive(Asset, TypePath, AsBindGroup, Clone)]
-#[uniform(0, GalaxyUniform)]
-pub struct GalaxyFogMaterial {
+#[uniform(0, CandleUniform)]
+pub struct CandleFlameMaterial {
     pub diffuse_color: Color,
     pub center: Vec3,
     pub radius: f32,
@@ -22,7 +22,7 @@ pub struct GalaxyFogMaterial {
     pub props: NoiseProperties,
 }
 
-impl Default for GalaxyFogMaterial {
+impl Default for CandleFlameMaterial {
     fn default() -> Self {
         Self {
             diffuse_color: Color::Srgba(BLUE),
@@ -36,7 +36,7 @@ impl Default for GalaxyFogMaterial {
 }
 
 #[derive(Clone, ShaderType)]
-pub struct GalaxyUniform {
+pub struct CandleUniform {
     pub diffuse_color: Vec4,
     pub center: Vec3,
     pub radius: f32,
@@ -48,9 +48,9 @@ pub struct GalaxyUniform {
 pub struct NoiseProperties {
     pub octaves: i32,
     pub lacunarity: f32,
-    pub frequency: f32,
     pub gain: f32,
     pub amplitude: f32,
+    pub frequency: f32,
 }
 
 impl Default for NoiseProperties {
@@ -58,16 +58,16 @@ impl Default for NoiseProperties {
         Self {
             octaves: 4,
             lacunarity: 2.0,
-            frequency: 1.0,
             gain: 0.03,
             amplitude: 1.0,
+            frequency: 1.0,
         }
     }
 }
 
-impl Material for GalaxyFogMaterial {
+impl Material for CandleFlameMaterial {
     fn fragment_shader() -> ShaderRef {
-        GALAXYFOG_SHADER_HANDLE.into()
+        "example_assets/candle_flame.wgsl".into()
     }
 
     fn alpha_mode(&self) -> AlphaMode {
@@ -86,9 +86,9 @@ impl Material for GalaxyFogMaterial {
     }
 }
 
-impl AsBindGroupShaderType<GalaxyUniform> for GalaxyFogMaterial {
-    fn as_bind_group_shader_type(&self, _: &RenderAssets<GpuImage>) -> GalaxyUniform {
-        GalaxyUniform {
+impl AsBindGroupShaderType<CandleUniform> for CandleFlameMaterial {
+    fn as_bind_group_shader_type(&self, _: &RenderAssets<GpuImage>) -> CandleUniform {
+        CandleUniform {
             diffuse_color: self.diffuse_color.to_linear().to_vec4(),
             center: self.center,
             radius: self.radius,
@@ -98,14 +98,14 @@ impl AsBindGroupShaderType<GalaxyUniform> for GalaxyFogMaterial {
     }
 }
 
-impl AsBindGroupShaderType<NoiseProperties> for GalaxyFogMaterial {
+impl AsBindGroupShaderType<NoiseProperties> for CandleFlameMaterial {
     fn as_bind_group_shader_type(&self, _: &RenderAssets<GpuImage>) -> NoiseProperties {
         NoiseProperties {
             octaves: self.props.octaves,
             lacunarity: self.props.lacunarity,
-            frequency: self.props.frequency,
             gain: self.props.gain,
             amplitude: self.props.amplitude,
+            frequency: self.props.frequency,
         }
     }
 }
