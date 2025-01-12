@@ -29,7 +29,7 @@ fn fragment(
     var noise_offset: f32;
     for (var x = 0; x < i32(material.steps); x++) {
         if dist < 40.0 {
-            noise_offset = (-0.5 + FBN(vec4f(vec3<f32>(ro.x + sin(globals.time), ro.y - globals.time * 3.5, ro.z), sin(globals.time)))) * 0.3;
+            noise_offset = FBN(vec4f(vec3<f32>(ro.x + sin(globals.time), ro.y - globals.time * 3.5, ro.z), sin(globals.time)));
         } else {
             noise_offset = 0.5;
         }
