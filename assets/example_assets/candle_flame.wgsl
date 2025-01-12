@@ -29,16 +29,16 @@ fn fragment(
     var noise_offset: f32;
     for (var x = 0; x < i32(material.steps); x++) {
         if dist < 40.0 {
-            noise_offset = FBN(vec4f(vec3<f32>(ro.x - sin(globals.time), ro.y - globals.time * 3.5, ro.z), globals.time / 8.0));
+            noise_offset = (-0.5 + FBN(vec4f(vec3<f32>(ro.x + sin(globals.time), ro.y - globals.time * 3.5, ro.z), sin(globals.time)))) * 0.3;
         } else {
             noise_offset = 0.5;
         }
-        let ray: vec4f = raymarch(ro, rd, sdf_cone(ro - 0.5 + noise_offset, material.radius, 0.1, 2.0));
+        let ray: vec4f = raymarch(ro, rd, sdf_cone(ro + noise_offset, material.radius, 0.1, 2.0));
         ro = ray.xyz;
         dist = ray.a;
         if dist <= 1.0 / tolerance {
             for (var x = 0; x < i32(material.steps / 2); x++) {
-                let transmit_ray = raymarch(ro, rd, sdf_cone(ro - 0.25 + (noise_offset / 2.0), material.radius / 2.0, 0.01, 1.0));
+                let transmit_ray = raymarch(ro, rd, sdf_cone(ro + noise_offset, material.radius / 2.0, 0.01, 1.0));
 
                 if transmit_ray.a <= 1.0 / tolerance {
                     return vec4(vec3f(1.0, 1.0, 0.0), 1.0);
@@ -48,7 +48,7 @@ fn fragment(
             return vec4(vec3f(material.diffuse_color.rgb), 1.0);
         }
     }
-    return vec4(vec3f(1.0), 1.0 - dist);
+    return vec4(vec3f(0.0), 1.0 - dist);
 }
 
 

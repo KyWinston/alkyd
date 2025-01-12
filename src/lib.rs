@@ -10,6 +10,7 @@ pub mod components;
 pub mod showcase;
 pub mod utilities;
 pub mod workers;
+pub mod raymarch_quad;
 
 pub const IRRIDESCANT_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1208033355542926744);
 pub const PAINTERLY_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1908033355537029744);

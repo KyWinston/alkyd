@@ -1,8 +1,7 @@
-use alkyd::{components::Showcase, AlkydPlugin};
+use alkyd::AlkydPlugin;
 
 use bevy::{
     color::palettes::css::ORANGE,
-    core_pipeline::prepass::{DepthPrepass, NormalPrepass},
     diagnostic::{
         EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin,
         SystemInformationDiagnosticsPlugin,
@@ -11,7 +10,7 @@ use bevy::{
     prelude::*,
     window::WindowResolution,
 };
-use bevy_third_person_camera::{ThirdPersonCamera, ThirdPersonCameraTarget, Zoom};
+use bevy_third_person_camera::{ThirdPersonCamera, ThirdPersonCameraPlugin, ThirdPersonCameraTarget, Zoom};
 use candle_flame::{
     candle_flame::{CandleFlameMaterial, NoiseProperties},
     CandleFlamePlugin,
@@ -49,6 +48,7 @@ fn main() {
             SystemInformationDiagnosticsPlugin,
             CandleFlamePlugin,
             PerfUiPlugin,
+            ThirdPersonCameraPlugin,
             MaterialPlugin::<CandleFlameMaterial>::default(),
             AlkydPlugin { debug: true },
         ))
