@@ -24,3 +24,17 @@ fn FBN(p: vec4f) -> f32 {
 
     return value;
 }
+
+fn flow_noise(p: vec3f, flow_dir: vec3f) -> f32 {
+    var new_p = p;
+    var n_p = props;
+    let shift = flow_dir;
+    var value = 0.0;
+    for (var i = 0; i < props.octaves; i++) {
+        value += n_p.amplitude * simplex_3d::snoise(n_p.frequency * new_p);
+        new_p += shift;
+        n_p.frequency *= n_p.lacunarity;
+        n_p.amplitude *= n_p.gain;
+    }
+    return value;
+}FBN
