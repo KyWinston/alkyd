@@ -5,6 +5,7 @@
 #import bevy_pbr::mesh_view_bindings::{globals,view};
 #import utils::{raymarch,conemarch,sdf_cone,map};
 #import noise_gen::FBN;
+#import bevy_pbr::utils::coords_to_viewport_uv;
 
 struct CandleFlame {
     diffuse_color: vec4<f32>,
@@ -27,10 +28,10 @@ fn fragment(
     let rd: vec3<f32> = normalize(in.world_position - vec4f(ro, 1.0)).xyz;
     var noise_offset: f32;
     for (var x = 0; x < i32(material.steps); x++) {
-        if dist > 20.0 {    
+        if dist > 20.0 {
             noise_offset = 0.0;
         } else {
-            noise_offset = FBN(vec4f(vec3<f32>(ro.x + sin(globals.time), ro.y - globals.time * 3.5, ro.z), sin(globals.time)));
+            noise_offset = FBN(vec4f(vec3<f32>(ro.x + sin(globals.time) * 0.1, ro.y - (globals.time * 3.5), ro.z), 1.0)) * coords_to_viewport_uv(in.position.xy, view.viewport).y;
         }
         let ray: vec4f = raymarch(ro, rd, sdf_cone(ro + noise_offset, material.radius, 0.1, 2.0));
         ro = ray.xyz;

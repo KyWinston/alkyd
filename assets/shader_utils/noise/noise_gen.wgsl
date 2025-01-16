@@ -1,4 +1,5 @@
 #define_import_path noise_gen
+
 #import global_values::NoiseProperties;
 #import simplex_4d;
 #import bevy_pbr::mesh_view_bindings::globals;
@@ -37,4 +38,4 @@ fn flow_noise(p: vec3f, flow_dir: vec3f) -> f32 {
         n_p.amplitude *= n_p.gain;
     }
     return value;
-}FBN
+}
