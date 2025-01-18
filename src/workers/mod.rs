@@ -1,9 +1,7 @@
 use bevy::prelude::*;
-use resources::NoiseComputeWorker;
-use bevy_easy_compute::prelude::{AppComputeWorker, AppComputeWorkerPlugin};
 
-pub mod resources;
-pub mod systems;
+use crate::compute::TextureGenPlugin;
+
 pub struct WorkersPlugin;
 
 pub const DISPLAY_FACTOR: u32 = 4;
@@ -12,12 +10,6 @@ pub const WORKGROUP_SIZE: u32 = 8;
 
 impl Plugin for WorkersPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(AppComputeWorkerPlugin::<NoiseComputeWorker>::default())
-            .add_systems(
-                PostStartup,
-                |mut compute_worker: ResMut<AppComputeWorker<NoiseComputeWorker>>| {
-                    compute_worker.execute();
-                },
-            );
+        app.add_plugins(TextureGenPlugin);
     }
 }

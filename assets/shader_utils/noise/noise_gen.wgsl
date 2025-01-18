@@ -5,7 +5,7 @@
 #import bevy_pbr::mesh_view_bindings::globals;
 
 
-@group(2) @binding(1) var<uniform> props:NoiseProperties;
+@group(0) @binding(2) var<uniform> props: NoiseProperties;
 
 fn random(st: vec3<f32>) -> f32 {
     return fract(sin(dot(st,

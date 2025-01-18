@@ -20,7 +20,7 @@ fn main() {
                     ..Default::default()
                 },
             }),
-            AlkydPlugin { debug: true },
+            AlkydPlugin,
             FrameTimeDiagnosticsPlugin,
         ))
         .add_systems(Startup, (init_scene, create_cube))

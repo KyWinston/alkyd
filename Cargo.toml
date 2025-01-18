@@ -15,9 +15,8 @@ bevy = { version = "0.15.1", default-features = false, features = [
 ] }
 cfg-if = "1.0.0"
 bitflags = "2.5.0"
-bevy_easy_compute = { version = "0.15.0" }
-bevy_third_person_camera = "0.2.0"
-
+bytemuck = "1.21.0"
+crossbeam-channel = "0.5.14"
 
 [dev-dependencies]
 bevy = { version = "0.15.1", default-features = false, features = [
@@ -27,7 +26,7 @@ bevy = { version = "0.15.1", default-features = false, features = [
     "trace",
     "png",
 ] }
-
+bevy_third_person_camera = "0.2.0"
 iyes_perf_ui = { git = "https://github.com/IyesGames/iyes_perf_ui", branch = "main" }
 
 cargo-husky = { version = "1", features = [
@@ -37,7 +36,6 @@ cargo-husky = { version = "1", features = [
 ] }
 
 [features]
-debug = []
 default = []
 
 [target.'cfg(target_os = "linux")'.dev-dependencies.bevy]
@@ -67,10 +65,6 @@ codegen-units = 10
 
 [[example]]
 name = "cube"
-doc-scrape-examples = true
-
-[[example]]
-name = "stone"
 doc-scrape-examples = true
 
 [[example]]

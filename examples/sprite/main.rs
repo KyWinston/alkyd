@@ -24,7 +24,7 @@ fn main() {
                 ..Default::default()
             },
         }),
-        AlkydPlugin { debug: true },
+        AlkydPlugin,
         SpritelyPlugin,
         MaterialPlugin::<SpritelyMaterial>::default(),
     ))
