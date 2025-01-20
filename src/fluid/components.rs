@@ -30,6 +30,7 @@ pub struct FluidParticle {
     pub(crate) mass: f32,
     pub(crate) density: f32,
     pub(crate) pressure: f32,
+    pub(crate) force: Vec3,
     pub(crate) smoothing_radius: f32,
 }
 
@@ -41,6 +42,7 @@ impl FluidParticle {
             mass,
             density: 0.0,
             pressure: 0.0,
+            force: Vec3::ZERO,
             smoothing_radius,
         }
     }

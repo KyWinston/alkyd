@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use systems::{
-    calcuate_sph, debug_fluid_volumes, init_fluid_particles, resolve_collisions, simulate_particles,
+    calcuate_sph, calculate_force, debug_fluid_volumes, init_fluid_particles, resolve_collisions,
+    simulate_particles,
 };
 
 pub mod components;
@@ -18,10 +19,14 @@ impl Plugin for FluidPlugin {
             Update,
             (
                 init_fluid_particles,
-                calcuate_sph,
-                simulate_particles,
-                debug_fluid_volumes.after(calcuate_sph),
-                resolve_collisions,
+                (
+                    calcuate_sph,
+                    calculate_force,
+                    simulate_particles,
+                    debug_fluid_volumes,
+                    resolve_collisions,
+                )
+                    .chain(),
             ),
         );
     }

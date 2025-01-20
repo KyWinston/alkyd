@@ -74,9 +74,8 @@ pub fn simulate_particles(
     mut particles: Query<(&mut Transform, &mut FluidParticle)>,
 ) {
     for (mut transform, mut particle) in particles.iter_mut() {
-        particle.velocity += Vec3::NEG_Y * 9.5 * time.delta_secs() * 0.003;
-        let pressure_acc = particle.pressure / particle.density.max(0.01);
-        particle.velocity += pressure_acc * time.delta_secs() * 0.003;
+        let force = particle.force;
+        particle.velocity += force * time.delta_secs() * 0.003;
         transform.translation += particle.velocity * time.delta_secs() * 0.003;
     }
 }
@@ -125,18 +124,31 @@ pub fn calcuate_sph(mut particles: Query<(&Transform, &mut FluidParticle)>) {
 }
 
 pub fn calculate_force(mut particles: Query<(&Transform, &mut FluidParticle)>) {
-    let _pressure = Vec3::ZERO;
-    let _viscosity = Vec3::ZERO;
+    let mut pressure = Vec3::ZERO;
+    let mut viscosity = Vec3::ZERO;
 
     let mut combinations = particles.iter_combinations_mut();
-    while let Some([(transform_a, particle_a), (transform_b, _)]) = combinations.fetch_next() {
+    while let Some([(transform_a, mut particle_a), (transform_b, particle_b)]) =
+        combinations.fetch_next()
+    {
         let dist = transform_a.translation.distance(transform_b.translation);
         if dist < particle_a.smoothing_radius * 2.0 {
             let pressure_dir = (transform_a.translation - transform_b.translation).normalize();
             let mut pressure_contribution = particle_a.mass
                 * particle_a.mass
                 * spiked_kernel_gradient(particle_a.smoothing_radius, dist, pressure_dir);
-                pressure_contribution *= 1.0;
+            pressure_contribution *= particle_a.pressure
+                / (particle_a.density * particle_a.density)
+                + particle_b.pressure / (particle_b.density * particle_b.density);
+
+            let mut viscosity_contribution = viscosity
+                * (particle_a.mass * particle_a.mass)
+                * (particle_b.velocity - particle_a.velocity / particle_b.density);
+            viscosity_contribution *= spiked_kernel_d2(particle_a.smoothing_radius, dist);
+            pressure += pressure_contribution;
+            viscosity += viscosity_contribution;
+
+            particle_a.force = Vec3::new(0.0, 9.81 * particle_a.mass, 0.0) - pressure + viscosity;
         }
     }
 }
@@ -149,6 +161,11 @@ fn smooth_kernel_d(radius: f32, dist_sq: f32) -> f32 {
 fn spiked_kernel_d(radius: f32, dist: f32) -> f32 {
     let x = 1.0 - dist / radius;
     -45.0 / (PI * radius * radius * radius * radius) * x * x
+}
+
+fn spiked_kernel_d2(radius: f32, dist: f32) -> f32 {
+    let x = 1.0 - dist / radius;
+    90.0 / (PI * radius * radius * radius * radius * radius) * x
 }
 
 fn spiked_kernel_gradient(radius: f32, dist: f32, dir: Vec3) -> Vec3 {
