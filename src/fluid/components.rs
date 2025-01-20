@@ -31,11 +31,10 @@ pub struct FluidParticle {
     pub(crate) density: f32,
     pub(crate) pressure: f32,
     pub(crate) force: Vec3,
-    pub(crate) smoothing_radius: f32,
 }
 
 impl FluidParticle {
-    pub fn new(parent_volume: Entity, mass: f32, smoothing_radius: f32) -> Self {
+    pub fn new(parent_volume: Entity, mass: f32) -> Self {
         Self {
             parent_volume,
             velocity: Vec3::ZERO,
@@ -43,7 +42,6 @@ impl FluidParticle {
             density: 0.0,
             pressure: 0.0,
             force: Vec3::ZERO,
-            smoothing_radius,
         }
     }
 }

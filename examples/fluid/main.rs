@@ -57,7 +57,7 @@ pub fn init_scene(mut commands: Commands) {
     ));
 
     commands.spawn((
-        FluidVolume::new(1000, Vec3::splat(15.0)),
+        FluidVolume::new(300, Vec3::splat(15.0)),
         VolumeDebug(Timer::from_seconds(5.0, TimerMode::Repeating)),
         InheritedVisibility::VISIBLE,
         VolumeFilling,

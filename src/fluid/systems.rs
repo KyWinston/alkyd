@@ -8,17 +8,13 @@ use rand::{thread_rng, Rng};
 
 use super::{
     components::{FluidParticle, FluidVolume, VolumeDebug, VolumeFilling},
-    DAMPING,
+    DAMPING, GAS_CONSTANT, RADIUS, RADIUS2, RADIUS3, RADIUS4, RADIUS5, REST_DENSITY, STEP,
 };
 
 pub fn init_fluid_particles(
     mut commands: Commands,
     volumes: Query<(Entity, &Transform, &FluidVolume), With<VolumeFilling>>,
-    mut mesh: ResMut<Assets<Mesh>>,
-    mut mat: ResMut<Assets<StandardMaterial>>,
 ) {
-    let sphere = mesh.add(Sphere::new(0.05));
-    let material = mat.add(Color::srgb_from_array(BLUE_100.to_f32_array_no_alpha()));
     for (ent, transform, vol) in volumes.iter() {
         let mut particle_container = vec![];
         let full_bound = vol.bounds_size;
@@ -26,17 +22,15 @@ pub fn init_fluid_particles(
         let translation = transform.translation;
         for _ in 0..vol.particle_amount {
             let x = (thread_rng().gen_range(0..full_bound.x as i32 * 10000) / 10000) as f32;
-            let y = (thread_rng().gen_range(0..full_bound.y as i32 * 10000) / 10000) as f32 - 7.5;
+            let y = (thread_rng().gen_range(0..full_bound.y as i32 * 10000) / 10000) as f32;
             let z = (thread_rng().gen_range(0..full_bound.z as i32 * 10000) / 10000) as f32;
             let part_ent = commands
                 .spawn((
-                    FluidParticle::new(ent, 1.0, 3.0),
-                    Mesh3d(sphere.clone()),
-                    MeshMaterial3d(material.clone()),
+                    FluidParticle::new(ent, 1.0),
                     Transform::from_xyz(
-                        (translation.x - half_bound.y) + x,
-                        (translation.y - half_bound.y) + y,
-                        (translation.z - half_bound.z) + z,
+                        translation.x - half_bound.x + x,
+                        translation.y - half_bound.y + y,
+                        translation.z - half_bound.z + z,
                     ),
                 ))
                 .id();
@@ -48,59 +42,55 @@ pub fn init_fluid_particles(
 }
 
 pub fn debug_fluid_volumes(
-    time: Res<Time>,
     mut gizmos: Gizmos,
-    mut volumes: Query<(&Transform, &FluidVolume, &mut VolumeDebug)>,
-    particles: Query<&FluidParticle, With<Parent>>,
+    mut volumes: Query<(Entity, &Transform, &FluidVolume, &mut VolumeDebug)>,
 ) {
-    for mut volume in volumes.iter_mut() {
+    for volume in volumes.iter_mut() {
         gizmos.cuboid(
-            Transform::from_scale(volume.1.bounds_size).with_translation(volume.0.translation),
+            Transform::from_scale(volume.2.bounds_size).with_translation(volume.1.translation),
             YELLOW_100,
         );
-        volume.2 .0.tick(time.delta());
-        if volume.2 .0.just_finished() {
-            for particle in particles.iter() {
-                if particle.density > 0.0 {
-                    println!("density : {:?}", particle.density);
-                }
-            }
-        }
     }
 }
 
 pub fn simulate_particles(
-    time: Res<Time>,
-    mut particles: Query<(&mut Transform, &mut FluidParticle)>,
-) {
-    for (mut transform, mut particle) in particles.iter_mut() {
-        let force = particle.force;
-        particle.velocity += force * time.delta_secs() * 0.003;
-        transform.translation += particle.velocity * time.delta_secs() * 0.003;
-    }
-}
-
-pub fn resolve_collisions(
+    mut gizmos: Gizmos,
     mut particles: Query<(&mut Transform, &mut FluidParticle), Without<FluidVolume>>,
-    mut volumes: Query<(Entity, &FluidVolume)>,
+    volumes: Query<(Entity, &Transform, &FluidVolume)>,
 ) {
-    for (mut part_t, mut particle) in particles.iter_mut() {
-        for (ent, volume) in volumes.iter_mut() {
-            if ent == particle.parent_volume {
-                let half_bound = volume.bounds_size / 2.0 - Vec3::ONE * 0.05;
+    for (ent, _, volume) in volumes.iter() {
+        for (mut transform, mut particle) in particles.iter_mut() {
+            if particle.parent_volume == ent {
+                let force = particle.force;
+                let mass = particle.mass;
 
-                if part_t.translation.x.abs() > half_bound.x {
-                    part_t.translation.x = half_bound.x * part_t.translation.x.signum();
-                    particle.velocity.x *= -1.0 * DAMPING;
+                let mut vel = (particle.velocity + force / mass) * STEP;
+
+                transform.translation += vel * STEP;
+
+                let half_bound = volume.bounds_size / 2.0 - Vec3::ONE * RADIUS;
+
+                //min bounds
+                if transform.translation.x.abs() > half_bound.x {
+                    transform.translation.x = half_bound.x * transform.translation.x.signum();
+                    vel.x *= -1.0 * DAMPING;
                 }
-                if part_t.translation.y.abs() > half_bound.y {
-                    part_t.translation.y = half_bound.y * part_t.translation.y.signum();
-                    particle.velocity.y *= -1.0 * DAMPING;
+                if transform.translation.y.abs() > half_bound.y {
+                    transform.translation.y = half_bound.y * transform.translation.y.signum();
+                    vel.y *= -1.0 * DAMPING;
                 }
-                if part_t.translation.z.abs() > half_bound.z {
-                    part_t.translation.z = half_bound.z * part_t.translation.z.signum();
-                    particle.velocity.z *= -1.0 * DAMPING;
+                if transform.translation.z.abs() > half_bound.z {
+                    transform.translation.z = half_bound.z * transform.translation.z.signum();
+                    vel.z *= -1.0 * DAMPING;
                 }
+
+                particle.velocity = vel;
+
+                gizmos.sphere(
+                    Isometry3d::from_translation(transform.translation),
+                    0.05,
+                    BLUE_100,
+                );
             }
         }
     }
@@ -111,63 +101,60 @@ pub fn calcuate_sph(mut particles: Query<(&Transform, &mut FluidParticle)>) {
     let mut combinations = particles.iter_combinations_mut();
     while let Some([(transform_a, mut particle_a), (transform_b, _)]) = combinations.fetch_next() {
         let dist = transform_a.translation - transform_b.translation;
-        let radius = particle_a.smoothing_radius;
 
         let dist_sq = dist.dot(dist);
-        if radius * radius * 0.004 > dist_sq * 0.004 {
-            density += smooth_kernel_d(radius, dist_sq + 0.004);
+        if RADIUS2 * 0.004 > dist_sq * 0.004 {
+            density += smooth_kernel_d(dist_sq * 0.004);
         }
 
-        particle_a.density += density + particle_a.mass + 0.00001;
-        particle_a.pressure = 2.0 + density - 1.0;
+        particle_a.density = density * particle_a.mass + 0.000001;
+        particle_a.pressure = GAS_CONSTANT * (particle_a.density - REST_DENSITY);
     }
 }
 
 pub fn calculate_force(mut particles: Query<(&Transform, &mut FluidParticle)>) {
     let mut pressure = Vec3::ZERO;
     let mut viscosity = Vec3::ZERO;
-
     let mut combinations = particles.iter_combinations_mut();
     while let Some([(transform_a, mut particle_a), (transform_b, particle_b)]) =
         combinations.fetch_next()
     {
-        let dist = transform_a.translation.distance(transform_b.translation);
-        if dist < particle_a.smoothing_radius * 2.0 {
-            let pressure_dir = (transform_a.translation - transform_b.translation).normalize();
-            let mut pressure_contribution = particle_a.mass
-                * particle_a.mass
-                * spiked_kernel_gradient(particle_a.smoothing_radius, dist, pressure_dir);
-            pressure_contribution *= particle_a.pressure
-                / (particle_a.density * particle_a.density)
-                + particle_b.pressure / (particle_b.density * particle_b.density);
+        let mass_sq = particle_a.mass * particle_a.mass;
+        let density_sq = particle_a.density * particle_a.density;
+        let density_sq_b = particle_b.density * particle_b.density;
 
-            let mut viscosity_contribution = viscosity
-                * (particle_a.mass * particle_a.mass)
-                * (particle_b.velocity - particle_a.velocity / particle_b.density);
-            viscosity_contribution *= spiked_kernel_d2(particle_a.smoothing_radius, dist);
+        let dist = transform_b.translation.distance(transform_a.translation);
+        if dist < RADIUS * 2.0 {
+            let pressure_dir = (transform_a.translation - transform_b.translation).normalize();
+            let mut pressure_contribution = mass_sq * spiked_kernel_gradient(dist, pressure_dir);
+            pressure_contribution *=
+                particle_a.pressure / density_sq + particle_b.pressure / density_sq_b;
+            let mut viscosity_contribution =
+                viscosity * mass_sq * (particle_b.velocity - particle_a.velocity)
+                    / particle_b.density;
+            viscosity_contribution *= spiked_kernel_d2(dist);
             pressure += pressure_contribution;
             viscosity += viscosity_contribution;
-
-            particle_a.force = Vec3::new(0.0, 9.81 * particle_a.mass, 0.0) - pressure + viscosity;
         }
+        particle_a.force = Vec3::new(0.0, -9.81 * particle_a.mass, 0.0) - pressure + viscosity;
     }
 }
 
-fn smooth_kernel_d(radius: f32, dist_sq: f32) -> f32 {
-    let x = 1.0 - dist_sq / radius * radius;
-    315.0 / (64.0 * PI * radius * radius * radius) * x * x * x
+fn smooth_kernel_d(dist_sq: f32) -> f32 {
+    let x = 1.0 - dist_sq / RADIUS2;
+    315.0 / (64.0 * PI * RADIUS3) * x * x * x
 }
 
-fn spiked_kernel_d(radius: f32, dist: f32) -> f32 {
-    let x = 1.0 - dist / radius;
-    -45.0 / (PI * radius * radius * radius * radius) * x * x
+fn spiked_kernel_d(dist: f32) -> f32 {
+    let x = 1.0 - dist / RADIUS;
+    -45.0 / (PI * RADIUS4) * x * x
 }
 
-fn spiked_kernel_d2(radius: f32, dist: f32) -> f32 {
-    let x = 1.0 - dist / radius;
-    90.0 / (PI * radius * radius * radius * radius * radius) * x
+fn spiked_kernel_d2(dist: f32) -> f32 {
+    let x = 1.0 - dist / RADIUS;
+    90.0 / (PI * RADIUS5) * x
 }
 
-fn spiked_kernel_gradient(radius: f32, dist: f32, dir: Vec3) -> Vec3 {
-    spiked_kernel_d(radius, dist) * dir
+fn spiked_kernel_gradient(dist: f32, dir: Vec3) -> Vec3 {
+    spiked_kernel_d(dist) * dir
 }

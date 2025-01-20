@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 use systems::{
-    calcuate_sph, calculate_force, debug_fluid_volumes, init_fluid_particles, resolve_collisions,
-    simulate_particles,
+    calcuate_sph, calculate_force, debug_fluid_volumes, init_fluid_particles, simulate_particles,
 };
 
 pub mod components;
@@ -10,8 +9,16 @@ pub mod systems;
 pub struct FluidPlugin;
 
 pub const DAMPING: f32 = 0.4;
-pub const TARGET_DENSITY: f32 = 0.1;
-pub const RAD_8: f32 = 6561.0;
+pub const GAS_CONSTANT: f32 = 2.0;
+pub const REST_DENSITY: f32 = 10.0;
+
+pub const RADIUS: f32 = 2.0;
+pub const RADIUS2: f32 = 4.0;
+pub const RADIUS3: f32 = 8.0;
+pub const RADIUS4: f32 = 16.0;
+pub const RADIUS5: f32 = 32.0;
+
+pub const STEP: f32 = 0.004;
 
 impl Plugin for FluidPlugin {
     fn build(&self, app: &mut App) {
@@ -24,7 +31,6 @@ impl Plugin for FluidPlugin {
                     calculate_force,
                     simulate_particles,
                     debug_fluid_volumes,
-                    resolve_collisions,
                 )
                     .chain(),
             ),
