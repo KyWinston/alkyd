@@ -8,8 +8,9 @@ pub mod systems;
 
 pub struct FluidPlugin;
 
-pub const DAMPING: f32 = 0.8;
-pub const TARGET_DENSITY: f32 = 125.0;
+pub const DAMPING: f32 = 0.4;
+pub const TARGET_DENSITY: f32 = 0.1;
+pub const RAD_8: f32 = 6561.0;
 
 impl Plugin for FluidPlugin {
     fn build(&self, app: &mut App) {
@@ -18,9 +19,9 @@ impl Plugin for FluidPlugin {
             (
                 init_fluid_particles,
                 calcuate_sph,
-                simulate_particles.after(calcuate_sph),
-                debug_fluid_volumes,
-                resolve_collisions.after(simulate_particles),
+                simulate_particles,
+                debug_fluid_volumes.after(calcuate_sph),
+                resolve_collisions,
             ),
         );
     }

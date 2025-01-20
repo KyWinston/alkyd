@@ -20,7 +20,7 @@ impl FluidVolume {
 pub struct VolumeFilling;
 
 #[derive(Component)]
-pub struct VolumeDebug;
+pub struct VolumeDebug(pub Timer);
 
 #[derive(Component)]
 #[require(Transform)]
@@ -29,7 +29,7 @@ pub struct FluidParticle {
     pub(crate) velocity: Vec3,
     pub(crate) mass: f32,
     pub(crate) density: f32,
-    pub(crate) pressure: Vec3,
+    pub(crate) pressure: f32,
     pub(crate) smoothing_radius: f32,
 }
 
@@ -40,7 +40,7 @@ impl FluidParticle {
             velocity: Vec3::ZERO,
             mass,
             density: 0.0,
-            pressure: Vec3::ZERO,
+            pressure: 0.0,
             smoothing_radius,
         }
     }
