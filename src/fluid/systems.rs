@@ -1,5 +1,8 @@
 use bevy::{
-    color::palettes::tailwind::{BLUE_100, YELLOW_100},
+    color::palettes::{
+        css::RED,
+        tailwind::{BLUE_100, YELLOW_100},
+    },
     prelude::*,
 };
 use bevy_easy_compute::prelude::AppComputeWorker;
@@ -13,11 +16,15 @@ pub fn simulate_fluid_volumes(mut gizmos: Gizmos, worker: ResMut<AppComputeWorke
 
     let fluid_particles = worker.read_vec::<FluidParticleBuffer>("particles_out");
     gizmos.cuboid(Transform::from_scale(Vec3::splat(15.0)), YELLOW_100);
-
-    for particle in fluid_particles.as_slice() {
+    gizmos.sphere(Isometry3d::from_translation(Vec3::ZERO), 0.5, RED);
+    for p in fluid_particles {
         gizmos.sphere(
-            Isometry3d::from_translation(particle.local_position),
-            0.05,
+            Isometry3d::from_translation(Vec3::new(
+                p.local_position.x,
+                p.local_position.y,
+                p.local_position.z,
+            )),
+            0.1,
             BLUE_100,
         );
     }

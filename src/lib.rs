@@ -25,7 +25,8 @@ pub const SOBEL_HANDLE: Handle<Shader> = Handle::weak_from_u128(1748343643674965
 pub const BLEND_MODES_HANDLE: Handle<Shader> = Handle::weak_from_u128(184229632462351882081599150);
 pub const CONVERTERS_HANDLE: Handle<Shader> = Handle::weak_from_u128(522521912971636216150179);
 pub const FLUID_SIM_HANDLE: Handle<Shader> = Handle::weak_from_u128(38257092369836390268233459);
- 
+pub const FLUID_SIM_SECOND_PASS_HANDLE: Handle<Shader> = Handle::weak_from_u128(382579689756468233459);
+
 pub struct AlkydPlugin;
 
 impl Plugin for AlkydPlugin {
