@@ -16,6 +16,7 @@ impl Plugin for UtilitiesPlugin {
             "../../assets/shader_utils/consts/globs.wgsl",
             Shader::from_wgsl
         );
+
         load_internal_asset!(
             app,
             NOISE_COMPUTE_HANDLE,

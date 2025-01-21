@@ -1,18 +1,14 @@
 use bevy::prelude::*;
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 #[require(Transform)]
 pub struct FluidVolume {
-    pub(crate) particle_amount: usize,
-    pub(crate) bounds_size: Vec3,
+    pub bounds_size: Vec3,
 }
 
 impl FluidVolume {
-    pub fn new(particle_amount: usize, bounds_size: Vec3) -> Self {
-        Self {
-            particle_amount,
-            bounds_size,
-        }
+    pub fn new(bounds_size: Vec3) -> Self {
+        Self { bounds_size }
     }
 }
 
@@ -25,12 +21,12 @@ pub struct VolumeDebug(pub Timer);
 #[derive(Component)]
 #[require(Transform)]
 pub struct FluidParticle {
-    pub(crate) parent_volume: Entity,
-    pub(crate) velocity: Vec3,
-    pub(crate) mass: f32,
-    pub(crate) density: f32,
-    pub(crate) pressure: f32,
-    pub(crate) force: Vec3,
+    pub parent_volume: Entity,
+    pub velocity: Vec3,
+    pub mass: f32,
+    pub density: f32,
+    pub pressure: f32,
+    pub force: Vec3,
 }
 
 impl FluidParticle {

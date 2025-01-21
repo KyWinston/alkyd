@@ -4,13 +4,18 @@ use alkyd::{
 };
 
 use bevy::{
-    color::palettes::css::GRAY,
+    color::palettes::css::{BLUE, GRAY},
     diagnostic::{
         EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin,
         SystemInformationDiagnosticsPlugin,
     },
     image::{ImageAddressMode, ImageSamplerDescriptor},
     prelude::*,
+    render::{
+        render_asset::RenderAssets,
+        render_resource::{AsBindGroup, AsBindGroupShaderType, ShaderRef, ShaderType},
+        texture::GpuImage,
+    },
 };
 use bevy_third_person_camera::{
     ThirdPersonCamera, ThirdPersonCameraPlugin, ThirdPersonCameraTarget, Zoom,
@@ -34,13 +39,14 @@ fn main() {
             FrameTimeDiagnosticsPlugin,
             EntityCountDiagnosticsPlugin,
             SystemInformationDiagnosticsPlugin,
+            MaterialPlugin::<FluidMaterial>::default(),
             PerfUiPlugin,
         ))
         .add_systems(Startup, init_scene)
         .run();
 }
 
-pub fn init_scene(mut commands: Commands) {
+pub fn init_scene(mut commands: Commands, mut mesh: ResMut<Assets<Mesh>>) {
     commands.spawn(PerfUiDefaultEntries::default());
     commands.spawn((
         DirectionalLight::default(),
@@ -57,11 +63,48 @@ pub fn init_scene(mut commands: Commands) {
     ));
 
     commands.spawn((
-        FluidVolume::new(300, Vec3::splat(15.0)),
+        Mesh3d(mesh.add(Cuboid::from_length(15.0))),
+        FluidVolume::new(Vec3::splat(15.0)),
         VolumeDebug(Timer::from_seconds(5.0, TimerMode::Repeating)),
         InheritedVisibility::VISIBLE,
         VolumeFilling,
         ThirdPersonCameraTarget,
         Transform::from_xyz(0.0, 8.5, 0.0),
     ));
+}
+
+#[derive(Asset, TypePath, AsBindGroup, Clone)]
+#[uniform(0, FluidUniform)]
+pub struct FluidMaterial {
+    pub diffuse_color: Color,
+}
+
+impl Default for FluidMaterial {
+    fn default() -> Self {
+        Self {
+            diffuse_color: Color::Srgba(BLUE),
+        }
+    }
+}
+
+#[derive(Clone, ShaderType)]
+pub struct FluidUniform {
+    pub diffuse_color: Vec4,
+}
+
+impl Material for FluidMaterial {
+    fn fragment_shader() -> ShaderRef {
+        "example_assets/water.wgsl".into()
+    }
+    fn alpha_mode(&self) -> AlphaMode {
+        AlphaMode::Blend
+    }
+}
+
+impl AsBindGroupShaderType<FluidUniform> for FluidMaterial {
+    fn as_bind_group_shader_type(&self, _: &RenderAssets<GpuImage>) -> FluidUniform {
+        FluidUniform {
+            diffuse_color: self.diffuse_color.to_linear().to_vec4(),
+        }
+    }
 }

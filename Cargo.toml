@@ -19,6 +19,7 @@ bitflags = "2.5.0"
 bytemuck = "1.21.0"
 crossbeam-channel = "0.5.14"
 rand = "0.8.5"
+bevy_easy_compute = {git="https://github.com/AnthonyTornetta/bevy_easy_compute", branch="main"}
 
 [dev-dependencies]
 bevy = { version = "0.15.1", default-features = false, features = [

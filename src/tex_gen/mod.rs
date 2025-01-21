@@ -101,6 +101,7 @@ impl Node for TexGenNode {
             bind_group,
             pipeline.init_pipeline,
             0,
+            &[],
             self.state.clone(),
             ComputePassDescriptor::default(),
         );
