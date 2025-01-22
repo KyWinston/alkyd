@@ -74,18 +74,18 @@ fn integrate(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
     let half_bound = 15.0 / 2.0 - vec3(1.0) * 0.1;
 
     if abs(target_particle.local_position.x) > half_bound.x {
-        vel.x *= DAMPING;
+        vel.x *= -1.0 * DAMPING;
 
         target_particle.local_position.x = half_bound.x * sign(target_particle.local_position.x);
     }
 
     if abs(target_particle.local_position.y) > half_bound.y {
-        vel.y *= DAMPING;
+        vel.y *= -1.0 * DAMPING;
         target_particle.local_position.y = half_bound.y * sign(target_particle.local_position.y);
     }
 
     if abs(target_particle.local_position.z) > half_bound.z {
-        vel.z *= DAMPING;
+        vel.z *= -1.0 * DAMPING;
         target_particle.local_position.z = half_bound.z * sign(target_particle.local_position.z);
     }
 
