@@ -11,7 +11,7 @@ pub mod node;
 pub mod resource;
 pub mod systems;
 
-pub const PARTICLE_COUNT: usize = 1000;
+pub const PARTICLE_COUNT: usize = 10000;
 pub struct FluidPlugin;
 
 impl Plugin for FluidPlugin {
