@@ -47,7 +47,7 @@ pub struct FluidWorker;
 
 impl ComputeWorker for FluidWorker {
     fn build(world: &mut World) -> AppComputeWorker<Self> {
-        let mut particle_container = Vec::<FluidParticleBuffer>::with_capacity(PARTICLE_COUNT);
+        let mut particle_container = vec![];
         let mut rng = rand::thread_rng();
         let unif = Uniform::new_inclusive(-7.3, 7.3);
 
