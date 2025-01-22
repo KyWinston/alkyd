@@ -15,9 +15,10 @@ pub fn simulate_fluid_volumes(mut gizmos: Gizmos, worker: ResMut<AppComputeWorke
     }
 
     let fluid_particles = worker.read_vec::<FluidParticleBuffer>("particles_out");
+
     gizmos.cuboid(Transform::from_scale(Vec3::splat(15.0)), YELLOW_100);
     gizmos.sphere(Isometry3d::from_translation(Vec3::ZERO), 0.5, RED);
-    for p in fluid_particles {
+    for p in fluid_particles.iter() {
         gizmos.sphere(
             Isometry3d::from_translation(Vec3::new(
                 p.local_position.x,

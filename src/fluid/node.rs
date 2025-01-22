@@ -14,6 +14,9 @@ struct FluidDensityPass;
 #[derive(TypePath)]
 struct FluidForcesPass;
 
+#[derive(TypePath)]
+struct FluidIntegratePass;
+
 impl ComputeShader for FluidDensityPass {
     fn shader() -> ShaderRef {
         FLUID_SIM_HANDLE.into()
@@ -27,6 +30,16 @@ impl ComputeShader for FluidForcesPass {
 
     fn entry_point<'a>() -> &'a str {
         "calculate_forces"
+    }
+}
+
+impl ComputeShader for FluidIntegratePass {
+    fn shader() -> ShaderRef {
+        FLUID_SIM_SECOND_PASS_HANDLE.into()
+    }
+
+    fn entry_point<'a>() -> &'a str {
+        "integrate"
     }
 }
 
@@ -48,14 +61,14 @@ impl ComputeWorker for FluidWorker {
         }
 
         let worker = AppComputeWorkerBuilder::new(world)
-            .add_staging("particles", &particle_container)
+            .add_storage("particles", &particle_container)
             .add_staging("particles_out", &particle_container)
             .add_pass::<FluidDensityPass>(
                 [PARTICLE_COUNT as u32 / 100, 1, 1],
                 &["particles", "particles_out"],
             )
             .add_pass::<FluidForcesPass>([PARTICLE_COUNT as u32 / 100, 1, 1], &["particles_out"])
-            .add_swap("particles", "particles_out")
+            .add_pass::<FluidIntegratePass>([PARTICLE_COUNT as u32 / 100, 1, 1], &["particles_out"])
             .build();
         worker
     }

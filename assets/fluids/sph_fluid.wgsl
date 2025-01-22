@@ -1,10 +1,10 @@
 #define_import_path sph_fluids
 
 #import global_values::PI;
+#import fluid_consts::{RADIUS2, RADIUS3, GAS_CONSTANT, REST_DENSITY}
 
-@group(0) @binding(0) var<storage> fluid_particles: array<FluidParticle>;
+@group(0) @binding(0) var<storage, read> fluid_particles: array<FluidParticle>;
 @group(0) @binding(1) var<storage, read_write> fluid_particles_out: array<FluidParticle>;
-
 
 struct FluidParticle {
     local_position: vec3<f32>,
@@ -14,18 +14,6 @@ struct FluidParticle {
     density: f32,
     force: vec3<f32>
 }
-
-const DAMPING: f32 = 0.5;
-const GAS_CONSTANT: f32 = 2.0;
-const REST_DENSITY: f32 = 1.0;
-
-const RADIUS: f32 = 2.0;
-const RADIUS2: f32 = 4.0;
-const RADIUS3: f32 = 8.0;
-const RADIUS4: f32 = 16.0;
-const RADIUS5: f32 = 32.0;
-
-const STEP:f32 = 0.04;
 
 @compute @workgroup_size(100)
 fn main(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
@@ -58,9 +46,7 @@ fn main(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
     fluid_particles_out[index] = target_particle;
 }
 
-
 fn smooth_kernel_d(dist_sq: f32) -> f32 {
     let x = 1.0 - dist_sq / RADIUS2;
     return 315.0 / (64.0 * PI * RADIUS3) * x * x * x;
 }
-

@@ -1,6 +1,7 @@
 #define_import_path sph_fluids
 
 #import global_values::PI;
+#import fluid_consts::{STEP, DAMPING, RADIUS, RADIUS3, RADIUS4, RADIUS5};
 
 @group(0) @binding(0) var<storage, read_write> fluid_particles_out: array<FluidParticle>;
 
@@ -13,18 +14,6 @@ struct FluidParticle {
     force: vec3<f32>
 }
 
-
-const DAMPING: f32 = 0.5;
-const GAS_CONSTANT: f32 = 2.0;
-const REST_DENSITY: f32 = 1.0;
-
-const RADIUS: f32 = 2.0;
-const RADIUS2: f32 = 4.0;
-const RADIUS3: f32 = 8.0;
-const RADIUS4: f32 = 16.0;
-const RADIUS5: f32 = 32.0;
-
-const STEP:f32 = 0.04;
 
 @compute @workgroup_size(100)
 fn calculate_forces(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
@@ -65,6 +54,20 @@ fn calculate_forces(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
     }
 
     target_particle.force = vec3<f32>(0.0, -9.81 * target_particle.mass, 0.0) - pressure + viscosity;
+    fluid_particles_out[index] = target_particle;
+
+}
+
+@compute @workgroup_size(100)
+fn integrate( @builtin(global_invocation_id) invocation_id: vec3<u32>){
+    let total = arrayLength(&fluid_particles_out);
+    let index = invocation_id.x;
+
+    if index >= total {
+        return;
+    }
+
+    var target_particle = fluid_particles_out[index];
 
     var vel = target_particle.velocity + (target_particle.force / target_particle.mass) * STEP;
 
