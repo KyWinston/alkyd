@@ -15,7 +15,7 @@ struct FluidParticle {
     force: vec3<f32>
 }
 
-@compute @workgroup_size(100)
+@compute @workgroup_size(64)
 fn main(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
 
     let total = arrayLength(&fluid_particles);
@@ -25,13 +25,13 @@ fn main(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
         return;
     }
 
-    var density = 0.0;
     var target_particle = fluid_particles[index];
-
+    var density = 0.0;
     for (var i = 0; i < i32(total); i++) {
-        if u32(i) == index {
+        if u32(i) == index{
             continue;
         }
+
         let dist = target_particle.local_position - fluid_particles[i].local_position;
 
         let dist_sq = dot(dist, dist);

@@ -61,14 +61,15 @@ impl ComputeWorker for FluidWorker {
         }
 
         let worker = AppComputeWorkerBuilder::new(world)
-            .add_storage("particles", &particle_container)
+            .add_staging("particles", &particle_container)
             .add_staging("particles_out", &particle_container)
             .add_pass::<FluidDensityPass>(
-                [PARTICLE_COUNT as u32 / 100, 1, 1],
+                [PARTICLE_COUNT as u32 / 64, 1, 1],
                 &["particles", "particles_out"],
             )
-            .add_pass::<FluidForcesPass>([PARTICLE_COUNT as u32 / 100, 1, 1], &["particles_out"])
-            .add_pass::<FluidIntegratePass>([PARTICLE_COUNT as u32 / 100, 1, 1], &["particles_out"])
+            .add_pass::<FluidForcesPass>([PARTICLE_COUNT as u32 / 64, 1, 1], &["particles_out"])
+            .add_pass::<FluidIntegratePass>([PARTICLE_COUNT as u32 / 64, 1, 1], &["particles_out"])
+            .add_swap("particles", "particles_out")
             .build();
         worker
     }

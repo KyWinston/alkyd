@@ -36,16 +36,15 @@ fn calculate_forces(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
         if u32(i) == index {
             continue;
         }
-        let density_sq_b = fluid_particles_out[i].density * fluid_particles_out[i].density;
         let dist = distance(fluid_particles_out[i].local_position, target_particle.local_position);
 
         if dist < RADIUS * 2.0 {
             let pressure_dir = normalize(target_particle.local_position - fluid_particles_out[i].local_position);
 
             var pressure_contribution = mass_sq * spiked_kernel_gradient(dist, pressure_dir);
-            pressure_contribution *= (target_particle.pressure / density_sq + fluid_particles_out[i].pressure / density_sq_b);
+            pressure_contribution *= (target_particle.pressure / density_sq + fluid_particles_out[i].pressure / (fluid_particles_out[i].density * fluid_particles_out[i].density));
 
-            var viscosity_contribution = viscosity * mass_sq * (fluid_particles_out[i].velocity - target_particle.velocity) / target_particle.density;
+            var viscosity_contribution = viscosity * mass_sq * (fluid_particles_out[i].velocity - target_particle.velocity) / fluid_particles_out[i].density;
             viscosity_contribution *= spiked_kernel_d2(dist);
 
             pressure += pressure_contribution;
@@ -55,19 +54,18 @@ fn calculate_forces(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
 
     target_particle.force = vec3<f32>(0.0, -9.81 * target_particle.mass, 0.0) - pressure + viscosity;
     fluid_particles_out[index] = target_particle;
-
 }
 
-@compute @workgroup_size(100)
-fn integrate( @builtin(global_invocation_id) invocation_id: vec3<u32>){
+@compute @workgroup_size(64)
+fn integrate(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
     let total = arrayLength(&fluid_particles_out);
     let index = invocation_id.x;
 
     if index >= total {
         return;
     }
-
     var target_particle = fluid_particles_out[index];
+
 
     var vel = target_particle.velocity + (target_particle.force / target_particle.mass) * STEP;
 
@@ -76,18 +74,19 @@ fn integrate( @builtin(global_invocation_id) invocation_id: vec3<u32>){
     let half_bound = 15.0 / 2.0 - vec3(1.0) * 0.1;
 
     if abs(target_particle.local_position.x) > half_bound.x {
+        vel.x *= DAMPING;
+
         target_particle.local_position.x = half_bound.x * sign(target_particle.local_position.x);
-        vel.x *= -1.0 * DAMPING;
     }
 
     if abs(target_particle.local_position.y) > half_bound.y {
+        vel.y *= DAMPING;
         target_particle.local_position.y = half_bound.y * sign(target_particle.local_position.y);
-        vel.y *= -1.0 * DAMPING;
     }
 
     if abs(target_particle.local_position.z) > half_bound.z {
+        vel.z *= DAMPING;
         target_particle.local_position.z = half_bound.z * sign(target_particle.local_position.z);
-        vel.z *= -1.0 * DAMPING;
     }
 
     target_particle.velocity = vel;

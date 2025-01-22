@@ -37,10 +37,11 @@ impl FluidParticleBuffer {
     pub fn new(local_position: Vec3) -> Self {
         Self {
             local_position,
-            density: 0.0,
+            density: 1.0,
             mass: 1.0,
-            _padding: Vec4::ZERO,
             velocity: Vec3::ZERO,
+            _padding: Vec4::ZERO,
+
             ..default()
         }
     }
