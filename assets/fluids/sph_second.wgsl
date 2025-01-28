@@ -14,8 +14,7 @@ struct FluidParticle {
     force: vec3<f32>
 }
 
-
-@compute @workgroup_size(100)
+@compute @workgroup_size(256)
 fn calculate_forces(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
     let total = arrayLength(&fluid_particles_out);
     let index = invocation_id.x;
@@ -56,7 +55,7 @@ fn calculate_forces(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
     fluid_particles_out[index] = target_particle;
 }
 
-@compute @workgroup_size(64)
+@compute @workgroup_size(256)
 fn integrate(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
     let total = arrayLength(&fluid_particles_out);
     let index = invocation_id.x;

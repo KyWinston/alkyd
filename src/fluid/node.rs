@@ -17,6 +17,20 @@ struct FluidForcesPass;
 #[derive(TypePath)]
 struct FluidIntegratePass;
 
+#[allow(dead_code)]
+#[derive(TypePath)]
+struct FluidHashPass;
+
+impl ComputeShader for FluidHashPass {
+    fn shader() -> ShaderRef {
+        FLUID_SIM_HANDLE.into()
+    }
+
+    fn entry_point<'a>() -> &'a str {
+        "hash_particles"
+    }
+}
+
 impl ComputeShader for FluidDensityPass {
     fn shader() -> ShaderRef {
         FLUID_SIM_HANDLE.into()
@@ -49,7 +63,7 @@ impl ComputeWorker for FluidWorker {
     fn build(world: &mut World) -> AppComputeWorker<Self> {
         let mut particle_container = vec![];
         let mut rng = rand::thread_rng();
-        let unif = Uniform::new_inclusive(-7.3, 7.3);
+        let unif = Uniform::new_inclusive(-7.4, 7.4);
 
         for _ in 0..PARTICLE_COUNT {
             let position = Vec3::new(
@@ -63,12 +77,16 @@ impl ComputeWorker for FluidWorker {
         let worker = AppComputeWorkerBuilder::new(world)
             .add_staging("particles", &particle_container)
             .add_staging("particles_out", &particle_container)
+            // .add_pass::<FluidHashPass>(
+            //     [PARTICLE_COUNT as u32 / 256, 1, 1],
+            //     &["particles", "particles_out"],
+            // )
             .add_pass::<FluidDensityPass>(
-                [PARTICLE_COUNT as u32 / 64, 1, 1],
+                [PARTICLE_COUNT as u32 / 256, 1, 1],
                 &["particles", "particles_out"],
             )
-            .add_pass::<FluidForcesPass>([PARTICLE_COUNT as u32 / 64, 1, 1], &["particles_out"])
-            .add_pass::<FluidIntegratePass>([PARTICLE_COUNT as u32 / 64, 1, 1], &["particles_out"])
+            .add_pass::<FluidForcesPass>([PARTICLE_COUNT as u32 / 256, 1, 1], &["particles_out"])
+            .add_pass::<FluidIntegratePass>([PARTICLE_COUNT as u32 / 256, 1, 1], &["particles_out"])
             .add_swap("particles", "particles_out")
             .build();
         worker

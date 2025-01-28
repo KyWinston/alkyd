@@ -1,7 +1,7 @@
 #define_import_path fluid_consts
 
 const DAMPING: f32 = 0.9;
-const GAS_CONSTANT: f32 = 1.0;
+const GAS_CONSTANT: f32 = 2.0;
 const REST_DENSITY: f32 = 5.0;
 
 const RADIUS: f32 = 2.0;
