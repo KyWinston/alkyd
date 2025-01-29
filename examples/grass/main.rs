@@ -12,9 +12,8 @@ use bevy::{
 
 use bevy_third_person_camera::ThirdPersonCameraPlugin;
 use iyes_perf_ui::PerfUiPlugin;
-use systems::{add_grass_material, create_plane, init_scene};
 
-pub mod systems;
+
 
 fn main() {
     App::new()
@@ -35,7 +34,5 @@ fn main() {
             SystemInformationDiagnosticsPlugin,
             PerfUiPlugin,
         ))
-        .add_systems(Startup, (init_scene, create_plane))
-        .add_systems(Update, add_grass_material)
         .run();
 }

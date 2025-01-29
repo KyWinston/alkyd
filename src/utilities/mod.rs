@@ -6,6 +6,8 @@ use crate::{
 
 use bevy::{asset::load_internal_asset, prelude::*};
 
+pub mod aabb;
+
 pub struct UtilitiesPlugin;
 
 impl Plugin for UtilitiesPlugin {

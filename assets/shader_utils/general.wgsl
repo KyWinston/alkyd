@@ -6,7 +6,7 @@
 #import bevy_pbr::pbr_types::{STANDARD_MATERIAL_FLAGS_DOUBLE_SIDED_BIT, PbrInput, pbr_input_new};
 #import bevy_pbr::prepass_utils::{prepass_depth,prepass_normal};
 #import bevy_pbr::mesh_view_bindings::{globals,view,View};
-
+#import global_values::PI
 
 @group(2) @binding(1) var<storage, read_write> voro_cache: array<vec4<f32>>;
 
@@ -402,4 +402,67 @@ fn extend_pbr(in: VertexOutput, is_front: bool) -> PbrInput {
     return pbrInput;
 }
 
+fn unpack_float(rgb: vec3<f32>) -> f32 {
+    let r = rgb.r * 255.0;
+    let g = rgb.g * 255.0;
+    let b = rgb.b * 255.0;
 
+    let noise_scaled = r * 65536.0 + g * 256.0 + b;
+    let noise = noise_scaled / 16777215.0;
+
+    return noise;
+}
+
+fn rotate_align(v1: vec3<f32>, v2: vec3<f32>) -> mat3x3<f32> {
+    let axis = cross(v1, v2);
+
+    let cos_a = dot(v1, v2);
+    let k = 1.0 / (1.0 + cos_a);
+
+    let result = mat3x3f( 
+            (axis.x * axis.x * k) + cos_a, (axis.x * axis.y * k) + axis.z, (axis.x * axis.z * k) - axis.y,
+            (axis.y * axis.x * k) - axis.z, (axis.y * axis.y * k) + cos_a,  (axis.y * axis.z * k) + axis.x, 
+            (axis.z * axis.x * k) + axis.y, (axis.z * axis.y * k) - axis.x, (axis.z * axis.z * k) + cos_a 
+        );
+
+    return result;
+}
+
+fn cubic_bezier(t: f32, p0: vec3<f32>, p1: vec3<f32>, p2: vec3<f32>, p3: vec3<f32>) -> vec3<f32> {
+    let u = 1.0 - t;
+    let tt = t * t;
+    let uu = u * u;
+    let uuu = uu * u;
+    let ttt = tt * t;
+
+    var p = uuu * p0;
+    p = p + 3.0 * uu * t * p1;
+    p = p + 3.0 * u * tt * p2;
+    p = p + ttt * p3;
+
+    return p;
+}
+
+
+fn bezier_tangent(t: f32, p0: vec3<f32>, p1: vec3<f32>, p2: vec3<f32>, p3: vec3<f32>) -> vec3<f32> {
+    let u = 1.0 - t;
+    let u2 = u * u;
+    let t2 = t * t;
+    
+    let tangent = -3.0 * u2 * p0
+        + 3.0 * u2 * p1
+        - 6.0 * u * t * p1
+        + 6.0 * u * t * p2
+        - 3.0 * t2 * p2
+        + 3.0 * t2 * p3;
+    
+    return tangent;
+}
+
+fn rotate_vector(v: vec3<f32>, n: vec3<f32>, degrees: f32) -> vec3<f32> {
+    let theta = degrees * PI / 180.;
+    let cos_theta = cos(theta);
+    let sin_theta = sin(theta);
+
+    return v * cos_theta + cross(n, v) * sin_theta + n * dot(n, v) * (1.0 - cos_theta);
+}

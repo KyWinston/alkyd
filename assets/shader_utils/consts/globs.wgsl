@@ -26,3 +26,10 @@ struct NoiseProperties {
     amplitude: f32,
     frequency: f32
 }
+
+const identity_matrix: mat4x4<f32> = mat4x4<f32>(
+    vec4<f32>(1.0, 0.0, 0.0, 0.0),
+    vec4<f32>(0.0, 1.0, 0.0, 0.0),
+    vec4<f32>(0.0, 0.0, 1.0, 0.0),
+    vec4<f32>(0.0, 0.0, 0.0, 1.0)
+);
