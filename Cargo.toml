@@ -19,7 +19,8 @@ bitflags = "2.5.0"
 bytemuck = "1.21.0"
 crossbeam-channel = "0.5.14"
 rand = "0.9"
-bevy_easy_compute = {git="https://github.com/AnthonyTornetta/bevy_easy_compute", branch="main"}
+bevy_easy_compute = { git = "https://github.com/AnthonyTornetta/bevy_easy_compute", branch = "main" }
+bevy-inspector-egui = { version = "0.29.1", optional = true }
 
 [dev-dependencies]
 bevy = { version = "0.15.1", default-features = false, features = [
@@ -28,7 +29,7 @@ bevy = { version = "0.15.1", default-features = false, features = [
     "trace",
     "png",
 ] }
-# bevy-inspector-egui = "0.29.1"
+bevy-inspector-egui = "0.29.1" 
 bevy_third_person_camera = "0.2.0"
 iyes_perf_ui = { git = "https://github.com/IyesGames/iyes_perf_ui", branch = "main" }
 
@@ -40,6 +41,7 @@ cargo-husky = { version = "1", features = [
 
 [features]
 default = []
+bevy-inspector-egui = ["dep:bevy-inspector-egui"]
 
 [target.'cfg(target_os = "linux")'.dev-dependencies.bevy]
 features = ["x11", "wayland", "bevy_winit"]
