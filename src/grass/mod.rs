@@ -32,8 +32,8 @@ use render::{
     prepare::{prepare_grass, update_computed_grass, ComputedGrassEntities},
     queue::{queue_grass, queue_grass_shadows},
 };
-use resources::GrassWind;
-use systems::cull_chunks;
+use resources::{clump_startup, GrassClumpConfig, GrassClumps, GrassWind};
+use systems::{cull_chunks, prepare_clump};
 
 use crate::prefix_sum::PrefixSumPipeline;
 
@@ -94,7 +94,7 @@ impl Plugin for GrassGeneratorPlugin {
             .add_systems(
                 Update,
                 (
-                    grass_setup,
+                    // grass_setup,
                     update_config_buffers,
                     (toggle_shadows, cull_chunks).chain(),
                 ),

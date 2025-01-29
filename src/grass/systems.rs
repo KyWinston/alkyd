@@ -1,8 +1,12 @@
+use crate::utilities::aabb::Aabb2dGpu;
+
 use super::{
     components::{Grass, GrassChunk, GrassChunkBuffers, GrassCullChunks, GrassGpuInfo},
     config::GrassConfig,
     lod::GrassLODMesh,
     material::GrassMaterial,
+    render::pipeline::GrassGeneratePipeline,
+    resources::{GrassClumpConfig, GrassClumps, GrassClumpsBindGroup},
 };
 use bevy::{
     ecs::{entity::Entity, system::Commands},
@@ -10,7 +14,10 @@ use bevy::{
     math::{bounding::Aabb2d, Affine3A},
     prelude::*,
     render::{
-        batching::NoAutomaticBatching, primitives::{Aabb, Frustum}, renderer::RenderDevice,
+        batching::NoAutomaticBatching,
+        primitives::{Aabb, Frustum},
+        render_resource::{BindGroupEntries, BufferInitDescriptor, BufferUsages},
+        renderer::RenderDevice,
         view::NoFrustumCulling,
     },
 };
@@ -145,7 +152,6 @@ pub(crate) fn cull_chunks(
     }
 }
 
-
 // pub fn create_wind_map(mut wind: ResMut<GrassWind>, asset_server: Res<AssetServer>) {
 //     wind.wind_map = asset_server.add(GrassWind::generate_wind_map(2048, 4.));
 // }
@@ -194,8 +200,8 @@ pub(crate) fn prepare_clump(
     );
 
     commands.insert_resource(GrassClumpsBindGroup {
-        _positions_buffer: positions_buffer,
-        _params_buffer: params_buffer,
+        positions_buffer,
+        params_buffer,
         bind_group,
     });
 }

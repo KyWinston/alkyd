@@ -8,7 +8,6 @@ pub mod raymarch_quad;
 pub mod showcase;
 pub mod utilities;
 pub mod workers;
-// pub mod prefix_sum;
 // pub mod grass;
 
 // pub(crate) const IRRIDESCANT_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1208033355542926744);

@@ -1,8 +1,7 @@
-use crate::{grass::{
-    chunk::{GrassChunk, GrassChunkBuffers},
-    clump::GrassClumpConfig,
-    config::GrassConfigGpu, material::GrassMaterial,
-}, utilities::aabb::Aabb2dGpu};
+use crate::{
+    grass::{components::{GrassChunk, GrassChunkBuffers}, config::GrassConfigGpu, material::GrassMaterial, resources::GrassClumpConfig},
+    utilities::aabb::Aabb2dGpu,
+};
 use bevy::{
     pbr::MaterialPipeline,
     prelude::*,

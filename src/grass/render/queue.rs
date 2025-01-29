@@ -11,11 +11,16 @@ use bevy::{
         render_asset::RenderAssets,
         render_phase::{BinnedRenderPhaseType, DrawFunctions, ViewBinnedRenderPhases},
         render_resource::{PipelineCache, SpecializedMeshPipelines},
+        sync_world::MainEntity,
         view::ExtractedView,
     },
 };
 
-use crate::grass::{chunk::GrassChunk, config::{GrassConfig, GrassLightType}, lod::GrassLODMesh, material::GrassMaterial};
+use crate::grass::{
+    config::{GrassConfig, GrassLightType},
+    lod::GrassLODMesh,
+    material::GrassMaterial,
+};
 
 use super::draw::{DrawGrass, DrawGrassLOD, DrawGrassPrepass};
 
@@ -88,7 +93,7 @@ pub(crate) fn queue_grass(
                     material_bind_group_id: material.get_bind_group_id().0,
                     lightmap_image: None,
                 },
-                entity,
+                *entity,
                 BinnedRenderPhaseType::UnbatchableMesh,
             );
         }
@@ -229,7 +234,7 @@ pub fn queue_grass_shadows(
                         pipeline: pipeline_id,
                         asset_id: mesh_instance.mesh_asset_id.into(),
                     },
-                    entity,
+                    *entity,
                     BinnedRenderPhaseType::UnbatchableMesh,
                 );
             }

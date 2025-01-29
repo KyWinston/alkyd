@@ -8,7 +8,8 @@ use bevy::{
     },
 };
 
-use crate::grass::{clump::GrassClumpsBindGroup, material::GrassMaterial};
+
+use crate::grass::{material::GrassMaterial, resources::GrassClumpsBindGroup};
 
 use super::{
     pipeline::GrassGeneratePipelineId,

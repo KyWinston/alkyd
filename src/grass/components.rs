@@ -8,11 +8,12 @@ use bevy::{
             Buffer, BufferDescriptor, BufferInitDescriptor, BufferUsages, DrawIndexedIndirectArgs,
         },
         renderer::RenderDevice,
-    }, utils::HashMap,
+    },
+    utils::HashMap,
 };
 
-use super::{lod::GrassLODMesh, render::instance::GrassInstanceData, GrassHeightMap};
-use crate::{prefix_sum::PrefixSumBuffers, utilities::aabb::Aabb2dGpu};
+use super::{lod::GrassLODMesh, render::instance::GrassInstanceData, resources::PrefixSumBuffers, GrassHeightMap};
+use crate::utilities::aabb::Aabb2dGpu;
 
 #[derive(Component, Clone)]
 pub struct GrassChunk {

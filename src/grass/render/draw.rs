@@ -94,7 +94,7 @@ impl<P: PhaseItem, B: GrassBindGroups> RenderCommand<P> for DrawGrassInstanced<B
             return RenderCommandResult::Failure("");
         };
         let Some(bind_groups) = query_item else {
-            return RenderCommandResult::Failure;
+            return RenderCommandResult::Failure("");
         };
 
         pass.set_vertex_buffer(0, gpu_mesh.vertex_buffer.slice(..));

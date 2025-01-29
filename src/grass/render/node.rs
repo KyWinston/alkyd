@@ -1,6 +1,7 @@
 use bevy::{prelude::*, render::{render_graph::{self, RenderGraphContext, RenderLabel}, render_resource::{CachedPipelineState, ComputePassDescriptor, PipelineCache}, renderer::RenderContext, view::ViewUniformOffset}};
 
-use crate::prefix_sum::{prefix_sum_pass, PrefixSumBindGroups, PrefixSumPipeline};
+
+use crate::grass::resources::{prefix_sum_pass, PrefixSumBindGroups, PrefixSumPipeline};
 
 use super::{pipeline::{GrassCompactPipeline, GrassCullPipelineId}, prepare::{CompactBindGroups, CompactBindGroupsLOD, GrassChunkCullBindGroup, GrassShadowBindGroups, PrefixSumBindGroupsLOD, ShadowPrefixSumBindGroups}};
 

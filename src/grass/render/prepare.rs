@@ -1,11 +1,5 @@
 use super::pipeline::{GrassCompactPipeline, GrassCullPipeline, GrassGeneratePipeline};
-use crate::{
-    grass::{
-        chunk::{GrassChunk, GrassChunkBuffers, GrassChunkCullBuffers},
-        config::GrassConfigBuffer, Grass, GrassGpuInfo,
-    },
-    prefix_sum::{PrefixSumBindGroups, PrefixSumPipeline},
-};
+use crate::grass::{components::{GrassChunk, GrassChunkBuffers, GrassChunkCullBuffers, GrassGpuInfo}, config::GrassConfigBuffer, resources::{PrefixSumBindGroups, PrefixSumPipeline}, Grass};
 use bevy::{
     prelude::*,
     render::{
