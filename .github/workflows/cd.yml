@@ -8,6 +8,11 @@ env:
   CRATE_PATHS: .
 
 jobs:
+  setup:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: setup bevy required packages
+        run: sudo apt-get install g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0
   check-version:
     runs-on: ubuntu-22.04
     outputs:
