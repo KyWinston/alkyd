@@ -1,13 +1,14 @@
 use alkyd::AlkydPlugin;
 
 use bevy::{
-    color::palettes::css::GRAY, diagnostic::FrameTimeDiagnosticsPlugin, image::{ImageAddressMode, ImageSamplerDescriptor}, prelude::*
+    color::palettes::css::GRAY, diagnostic::FrameTimeDiagnosticsPlugin, image::{ImageAddressMode, ImageSamplerDescriptor}, pbr::ExtendedMaterial, prelude::*
 };
 
+use irridescant::{shader::IrridescantMaterial, IrridescantMaterialPlugin};
 use systems::{create_cube, init_scene, rotate_mesh};
 
 pub mod systems;
-
+pub mod irridescant;
 fn main() {
     App::new()
         .insert_resource(ClearColor(GRAY.into()))
@@ -21,6 +22,8 @@ fn main() {
                 },
             }),
             AlkydPlugin,
+            IrridescantMaterialPlugin,
+            MaterialPlugin::<ExtendedMaterial<StandardMaterial, IrridescantMaterial>>::default(),
             FrameTimeDiagnosticsPlugin,
         ))
         .add_systems(Startup, (init_scene, create_cube))

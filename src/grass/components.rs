@@ -9,8 +9,6 @@ use bevy::{
 };
 use bytemuck::{Pod, Zeroable};
 
-
-
 #[derive(Clone, Copy, Pod, Zeroable, Reflect, Debug)]
 #[repr(C)]
 pub struct GrassData {
@@ -21,18 +19,11 @@ pub struct GrassData {
 #[derive(Component, Clone, Asset, TypePath)]
 pub struct GrassChunkBuffer {
     pub buffer: Buffer,
-    pub length: usize
+    pub length: usize,
 }
 
-
-#[derive(Component, Deref, Clone, Asset, TypePath)]
+#[derive(Component, Default, Deref, Clone, Asset, TypePath)]
 pub struct GrassChunkData(pub Vec<GrassData>);
-
-impl Default for GrassChunkData {
-    fn default() -> Self {
-        Self(Vec::new())
-    }
-}
 
 impl RenderAsset for GrassChunkBuffer {
     type SourceAsset = GrassChunkData;

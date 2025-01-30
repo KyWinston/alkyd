@@ -1,5 +1,7 @@
 use alkyd::components::Showcase;
-use bevy::{color::palettes::css::WHITE, prelude::*};
+use bevy::{color::palettes::css::WHITE, pbr::ExtendedMaterial, prelude::*};
+
+use crate::irridescant::shader::IrridescantMaterial;
 
 pub fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<Time>) {
     if let Ok(mut mesh) = mesh_q.get_single_mut() {
@@ -22,13 +24,15 @@ pub fn init_scene(mut commands: Commands) {
 
 pub fn create_cube(
     mut commands: Commands,
-    mut materials: ResMut<Assets<StandardMaterial>>,
+    mut materials: ResMut<Assets<ExtendedMaterial<StandardMaterial, IrridescantMaterial>>>,
     mut meshes: ResMut<Assets<Mesh>>,
-    // asset_server: Res<AssetServer>,
 ) {
-    let material = materials.add(StandardMaterial {
-        base_color: WHITE.into(),
-        ..default()
+    let material = materials.add(ExtendedMaterial {
+        base: StandardMaterial {
+            base_color: WHITE.into(),
+            ..default()
+        },
+        extension: IrridescantMaterial::default(),
     });
 
     let mesh = meshes.add(Cuboid::from_size(Vec3::splat(4.0)));
