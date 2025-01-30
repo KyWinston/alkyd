@@ -30,7 +30,7 @@ jobs:
           toolchain: ${{ env.RUST_VERSION_STABLE }}
           profile: minimal
           override: true
-      - run: sudo apt-get install g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
+      - run: sudo apt-get update && apt-get install g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
       - name: Test
         run: cargo test
 
@@ -95,7 +95,7 @@ jobs:
           profile: minimal
           components: rustfmt, clippy
           override: true
-      - run: sudo apt-get install g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
+      - run: sudo apt-get update && apt-get install g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
       - name: Run clippy
         run: cargo clippy --all-targets -- -D warnings $(cat .lints | cut -f1 -d"#" | tr '\n' ' ')
       - name: Run rustfmt
