@@ -18,29 +18,24 @@ env:
   CRATE_PATHS: .
 
 jobs:
-  setup:
-    runs-on: ubuntu-22.04
-    steps:
-      - name: setup bevy required packages
-        run: sudo apt-get install g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
           toolchain: ${{ env.RUST_VERSION_STABLE }}
           profile: minimal
           override: true
-      - name: Build
-        run: cargo build --release
+      - run: sudo apt-get install g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
       - name: Test
         run: cargo test
 
   check-coverage:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     needs: test
     steps:
       - name: Checkout
@@ -71,7 +66,7 @@ jobs:
         run: bash .github/workflows/scripts/check_coverage.sh
 
   check-mutations:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     needs: test
     steps:
       - name: Checkout
@@ -88,7 +83,7 @@ jobs:
         run: bash .github/workflows/scripts/check_mutations.sh
 
   lint-rust:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     needs: test
     steps:
       - name: Checkout
@@ -100,6 +95,7 @@ jobs:
           profile: minimal
           components: rustfmt, clippy
           override: true
+      - run: sudo apt-get install g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
       - name: Run clippy
         run: cargo clippy --all-targets -- -D warnings $(cat .lints | cut -f1 -d"#" | tr '\n' ' ')
       - name: Run rustfmt
@@ -108,7 +104,7 @@ jobs:
         uses: EmbarkStudios/cargo-deny-action@v1
 
   lint-generic:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     needs: test
     steps:
       - name: Checkout
