@@ -11,7 +11,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   RUST_VERSION_STABLE: 1.84.0
-  RUST_VERSION_NIGHTLY: nightly-2025-01-14
+  RUST_VERSION_NIGHTLY: nightly-2025-01-30
   MUTAGEN_COMMIT: f8249256c40769c916b5b00bd284f204d5540588
   COV_THRESHOLD: 100.0
   MUTAGEN_THRESHOLD: 100.0
@@ -39,7 +39,7 @@ jobs:
     needs: test
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 2
       - name: Install Rust toolchain
@@ -54,7 +54,7 @@ jobs:
       - name: Run coverage
         run: bash .github/workflows/scripts/run_coverage.sh
       - name: Upload coverage report on GitHub
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: coverage
           path: coverage
@@ -70,7 +70,7 @@ jobs:
     needs: test
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -87,7 +87,7 @@ jobs:
     needs: test
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -108,7 +108,7 @@ jobs:
     needs: test
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install other dependencies
         run: sudo apt-get install moreutils dos2unix
       - name: Check encoding
