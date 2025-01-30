@@ -29,12 +29,6 @@ bevy = { version = "0.15.1", default-features = false, features = [
 bevy_third_person_camera = "0.2.0"
 iyes_perf_ui = { git = "https://github.com/IyesGames/iyes_perf_ui", branch = "main" }
 
-cargo-husky = { version = "1", features = [
-    "precommit-hook",
-    "run-cargo-test",
-    "run-cargo-clippy",
-] }
-
 [features]
 default = []
 

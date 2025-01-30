@@ -8,6 +8,7 @@ pub mod raymarch_quad;
 pub mod showcase;
 pub mod utilities;
 pub mod workers;
+pub mod grass;
 
 pub const IRRIDESCANT_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1208033355542926744);
 pub const PAINTERLY_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1908033355537029744);
@@ -23,7 +24,7 @@ pub const SPRITELY_HANDLE: Handle<Shader> = Handle::weak_from_u128(1708343655899
 pub const SOBEL_HANDLE: Handle<Shader> = Handle::weak_from_u128(1748343643674965476001229744);
 pub const BLEND_MODES_HANDLE: Handle<Shader> = Handle::weak_from_u128(184229632462351882081599150);
 pub const CONVERTERS_HANDLE: Handle<Shader> = Handle::weak_from_u128(522521912971636216150179);
-
+pub const GRASS_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(215365457463534568769856453423);
 pub struct AlkydPlugin;
 
 impl Plugin for AlkydPlugin {
