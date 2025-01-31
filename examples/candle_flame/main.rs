@@ -13,7 +13,7 @@ use bevy::{
 use bevy_third_person_camera::{
     ThirdPersonCamera, ThirdPersonCameraPlugin, ThirdPersonCameraTarget, Zoom,
 };
-use candle_flame::{candle_flame::CandleFlameMaterial, CandleFlamePlugin};
+use candle_flame::{material::CandleFlameMaterial, CandleFlamePlugin};
 use iyes_perf_ui::{prelude::PerfUiDefaultEntries, PerfUiPlugin};
 
 pub mod candle_flame;
@@ -96,7 +96,6 @@ pub fn create_cube(
         precision: 50.0,
         fbm: Some(tex_gen.texture_0.clone_weak()),
         fbm_2: Some(tex_gen.texture_1.clone_weak()),
-        ..default()
     });
     let mesh = meshes.add(Cuboid::from_size(Vec3::splat(5.0)));
     commands.spawn((

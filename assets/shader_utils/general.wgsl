@@ -6,6 +6,7 @@
 #import bevy_pbr::pbr_types::{STANDARD_MATERIAL_FLAGS_DOUBLE_SIDED_BIT, PbrInput, pbr_input_new};
 #import bevy_pbr::prepass_utils::{prepass_depth,prepass_normal};
 #import bevy_pbr::mesh_view_bindings::{globals,view,View};
+#import global_values::PI
 
 
 @group(2) @binding(1) var<storage, read_write> voro_cache: array<vec4<f32>>;
@@ -35,7 +36,6 @@ fn noise2(n: vec2<f32>) -> f32 {
 }
 
 fn rand22(n: vec2<f32>) -> f32 { return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453); }
-
 fn fade3(t: vec3f) -> vec3f { return t * t * t * (t * (t * 6. - 15.) + 10.); }
 fn rand11(n: f32) -> f32 { return fract(sin(n) * 43758.5453123); }
 
@@ -69,7 +69,7 @@ fn sd_bezier(p: vec2f, A: vec2f, B: vec2f, C: vec2f) -> vec2f {
         let t = clamp(uv.x + uv.y - kx, 0., 1.);
         let f = d + (c + b * t) * t;
         res = vec2f(dot(f, f), t);
-    } else {
+    } else {                                                                
         let z = sqrt(-p1);
         let v = acos(q / (p1 * z * 2.)) / 3.;
         let m = cos(v);
@@ -455,17 +455,17 @@ fn rotate_align(v1: vec3<f32>, v2: vec3<f32>) -> mat3x3<f32> {
     return result;
 }
 
-fn sample_wind_map(uv: vec2<f32>, speed: f32) -> vec4<f32> {
-    let texture_size = textureDimensions(t_wind_map);
+// fn sample_wind_map(uv: vec2<f32>, speed: f32) -> vec4<f32> {
+//     let texture_size = textureDimensions(t_wind_map);
     
-    let rad = wind.direction * PI / 180.0;
-    let direction = vec2<f32>(cos(rad), sin(rad));
+//     let rad = wind.direction * PI / 180.0;
+//     let direction = vec2<f32>(cos(rad), sin(rad));
     
-    let scrolled_uv = uv + direction * globals.time * speed;
+//     let scrolled_uv = uv + direction * globals.time * speed;
     
-    let pixel_coords = vec2<i32>(fract(scrolled_uv) * vec2<f32>(texture_size));
-    return textureLoad(t_wind_map, pixel_coords, 0);
-}
+//     let pixel_coords = vec2<i32>(fract(scrolled_uv) * vec2<f32>(texture_size));
+//     return textureLoad(t_wind_map, pixel_coords, 0);
+// }
 
 const identity_matrix: mat4x4<f32> = mat4x4<f32>(
     vec4<f32>(1.0, 0.0, 0.0, 0.0),

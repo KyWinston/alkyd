@@ -3,7 +3,6 @@
 #import bevy_pbr::mesh_view_bindings::globals
 #import bevy_pbr::mesh_view_bindings::lights
 #import bevy_pbr::mesh_view_bindings::view
-#import bevy_pbr::utils::PI
 #import bevy_pbr::utils::random1D
 #import bevy_pbr::pbr_types
 #import bevy_pbr::pbr_functions

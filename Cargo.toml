@@ -58,7 +58,7 @@ codegen-units = 10
 
 
 [[example]]
-name = "cube"
+name = "surfaces"
 doc-scrape-examples = true
 
 [[example]]
