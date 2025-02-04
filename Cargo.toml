@@ -11,37 +11,31 @@ publish = true
 [dependencies]
 bevy = { version = "0.15.1", default-features = false, features = [
     "bevy_pbr",
+    "bevy_gizmos",
     "png",
 ] }
 cfg-if = "1.0.0"
 bitflags = "2.5.0"
-bevy_easy_compute = { version = "0.15.0" }
-bevy_third_person_camera = "0.2.0"
-
+bytemuck = "1.21.0"
+crossbeam-channel = "0.5.14"
+rand = "0.8.5"
+bevy_easy_compute = {git="https://github.com/AnthonyTornetta/bevy_easy_compute", branch="main"}
 
 [dev-dependencies]
 bevy = { version = "0.15.1", default-features = false, features = [
-    "bevy_pbr",
-    "bevy_render",
-    "bevy_winit",
+    "bevy_core_pipeline",
+    "bevy_gizmos",
     "trace",
     "png",
 ] }
-
+bevy_third_person_camera = "0.2.0"
 iyes_perf_ui = { git = "https://github.com/IyesGames/iyes_perf_ui", branch = "main" }
 
-cargo-husky = { version = "1", features = [
-    "precommit-hook",
-    "run-cargo-test",
-    "run-cargo-clippy",
-] }
-
 [features]
-debug = []
 default = []
 
 [target.'cfg(target_os = "linux")'.dev-dependencies.bevy]
-features = ["x11", "wayland"]
+features = ["x11", "wayland", "bevy_winit"]
 version = "0.15.1"
 
 [lib]
@@ -66,11 +60,7 @@ codegen-units = 10
 
 
 [[example]]
-name = "cube"
-doc-scrape-examples = true
-
-[[example]]
-name = "stone"
+name = "surfaces"
 doc-scrape-examples = true
 
 [[example]]
@@ -79,4 +69,12 @@ doc-scrape-examples = true
 
 [[example]]
 name = "candle_flame"
+doc-scrape-examples = true
+
+[[example]]
+name = "fluid"
+doc-scrape-examples = true
+
+[[example]]
+name = "terrain"
 doc-scrape-examples = true

@@ -1,4 +1,4 @@
-use alkyd::AlkydPlugin;
+use alkyd::{tex_gen::resources::TexGenImage, AlkydPlugin};
 
 use bevy::{
     color::palettes::css::ORANGE,
@@ -7,14 +7,14 @@ use bevy::{
         SystemInformationDiagnosticsPlugin,
     },
     image::{ImageAddressMode, ImageSamplerDescriptor},
+    pbr::NotShadowCaster,
     prelude::*,
     window::WindowResolution,
 };
-use bevy_third_person_camera::{ThirdPersonCamera, ThirdPersonCameraPlugin, ThirdPersonCameraTarget, Zoom};
-use candle_flame::{
-    candle_flame::{CandleFlameMaterial, NoiseProperties},
-    CandleFlamePlugin,
+use bevy_third_person_camera::{
+    ThirdPersonCamera, ThirdPersonCameraPlugin, ThirdPersonCameraTarget, Zoom,
 };
+use candle_flame::{material::CandleFlameMaterial, CandleFlamePlugin};
 use iyes_perf_ui::{prelude::PerfUiDefaultEntries, PerfUiPlugin};
 
 pub mod candle_flame;
@@ -50,12 +50,10 @@ fn main() {
             PerfUiPlugin,
             ThirdPersonCameraPlugin,
             MaterialPlugin::<CandleFlameMaterial>::default(),
-            AlkydPlugin { debug: true },
+            AlkydPlugin,
         ))
-        .add_systems(
-            Startup,
-            (init_camera.before(init_scene), init_scene, create_cube),
-        )
+        .add_systems(Startup, (init_camera.before(init_scene), init_scene))
+        .add_systems(Update, create_cube.run_if(resource_added::<TexGenImage>))
         .run();
 }
 
@@ -89,25 +87,21 @@ pub fn create_cube(
     mut materials: ResMut<Assets<CandleFlameMaterial>>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
+    tex_gen: Res<TexGenImage>,
 ) {
     let material = materials.add(CandleFlameMaterial {
         diffuse_color: Color::srgb_from_array(ORANGE.to_f32_array_no_alpha()),
         radius: 0.8,
         center: Vec3::ZERO,
-        steps: 20,
-        precision: 20.0,
-        props: NoiseProperties {
-            octaves: 2,
-            lacunarity: 2.0,
-            frequency: 1.0,
-            gain: 0.3,
-            amplitude: 0.8,
-        },
-        ..default()
+        steps: 50,
+        precision: 50.0,
+        fbm: Some(tex_gen.texture_0.clone_weak()),
+        fbm_2: Some(tex_gen.texture_1.clone_weak()),
     });
-    let mesh = meshes.add(Cuboid::from_size(Vec3::splat(4.5)));
+    let mesh = meshes.add(Cuboid::from_size(Vec3::splat(5.0)));
     commands.spawn((
         Mesh3d(mesh),
+        NotShadowCaster,
         MeshMaterial3d(material),
         ThirdPersonCameraTarget,
     ));

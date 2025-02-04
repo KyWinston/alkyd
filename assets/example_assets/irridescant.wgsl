@@ -34,27 +34,23 @@ fn fragment(
     // generate a PbrInput struct from the StandardMaterial bindings
     var pbr_input = pbr_input_from_standard_material(in, is_front);
     let view_direction = normalize(in.world_position.xyz - view.world_position.xyz);
-    pbr_input.N *= 0.2;
     let facing = dot(view_direction, pbr_input.N.rgb);
     let fresnel = fresnel(my_extended_material.ior, view_direction, in.world_normal.rgb);
 
-    let color_noise = apply_hue(snoise(in.position.xyz * 0.03) * pbr_input.material.base_color.rgb, fresnel);
+    let color_noise = apply_hue(hsv2rgb(vec3(snoise(in.world_position.xyz * facing * 0.2), 1.0, 1.0)), fresnel);
     pbr_input.material.base_color = vec4(mix(vec3(pbr_input.material.base_color.rgb), color_noise, facing), 1.0);
-    pbr_input.material.metallic = 1.0;
+
     #ifdef PREPASS_PIPELINE
     // in deferred mode we can't modify anything after that, as lighting is run in a separate fullscreen shader.
     let out = deferred_output(in, pbr_input);
 #else
     var out: FragmentOutput;
     // apply lighting
-    out.color = apply_pbr_lighting(pbr_input);
+    out.color = pbr_input.material.base_color;
 
     // apply in-shader post processing (fog, alpha-premultiply, and also tonemapping, debanding if the camera is non-hdr)
     // note this does not include fullscreen postprocessing effects like bloom.
     out.color = main_pass_post_lighting_processing(pbr_input, out.color);
-
-    // we can optionally modify the final result here
-    out.color = out.color;
 #endif
     return out;
 }
