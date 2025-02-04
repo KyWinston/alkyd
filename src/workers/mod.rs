@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::compute::TextureGenPlugin;
+use crate::tex_gen::TextureGenPlugin;
 
 pub struct WorkersPlugin;
 

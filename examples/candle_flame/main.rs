@@ -1,4 +1,4 @@
-use alkyd::{compute::resources::TexGenImage, AlkydPlugin};
+use alkyd::{tex_gen::resources::TexGenImage, AlkydPlugin};
 
 use bevy::{
     color::palettes::css::ORANGE,
@@ -7,6 +7,7 @@ use bevy::{
         SystemInformationDiagnosticsPlugin,
     },
     image::{ImageAddressMode, ImageSamplerDescriptor},
+    pbr::NotShadowCaster,
     prelude::*,
     window::WindowResolution,
 };
@@ -90,7 +91,7 @@ pub fn create_cube(
 ) {
     let material = materials.add(CandleFlameMaterial {
         diffuse_color: Color::srgb_from_array(ORANGE.to_f32_array_no_alpha()),
-        radius: 0.9,
+        radius: 0.8,
         center: Vec3::ZERO,
         steps: 50,
         precision: 50.0,
@@ -100,6 +101,7 @@ pub fn create_cube(
     let mesh = meshes.add(Cuboid::from_size(Vec3::splat(5.0)));
     commands.spawn((
         Mesh3d(mesh),
+        NotShadowCaster,
         MeshMaterial3d(material),
         ThirdPersonCameraTarget,
     ));

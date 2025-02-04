@@ -1,18 +1,18 @@
 use bevy::{asset::load_internal_asset, prelude::*, render::render_resource::Shader};
 
-use crate::GRASS_SHADER_HANDLE;
+use crate::TERRAIN_SHADER_HANDLE;
 
 pub mod components;
-pub mod pipeline;
+pub mod node;
 
-pub struct GrassPlugin;
+pub struct TerrainPlugin;
 
-impl Plugin for GrassPlugin {
+impl Plugin for TerrainPlugin {
     fn build(&self, app: &mut App) {
         load_internal_asset!(
             app,
-            GRASS_SHADER_HANDLE,
-            "../../assets/shaders/grass.wgsl",
+            TERRAIN_SHADER_HANDLE,
+            "../../assets/shaders/terrain.wgsl",
             Shader::from_wgsl
         );
     }

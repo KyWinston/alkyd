@@ -373,34 +373,9 @@ fn color_ramp(color_stops: array<ColorStop,3>, factor: f32) -> vec3<f32> {
 }
 
 
-fn extend_pbr(in: VertexOutput, is_front: bool) -> PbrInput {
-    var pbrInput = pbr_input_new();
-    pbrInput.frag_coord = in.position;
-    pbrInput.world_position = in.world_position;
 
-    let double_sided = (pbrInput.material.flags & STANDARD_MATERIAL_FLAGS_DOUBLE_SIDED_BIT) != 0u;
-    pbrInput.world_normal = fns::prepare_world_normal(
-        in.world_normal,
-        double_sided,
-        is_front
-    );
-    
-    #ifdef VERTEX_TANGENTS
-    let Nt = pbrInput.world_normal.rgb;
-    let TBN = fns::calculate_tbn_mikktspace(pbrInput.world_normal.rgb,
-        in.world_tangent);
-    pbrInput.N = fns::apply_normal_mapping(
-        pbr_input.material.flags,
-        TBN,
-        double_sided,
-        is_front,
-        Nt,
-    );
-    #else
-    pbrInput.N = normalize(pbrInput.world_normal);
-    #endif
-    return pbrInput;
-}
+
+
 
 fn rotate_vector(v: vec3<f32>, n: vec3<f32>, degrees: f32) -> vec3<f32> {
     let theta = degrees * PI / 180.;
