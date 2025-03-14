@@ -1,11 +1,11 @@
-// use bevy::{prelude::*, render::render_resource::{AsBindGroup, Buffer}};
-// use bytemuck::{Pod, Zeroable};
+use bevy::prelude::*;
 
+#[derive(Component, Clone)]
+#[require(Transform)]
+pub struct TerrainRoot;
 
-
-// #[derive(Component, Clone, Asset, AsBindGroup)]
-// pub struct TerrainChunk {
-//     #[uniform(0)]
-//     pub id: usize,
-//     pub instances: u32,
-// }
+#[derive(Component, Clone)]
+pub struct TerrainChunk {
+    pub id: usize,
+    pub instances: u32,
+}

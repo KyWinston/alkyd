@@ -24,8 +24,8 @@ pub fn init_scene(mut commands: Commands, server: Res<AssetServer>) {
         Transform::from_xyz(0.0, 5.0, 15.0).looking_at(Vec3::ZERO, Vec3::Y),
     ));
     commands.insert_resource(TerrainMaps(
-        server.load("example_assets/heightmap.png"),
-        server.load("example_assets/terrain_normals.png"),
+        server.load("example_assets/tile_1_height.png"),
+        server.load("example_assets/tile_1_normal.png"),
     ));
 }
 
@@ -48,9 +48,9 @@ pub fn create_terrain(
     });
 
     let mesh = meshes.add(
-        Plane3d::new(Vec3::Y, Vec2::splat(7.5))
+        Plane3d::new(Vec3::Y, Vec2::splat(50.0))
             .mesh()
-            .subdivisions(8),
+            .subdivisions(16),
     );
     commands.spawn((
         Mesh3d(mesh),
