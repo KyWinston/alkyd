@@ -1,7 +1,7 @@
 [package]
 name = "alkyd"
 version = "0.3.2"
-edition = "2021"
+edition = "2024"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/KyWinston/alkyd"
 exclude = ["**/bin", "examples/*", "assets/example_assets/*", "**/wgpu_trace"]
@@ -9,7 +9,7 @@ description = "bevy crate for handling procedural textures and shaders"
 publish = true
 
 [dependencies]
-bevy = { version = "0.15.1", default-features = false, features = [
+bevy = { version = "0.15.3", default-features = false, features = [
     "bevy_pbr",
     "bevy_gizmos",
     "png",
@@ -22,7 +22,7 @@ rand = "0.8.5"
 bevy_easy_compute = {git="https://github.com/AnthonyTornetta/bevy_easy_compute", branch="main"}
 
 [dev-dependencies]
-bevy = { version = "0.15.1", default-features = false, features = [
+bevy = { version = "0.15.3", default-features = false, features = [
     "bevy_core_pipeline",
     "bevy_gizmos",
     "trace",
@@ -36,7 +36,7 @@ default = []
 
 [target.'cfg(target_os = "linux")'.dev-dependencies.bevy]
 features = ["x11", "wayland", "bevy_winit"]
-version = "0.15.1"
+version = "0.15.3"
 
 [lib]
 name = "alkyd"
