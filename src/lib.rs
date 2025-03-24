@@ -1,13 +1,13 @@
 use bevy::prelude::*;
-use terrain::TerrainPlugin;
+// use terrain::TerrainPlugin;
 use utilities::UtilitiesPlugin;
 use workers::WorkersPlugin;
 
 pub mod components;
 pub mod compute;
-pub mod fluid;
+// pub mod fluid;
 pub mod showcase;
-pub mod terrain;
+// pub mod terrain;
 pub mod tex_gen;
 pub mod utilities;
 pub mod workers;
@@ -36,6 +36,6 @@ pub struct AlkydPlugin;
 
 impl Plugin for AlkydPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((UtilitiesPlugin, WorkersPlugin, TerrainPlugin));
+        app.add_plugins((UtilitiesPlugin, WorkersPlugin));
     }
 }
