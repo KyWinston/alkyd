@@ -1,5 +1,4 @@
-use bevy::{pbr::MaterialExtension, prelude::*, render::render_resource::AsBindGroup};
-use bevy_easy_compute::prelude::ShaderRef;
+use bevy::{pbr::MaterialExtension, prelude::*, render::render_resource::{AsBindGroup, ShaderRef}};
 
 use crate::TERRAIN_SHADER_HANDLE;
 

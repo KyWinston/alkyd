@@ -28,8 +28,8 @@ bevy = { version = "0.16.0-rc.1", default-features = false, features = [
     "trace",
     "png",
 ] }
-bevy_third_person_camera = "0.2.0"
-iyes_perf_ui = { git = "https://github.com/IyesGames/iyes_perf_ui", branch = "main" }
+# bevy_third_person_camera = "0.2.0"
+# iyes_perf_ui = { git = "https://github.com/IyesGames/iyes_perf_ui", branch = "main" }
 
 [features]
 default = []
@@ -37,11 +37,11 @@ default = []
 [target.'cfg(target_os = "linux")'.dev-dependencies.bevy]
 features = ["x11", "wayland", "bevy_winit"]
 version = "0.16.0-rc.1"
+default-features = false
 
 [lib]
 name = "alkyd"
 path = "src/lib.rs"
-
 # Enable a small amount of optimization in debug mode
 [profile.dev]
 opt-level = 1
