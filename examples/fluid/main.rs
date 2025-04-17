@@ -1,6 +1,6 @@
 use alkyd::{
-    fluid::components::{FluidVolume, VolumeDebug, VolumeFilling},
     AlkydPlugin,
+    fluid::components::{FluidVolume, VolumeDebug, VolumeFilling},
 };
 
 use bevy::{
@@ -20,7 +20,7 @@ use bevy::{
 use bevy_third_person_camera::{
     ThirdPersonCamera, ThirdPersonCameraPlugin, ThirdPersonCameraTarget, Zoom,
 };
-use iyes_perf_ui::{prelude::PerfUiDefaultEntries, PerfUiPlugin};
+use iyes_perf_ui::{PerfUiPlugin, prelude::PerfUiDefaultEntries};
 
 fn main() {
     App::new()

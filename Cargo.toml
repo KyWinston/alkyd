@@ -9,7 +9,7 @@ description = "bevy crate for handling procedural textures and shaders"
 publish = true
 
 [dependencies]
-bevy = { version = "0.16.0-rc.1", default-features = false, features = [
+bevy = { version = "0.16.0-rc.5", default-features = false, features = [
     "bevy_pbr",
     "bevy_gizmos",
     "png",
@@ -19,24 +19,24 @@ bitflags = "2.5.0"
 bytemuck = "1.21.0"
 crossbeam-channel = "0.5.14"
 rand = "0.8.5"
-bevy_easy_compute = {git="https://github.com/AnthonyTornetta/bevy_easy_compute", branch="main"}
+bevy_easy_compute = { git = "https://github.com/AnthonyTornetta/bevy_easy_compute", branch = "main" }
 
 [dev-dependencies]
-bevy = { version = "0.16.0-rc.1", default-features = false, features = [
+bevy = { version = "0.16.0-rc.5", default-features = false, features = [
     "bevy_core_pipeline",
     "bevy_gizmos",
     "trace",
     "png",
 ] }
-# bevy_third_person_camera = "0.2.0"
-# iyes_perf_ui = { git = "https://github.com/IyesGames/iyes_perf_ui", branch = "main" }
+bevy_third_person_camera = "0.2.0"
+iyes_perf_ui = { git = "https://github.com/IyesGames/iyes_perf_ui", branch = "main" }
 
 [features]
 default = []
 
 [target.'cfg(target_os = "linux")'.dev-dependencies.bevy]
 features = ["x11", "wayland", "bevy_winit"]
-version = "0.16.0-rc.1"
+version = "0.16.0-rc.5"
 default-features = false
 
 [lib]
