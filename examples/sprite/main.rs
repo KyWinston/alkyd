@@ -5,8 +5,8 @@ use alkyd::AlkydPlugin;
 use bevy::image::{ImageAddressMode, ImageSamplerDescriptor};
 use bevy::pbr::ScreenSpaceAmbientOcclusion;
 
+use bevy::platform::collections::HashMap;
 use bevy::prelude::*;
-use bevy::utils::hashbrown::HashMap;
 use spritely::components::{Animation, AnimationData};
 use spritely::shader::SpritelyMaterial;
 use spritely::SpritelyPlugin;

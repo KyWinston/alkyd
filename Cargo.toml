@@ -13,7 +13,7 @@ bevy = { version = "0.16.0", default-features = false, features = [
     "bevy_pbr",
     "bevy_gizmos",
     "png",
-    "shader_format_wesl"
+    "shader_format_wesl",
 ] }
 cfg-if = "1.0.0"
 bitflags = "2.5.0"
@@ -27,6 +27,7 @@ bevy = { version = "0.16.0", default-features = false, features = [
     "bevy_core_pipeline",
     "bevy_gizmos",
     "trace",
+    "shader_format_wesl",
     "png",
 ] }
 bevy_third_person_camera = "0.2.1"

@@ -2,14 +2,17 @@ use alkyd::AlkydPlugin;
 
 use bevy::{
     color::palettes::css::GRAY,
-    diagnostic::{EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin, SystemInformationDiagnosticsPlugin},
+    diagnostic::{
+        EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin,
+        SystemInformationDiagnosticsPlugin,
+    },
     image::{ImageAddressMode, ImageSamplerDescriptor},
     pbr::ExtendedMaterial,
     prelude::*,
 };
 
 use bevy_third_person_camera::ThirdPersonCameraPlugin;
-use irridescant::{shader::IrridescantMaterial, IrridescantMaterialPlugin};
+use irridescant::{IrridescantMaterialPlugin, shader::IrridescantMaterial};
 use iyes_perf_ui::PerfUiPlugin;
 use systems::{create_cube, init_scene, rotate_mesh};
 
@@ -30,7 +33,6 @@ fn main() {
             AlkydPlugin,
             IrridescantMaterialPlugin,
             MaterialPlugin::<ExtendedMaterial<StandardMaterial, IrridescantMaterial>>::default(),
-            FrameTimeDiagnosticsPlugin,
             PerfUiPlugin,
             EntityCountDiagnosticsPlugin,
             SystemInformationDiagnosticsPlugin,
