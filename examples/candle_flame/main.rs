@@ -43,7 +43,6 @@ fn main() {
                     watch_for_changes_override: Some(true),
                     ..default()
                 }),
-            FrameTimeDiagnosticsPlugin,
             EntityCountDiagnosticsPlugin,
             SystemInformationDiagnosticsPlugin,
             CandleFlamePlugin,

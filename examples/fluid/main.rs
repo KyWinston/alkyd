@@ -36,7 +36,7 @@ fn main() {
             }),
             AlkydPlugin,
             ThirdPersonCameraPlugin,
-            FrameTimeDiagnosticsPlugin,
+            FrameTimeDiagnosticsPlugin::default(),
             EntityCountDiagnosticsPlugin,
             SystemInformationDiagnosticsPlugin,
             MaterialPlugin::<FluidMaterial>::default(),
