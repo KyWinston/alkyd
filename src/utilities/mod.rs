@@ -13,68 +13,68 @@ impl Plugin for UtilitiesPlugin {
         load_internal_asset!(
             app,
             GLOBAL_VALUES_HANDLE,
-            "../../assets/shader_utils/consts/globs.wesl",
+            "../../assets/shader_utils/consts/globs.wgsl",
             Shader::from_wesl
         );
 
         load_internal_asset!(
             app,
             NOISE_COMPUTE_HANDLE,
-            "../../assets/shader_utils/noise/noise_compute.wesl",
+            "../../assets/shader_utils/noise/noise_compute.wgsl",
             Shader::from_wesl
         );
         load_internal_asset!(
             app,
             TEX_GEN_HANDLE,
-            "../../assets/shader_utils/noise/tex_gen.wesl",
+            "../../assets/shader_utils/noise/tex_gen.wgsl",
             Shader::from_wesl
         );
         load_internal_asset!(
             app,
             SPRITELY_HANDLE,
-            "../../assets/shader_utils/sprite_rotation.wesl",
+            "../../assets/shader_utils/sprite_rotation.wgsl",
             Shader::from_wesl
         );
         load_internal_asset!(
             app,
             NOISE_FUNCTIONS_HANDLE,
-            "../../assets/shader_utils/general.wesl",
+            "../../assets/shader_utils/general.wgsl",
             Shader::from_wesl
         );
         load_internal_asset!(
             app,
             SIMPLEX_HANDLE,
-            "../../assets/shader_utils/noise/simplex_3d.wesl",
+            "../../assets/shader_utils/noise/simplex_3d.wgsl",
             Shader::from_wesl
         );
         load_internal_asset!(
             app,
             SIMPLEX_4D_HANDLE,
-            "../../assets/shader_utils/noise/simplex_4d.wesl",
+            "../../assets/shader_utils/noise/simplex_4d.wgsl",
             Shader::from_wesl
         );
         load_internal_asset!(
             app,
             NOISE_GEN_UTILS_HANDLE,
-            "../../assets/shader_utils/noise/noise_gen.wesl",
+            "../../assets/shader_utils/noise/noise_gen.wgsl",
             Shader::from_wesl
         );
         load_internal_asset!(
             app,
             SOBEL_HANDLE,
-            "../../assets/shader_utils/filters/sobel.wesl",
+            "../../assets/shader_utils/filters/sobel.wgsl",
             Shader::from_wesl
         );
         load_internal_asset!(
             app,
             BLEND_MODES_HANDLE,
-            "../../assets/shader_utils/color_functions/blend_modes.wesl",
+            "../../assets/shader_utils/color_functions/blend_modes.wgsl",
             Shader::from_wesl
         );
         load_internal_asset!(
             app,
             CONVERTERS_HANDLE,
-            "../../assets/shader_utils/color_functions/convert.wesl",
+            "../../assets/shader_utils/color_functions/convert.wgsl",
             Shader::from_wesl
         );
     }
