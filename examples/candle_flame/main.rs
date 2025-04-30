@@ -3,7 +3,7 @@ use alkyd::{tex_gen::resources::TexGenImage, AlkydPlugin};
 use bevy::{
     color::palettes::css::ORANGE,
     diagnostic::{
-        EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin,
+        EntityCountDiagnosticsPlugin,
         SystemInformationDiagnosticsPlugin,
     },
     image::{ImageAddressMode, ImageSamplerDescriptor},

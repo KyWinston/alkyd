@@ -2,10 +2,7 @@ use alkyd::AlkydPlugin;
 
 use bevy::{
     color::palettes::css::GRAY,
-    diagnostic::{
-        EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin,
-        SystemInformationDiagnosticsPlugin,
-    },
+    diagnostic::{EntityCountDiagnosticsPlugin, SystemInformationDiagnosticsPlugin},
     image::{ImageAddressMode, ImageSamplerDescriptor},
     pbr::ExtendedMaterial,
     prelude::*,

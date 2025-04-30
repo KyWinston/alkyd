@@ -5,7 +5,7 @@ use bevy_third_person_camera::{ThirdPersonCamera, ThirdPersonCameraTarget, Zoom}
 use crate::irridescant::shader::IrridescantMaterial;
 
 pub fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<Time>) {
-    if let Ok(mut mesh) = mesh_q.get_single_mut() {
+    if let Ok(mut mesh) = mesh_q.single_mut() {
         mesh.rotate_y(2.0 * time.delta_secs());
     }
 }
@@ -18,8 +18,10 @@ pub fn init_scene(mut commands: Commands) {
         },
         Transform::from_xyz(-4.0, 5.0, 2.0).looking_at(Vec3::ZERO, Vec3::Y),
     ));
-    commands.spawn((PointLight::default(), Transform::from_xyz(1.0, 3.0, -2.0)));
-    commands.spawn((PointLight::default(), Transform::from_xyz(-4.0, 0.5, -2.0)));
+    commands.spawn_batch([
+        (PointLight::default(), Transform::from_xyz(1.0, 3.0, -2.0)),
+        (PointLight::default(), Transform::from_xyz(-4.0, 0.5, -2.0)),
+    ]);
     commands.spawn((
         Camera3d::default(),
         ThirdPersonCamera {

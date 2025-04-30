@@ -1,6 +1,10 @@
-use bevy::{asset::load_internal_asset, prelude::*};
+use bevy::{
+    asset::{load_internal_asset, weak_handle},
+    prelude::*,
+};
 
-pub const GALAXYFOG_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1508032910437029714);
+pub const GALAXYFOG_SHADER_HANDLE: Handle<Shader> =
+    weak_handle!("10efad1a-2db7-4839-ae90-397c34d28d10");
 
 pub mod material;
 pub mod systems;
