@@ -1,7 +1,7 @@
 use crate::{
     BLEND_MODES_HANDLE, CONVERTERS_HANDLE, GLOBAL_VALUES_HANDLE, NOISE_COMPUTE_HANDLE,
     NOISE_FUNCTIONS_HANDLE, NOISE_GEN_UTILS_HANDLE, SIMPLEX_4D_HANDLE, SIMPLEX_HANDLE,
-    SOBEL_HANDLE, SPRITELY_HANDLE,
+    SOBEL_HANDLE, SPRITELY_HANDLE, TEX_GEN_HANDLE,
 };
 
 use bevy::{asset::load_internal_asset, prelude::*};
@@ -16,10 +16,17 @@ impl Plugin for UtilitiesPlugin {
             "../../assets/shader_utils/consts/globs.wgsl",
             Shader::from_wgsl
         );
+
         load_internal_asset!(
             app,
             NOISE_COMPUTE_HANDLE,
             "../../assets/shader_utils/noise/noise_compute.wgsl",
+            Shader::from_wgsl
+        );
+        load_internal_asset!(
+            app,
+            TEX_GEN_HANDLE,
+            "../../assets/shader_utils/noise/tex_gen.wgsl",
             Shader::from_wgsl
         );
         load_internal_asset!(

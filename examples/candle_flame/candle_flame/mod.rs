@@ -2,7 +2,7 @@ use bevy::{asset::load_internal_asset, prelude::*};
 
 pub const GALAXYFOG_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1508032910437029714);
 
-pub mod candle_flame;
+pub mod material;
 pub mod systems;
 pub struct CandleFlamePlugin;
 

@@ -1,6 +1,6 @@
 #import utils::{noise2};
 
-@group(0) @binding(0)
+@group(0) @binding(2)
 var<storage,read_write> centroids: array<vec4<f32>>;
 
 @compute @workgroup_size(1)

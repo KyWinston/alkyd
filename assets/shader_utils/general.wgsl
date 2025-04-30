@@ -6,6 +6,7 @@
 #import bevy_pbr::pbr_types::{STANDARD_MATERIAL_FLAGS_DOUBLE_SIDED_BIT, PbrInput, pbr_input_new};
 #import bevy_pbr::prepass_utils::{prepass_depth,prepass_normal};
 #import bevy_pbr::mesh_view_bindings::{globals,view,View};
+#import global_values::PI
 
 
 @group(2) @binding(1) var<storage, read_write> voro_cache: array<vec4<f32>>;
@@ -35,7 +36,6 @@ fn noise2(n: vec2<f32>) -> f32 {
 }
 
 fn rand22(n: vec2<f32>) -> f32 { return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453); }
-
 fn fade3(t: vec3f) -> vec3f { return t * t * t * (t * (t * 6. - 15.) + 10.); }
 fn rand11(n: f32) -> f32 { return fract(sin(n) * 43758.5453123); }
 
@@ -69,7 +69,7 @@ fn sd_bezier(p: vec2f, A: vec2f, B: vec2f, C: vec2f) -> vec2f {
         let t = clamp(uv.x + uv.y - kx, 0., 1.);
         let f = d + (c + b * t) * t;
         res = vec2f(dot(f, f), t);
-    } else {
+    } else {                                                                
         let z = sqrt(-p1);
         let v = acos(q / (p1 * z * 2.)) / 3.;
         let m = cos(v);
@@ -373,33 +373,89 @@ fn color_ramp(color_stops: array<ColorStop,3>, factor: f32) -> vec3<f32> {
 }
 
 
-fn extend_pbr(in: VertexOutput, is_front: bool) -> PbrInput {
-    var pbrInput = pbr_input_new();
-    pbrInput.frag_coord = in.position;
-    pbrInput.world_position = in.world_position;
 
-    let double_sided = (pbrInput.material.flags & STANDARD_MATERIAL_FLAGS_DOUBLE_SIDED_BIT) != 0u;
-    pbrInput.world_normal = fns::prepare_world_normal(
-        in.world_normal,
-        double_sided,
-        is_front
-    );
-    
-    #ifdef VERTEX_TANGENTS
-    let Nt = pbrInput.world_normal.rgb;
-    let TBN = fns::calculate_tbn_mikktspace(pbrInput.world_normal.rgb,
-        in.world_tangent);
-    pbrInput.N = fns::apply_normal_mapping(
-        pbr_input.material.flags,
-        TBN,
-        double_sided,
-        is_front,
-        Nt,
-    );
-    #else
-    pbrInput.N = normalize(pbrInput.world_normal);
-    #endif
-    return pbrInput;
+
+
+
+fn rotate_vector(v: vec3<f32>, n: vec3<f32>, degrees: f32) -> vec3<f32> {
+    let theta = degrees * PI / 180.;
+    let cos_theta = cos(theta);
+    let sin_theta = sin(theta);
+
+    return v * cos_theta + cross(n, v) * sin_theta + n * dot(n, v) * (1.0 - cos_theta);
 }
 
+fn cubic_bezier(t: f32, p0: vec3<f32>, p1: vec3<f32>, p2: vec3<f32>, p3: vec3<f32>) -> vec3<f32> {
+    let u = 1.0 - t;
+    let tt = t * t;
+    let uu = u * u;
+    let uuu = uu * u;
+    let ttt = tt * t;
 
+    var p = uuu * p0;
+    p = p + 3.0 * uu * t * p1;
+    p = p + 3.0 * u * tt * p2;
+    p = p + ttt * p3;
+
+    return p;
+}
+
+fn bezier_tangent(t: f32, p0: vec3<f32>, p1: vec3<f32>, p2: vec3<f32>, p3: vec3<f32>) -> vec3<f32> {
+    let u = 1.0 - t;
+    let u2 = u * u;
+    let t2 = t * t;
+    
+    let tangent = -3.0 * u2 * p0
+        + 3.0 * u2 * p1
+        - 6.0 * u * t * p1
+        + 6.0 * u * t * p2
+        - 3.0 * t2 * p2
+        + 3.0 * t2 * p3;
+    
+    return tangent;
+}
+
+fn rotate_align(v1: vec3<f32>, v2: vec3<f32>) -> mat3x3<f32> {
+    let axis = cross(v1, v2);
+
+    let cos_a = dot(v1, v2);
+    let k = 1.0 / (1.0 + cos_a);
+
+    let result = mat3x3f( 
+            (axis.x * axis.x * k) + cos_a, (axis.x * axis.y * k) + axis.z, (axis.x * axis.z * k) - axis.y,
+            (axis.y * axis.x * k) - axis.z, (axis.y * axis.y * k) + cos_a,  (axis.y * axis.z * k) + axis.x, 
+            (axis.z * axis.x * k) + axis.y, (axis.z * axis.y * k) - axis.x, (axis.z * axis.z * k) + cos_a 
+        );
+
+    return result;
+}
+
+// fn sample_wind_map(uv: vec2<f32>, speed: f32) -> vec4<f32> {
+//     let texture_size = textureDimensions(t_wind_map);
+    
+//     let rad = wind.direction * PI / 180.0;
+//     let direction = vec2<f32>(cos(rad), sin(rad));
+    
+//     let scrolled_uv = uv + direction * globals.time * speed;
+    
+//     let pixel_coords = vec2<i32>(fract(scrolled_uv) * vec2<f32>(texture_size));
+//     return textureLoad(t_wind_map, pixel_coords, 0);
+// }
+
+const identity_matrix: mat4x4<f32> = mat4x4<f32>(
+    vec4<f32>(1.0, 0.0, 0.0, 0.0),
+    vec4<f32>(0.0, 1.0, 0.0, 0.0),
+    vec4<f32>(0.0, 0.0, 1.0, 0.0),
+    vec4<f32>(0.0, 0.0, 0.0, 1.0)
+);
+
+fn unpack_float(rgb: vec3<f32>) -> f32 {
+    let r = rgb.r * 255.0;
+    let g = rgb.g * 255.0;
+    let b = rgb.b * 255.0;
+
+    let noise_scaled = r * 65536.0 + g * 256.0 + b;
+    let noise = noise_scaled / 16777215.0;
+
+    return noise;
+}

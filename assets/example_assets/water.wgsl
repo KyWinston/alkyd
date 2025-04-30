@@ -1,3 +1,5 @@
+#import bevy_pbr::forward_io::{VertexOutput};
+#import sph_fluids::{ FluidVolume, FluidParticle };
 
 #import bevy_pbr::forward_io::{VertexOutput};
 #import bevy_pbr::pbr_functions as fns;
@@ -6,30 +8,29 @@
 #import utils::{raymarch,conemarch,sdf_cone,map};
 #import bevy_pbr::utils::coords_to_viewport_uv;
 
-struct CandleFlame {
-    diffuse_color: vec4<f32>,
-    center: vec3<f32>,
-    radius: f32,
-    steps: u32,
-    prec: f32
-}
 
-@group(2) @binding(0) var<uniform> material:CandleFlame;
-@group(2) @binding(1) var first_half:texture_2d<f32>;
-@group(2) @binding(2) var s:sampler;
-@group(2) @binding(3) var second_half:texture_2d<f32>;
-@group(2) @binding(4) var s_2:sampler;
+@group(0) @binding(0) var<storage, read_write> fluid_volumes: array<FluidVolume>;
+@group(0) @binding(1) var<storage, read_write> fluid_particles: array<FluidParticle>;
+
+@group(2) @binding(0) var<uniform> fluid: FluidMaterial;
+
+struct FluidMaterial {
+    diffuse_color: vec4f,
+}
 
 @fragment
 fn fragment(
-    in: VertexOutput
+    in: VertexOutput,
 ) -> @location(0) vec4<f32> {
     var ro: vec3<f32> = view.world_position;
     var dist: f32 = 999.0;
-    let tolerance = f32(material.steps) * material.prec;
+    let tolerance = 300.0;
     let rd: vec3<f32> = normalize(in.world_position - vec4f(ro, 1.0)).xyz;
     var noise_offset: f32;
+
     for (var x = 0; x < i32(material.steps); x++) {
+        let nearest = 999.0;
+
         if dist > 20.0 {
             noise_offset = 0.0;
         } else {
@@ -51,6 +52,6 @@ fn fragment(
         }
     }
     return vec4(vec3f(0.0), 1.0 - dist);
+    return fluid.diffuse_color;
 }
-
 

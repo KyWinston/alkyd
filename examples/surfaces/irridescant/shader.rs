@@ -1,3 +1,4 @@
+use alkyd::IRRIDESCANT_SHADER_HANDLE;
 use bevy::{
     pbr::MaterialExtension, prelude::*, render::{
         render_asset::RenderAssets,
@@ -6,7 +7,6 @@ use bevy::{
     }
 };
 
-use crate::IRRIDESCANT_SHADER_HANDLE;
 
 #[derive(Asset, TypePath, AsBindGroup, Clone)]
 #[uniform(100, IrridescantUniform)]

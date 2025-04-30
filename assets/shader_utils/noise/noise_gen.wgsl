@@ -1,10 +1,11 @@
 #define_import_path noise_gen
+
 #import global_values::NoiseProperties;
 #import simplex_4d;
 #import bevy_pbr::mesh_view_bindings::globals;
 
 
-@group(2) @binding(1) var<uniform> props:NoiseProperties;
+@group(0) @binding(2) var<uniform> props: NoiseProperties;
 
 fn random(st: vec3<f32>) -> f32 {
     return fract(sin(dot(st,
@@ -37,4 +38,4 @@ fn flow_noise(p: vec3f, flow_dir: vec3f) -> f32 {
         n_p.amplitude *= n_p.gain;
     }
     return value;
-}FBN
+}
