@@ -1,3 +1,6 @@
+#define_import_path global_values
+
+
 // The circle family
 const PI:f32  =         3.14159265359;
 const HALF_PI =         1.57079632679;

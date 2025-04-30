@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{asset::weak_handle, prelude::*};
 // use terrain::TerrainPlugin;
 use utilities::UtilitiesPlugin;
 use workers::WorkersPlugin;
@@ -12,25 +12,31 @@ pub mod tex_gen;
 pub mod utilities;
 pub mod workers;
 
-pub const IRRIDESCANT_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1208033355542926744);
-pub const PAINTERLY_SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(1908033355537029744);
-pub const NOISE_FUNCTIONS_HANDLE: Handle<Shader> = Handle::weak_from_u128(94071345065644201137);
-pub const NOISE_GEN_UTILS_HANDLE: Handle<Shader> = Handle::weak_from_u128(94071345065837501137);
-pub const NOISE_COMPUTE_HANDLE: Handle<Shader> = Handle::weak_from_u128(24071345358763528837);
-pub const SIMPLEX_HANDLE: Handle<Shader> = Handle::weak_from_u128(34071823065847501137);
-pub const SIMPLEX_4D_HANDLE: Handle<Shader> = Handle::weak_from_u128(34071823465847412137);
-pub const GLOBAL_VALUES_HANDLE: Handle<Shader> = Handle::weak_from_u128(34071828566847501137);
-pub const TEX_GEN_HANDLE: Handle<Shader> = Handle::weak_from_u128(1508033515847412137);
-pub const SPRITELY_HANDLE: Handle<Shader> = Handle::weak_from_u128(1708343655899895001229744);
-pub const SOBEL_HANDLE: Handle<Shader> = Handle::weak_from_u128(1748343643674965476001229744);
-pub const BLEND_MODES_HANDLE: Handle<Shader> = Handle::weak_from_u128(184229632462351882081599150);
-pub const CONVERTERS_HANDLE: Handle<Shader> = Handle::weak_from_u128(522521912971636216150179);
+pub const IRRIDESCANT_SHADER_HANDLE: Handle<Shader> =
+    weak_handle!("16ccd8db-afe4-4afe-afe6-3b77bf067d02");
+pub const PAINTERLY_SHADER_HANDLE: Handle<Shader> =
+    weak_handle!("3411c9e9-4525-4810-8e93-7c5459439268");
+pub const NOISE_FUNCTIONS_HANDLE: Handle<Shader> =
+    weak_handle!("0412d402-9088-4f9c-883f-09988461dd89");
+pub const NOISE_GEN_UTILS_HANDLE: Handle<Shader> =
+    weak_handle!("b2f08cae-bf74-4d3d-9ee8-79cfb0a9876f");
+pub const NOISE_COMPUTE_HANDLE: Handle<Shader> =
+    weak_handle!("ef6fcd75-2564-4de1-be3b-d1961493eaf5");
+pub const SIMPLEX_HANDLE: Handle<Shader> = weak_handle!("469c82b5-189e-4169-a0ec-10d86df9d218");
+pub const SIMPLEX_4D_HANDLE: Handle<Shader> = weak_handle!("d27e4e75-8595-4def-a328-b92691248c05");
+pub const GLOBAL_VALUES_HANDLE: Handle<Shader> =
+    weak_handle!("066b8755-fd2a-41fc-b15a-c407c26a18a7");
+pub const TEX_GEN_HANDLE: Handle<Shader> = weak_handle!("eaca6b3a-aec5-4f39-a665-ef2ac4cbf13c");
+pub const SPRITELY_HANDLE: Handle<Shader> = weak_handle!("612937a1-e121-44be-803f-542ea29bd82e");
+pub const SOBEL_HANDLE: Handle<Shader> = weak_handle!("4f96cdce-169d-499a-a68c-8292af0015c1");
+pub const BLEND_MODES_HANDLE: Handle<Shader> = weak_handle!("62a9a1f1-35e8-464d-a0ec-27ee957ce478");
+pub const CONVERTERS_HANDLE: Handle<Shader> = weak_handle!("547cd0a7-a4ed-4aa8-aff8-857ef4eea9fc");
 pub const TERRAIN_SHADER_HANDLE: Handle<Shader> =
-    Handle::weak_from_u128(2153654746353456876985643423);
-pub const FLUID_SIM_HANDLE: Handle<Shader> = Handle::weak_from_u128(38257092369836390268233459);
+    weak_handle!("5f74e6d4-b59b-465b-8e88-8e12d8924715");
+pub const FLUID_SIM_HANDLE: Handle<Shader> = weak_handle!("d14aa666-f4ff-430b-9fac-9845e54dbf45");
 pub const FLUID_SIM_SECOND_PASS_HANDLE: Handle<Shader> =
-    Handle::weak_from_u128(382579689756468233459);
-pub const FLUID_CONSTS: Handle<Shader> = Handle::weak_from_u128(6243576094856749806743908);
+    weak_handle!("8d3a02f2-be73-4d6b-a7a2-5d0cd71aa38e");
+pub const FLUID_CONSTS: Handle<Shader> = weak_handle!("a06406b6-60d1-4533-ae71-c123cae79f01");
 
 pub struct AlkydPlugin;
 
