@@ -21,6 +21,6 @@ jobs:
       - name: Publish
         run: bash .github/workflows/scripts/run_publication.sh
         env:
-          CRATES_IO_TOKEN: ${{ secrets.CRATES_TOKEN }}
+          CRATES_IO_TOKEN: ${{ secrets.ALKYD_TOKEN }}
 
  
