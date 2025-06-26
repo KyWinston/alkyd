@@ -1,5 +1,9 @@
 use alkyd::components::Showcase;
-use bevy::{color::palettes::css::WHITE, pbr::ExtendedMaterial, prelude::*};
+use bevy::{
+    color::palettes::css::{WHEAT, WHITE},
+    pbr::ExtendedMaterial,
+    prelude::*,
+};
 use bevy_third_person_camera::{ThirdPersonCamera, ThirdPersonCameraTarget, Zoom};
 
 use crate::irridescant::shader::IrridescantMaterial;
@@ -34,22 +38,26 @@ pub fn init_scene(mut commands: Commands) {
 
 pub fn create_cube(
     mut commands: Commands,
+    mut s_materials: ResMut<Assets<StandardMaterial>>,
     mut materials: ResMut<Assets<ExtendedMaterial<StandardMaterial, IrridescantMaterial>>>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
-    let material = materials.add(ExtendedMaterial {
+    let material_1 = materials.add(ExtendedMaterial {
         base: StandardMaterial {
             base_color: WHITE.into(),
             ..default()
         },
         extension: IrridescantMaterial { ior: 2.0 },
     });
-
+    let material_2 = s_materials.add(StandardMaterial {
+        base_color: WHEAT.into(),
+        ..default()
+    });
     let mesh = meshes.add(Capsule3d::new(2.0, 4.0));
     commands.spawn((
         Mesh3d(mesh),
         Showcase,
-        MeshMaterial3d(material),
+        MeshMaterial3d(material_2),
         ThirdPersonCameraTarget,
         Transform::default().with_rotation(Quat::from_axis_angle(Vec3::Z, 25.0_f32.to_radians())),
     ));
