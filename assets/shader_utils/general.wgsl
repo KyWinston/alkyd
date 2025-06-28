@@ -1,4 +1,4 @@
-#define_import_path utils
+#define_import_path utils;
 
 #import bevy_pbr::pbr_functions as fns;
 #import noise_gen::FBN;

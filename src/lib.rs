@@ -1,19 +1,19 @@
 use bevy::{asset::weak_handle, prelude::*};
-// use terrain::TerrainPlugin;
 use utilities::UtilitiesPlugin;
 use workers::WorkersPlugin;
 
+use crate::shells::ShellsPlugin;
+
 pub mod components;
-pub mod compute;
-// pub mod fluid;
+pub mod shells;
 pub mod showcase;
-// pub mod terrain;
 pub mod custom_materials;
-pub mod tex_gen;
 pub mod utilities;
 pub mod uv_paint;
 pub mod workers;
 
+
+pub const SHELL_GEN_HANDLE: Handle<Shader> = weak_handle!("bdc72c60-48e1-4a4a-b789-39937c58f9df");
 pub const UV_PAINT_HANDLE: Handle<Shader> = weak_handle!("38279689-e0e5-42b4-af48-601ceb8da1b6");
 pub const IRRIDESCANT_SHADER_HANDLE: Handle<Shader> =
     weak_handle!("16ccd8db-afe4-4afe-afe6-3b77bf067d02");
@@ -45,6 +45,6 @@ pub struct AlkydPlugin;
 
 impl Plugin for AlkydPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((UtilitiesPlugin, WorkersPlugin));
+        app.add_plugins((UtilitiesPlugin, ShellsPlugin, WorkersPlugin));
     }
 }

@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 
-use crate::tex_gen::TextureGenPlugin;
 
 pub struct WorkersPlugin;
 
@@ -10,6 +9,5 @@ pub const WORKGROUP_SIZE: u32 = 8;
 
 impl Plugin for WorkersPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(TextureGenPlugin);
     }
 }

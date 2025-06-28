@@ -9,8 +9,9 @@ description = "bevy crate for handling procedural textures and shaders"
 publish = true
 
 [dependencies]
-bevy = { version = "0.16.0", default-features = false, features = [
+bevy = { version = "0.16.1", default-features = false, features = [
     "bevy_pbr",
+    "multi_threaded",
     "png",
 ] }
 cfg-if = "1.0.0"
@@ -19,14 +20,16 @@ bytemuck = "1.21.0"
 crossbeam-channel = "0.5.14"
 rand = "0.8.5"
 bevy_app_compute = "0.16"
+
 [dev-dependencies]
-bevy = { version = "0.16.0", default-features = false, features = [
+bevy = { version = "0.16.1", default-features = false, features = [
     "bevy_core_pipeline",
-    "bevy_gizmos",
+    "default_font",
     "tonemapping_luts",
     "trace",
     "png",
 ] }
+
 bevy_third_person_camera = "0.2.1"
 iyes_perf_ui = { git = "https://github.com/IyesGames/iyes_perf_ui", branch = "main" }
 
@@ -35,12 +38,13 @@ default = []
 
 [target.'cfg(target_os = "linux")'.dev-dependencies.bevy]
 features = ["x11", "wayland", "bevy_winit"]
-version = "0.16.0"
+version = "0.16.1"
 default-features = false
 
 [lib]
 name = "alkyd"
 path = "src/lib.rs"
+
 # Enable a small amount of optimization in debug mode
 [profile.dev]
 opt-level = 1
@@ -57,7 +61,6 @@ strip = true
 lto = "thin"
 codegen-units = 10
 
-
 [[example]]
 name = "surfaces"
 doc-scrape-examples = true
@@ -72,4 +75,8 @@ doc-scrape-examples = true
 
 [[example]]
 name = "fluid"
+doc-scrape-examples = true
+
+[[example]]
+name = "shells"
 doc-scrape-examples = true
