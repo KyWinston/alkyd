@@ -1,5 +1,5 @@
 #import shells::{shell_props,ShellProperties}
-
+#import utils::{rand11};
 // @group(2) @binding(0)
 // var<uniform> shell_props:ShellProperties;
 
@@ -12,8 +12,10 @@ struct FragmentInput {
     @location(4) uv:vec2<f32>, 
     @location(5) density:f32,
     @location(6) count:u32,
-    @location(7) variance:vec2<f32>,
-    @location(8) color:vec4<f32>
+    @location(7) attenuation:f32,
+    @location(8) occ_bias:f32,
+    @location(9) variance:vec2<f32>,
+    @location(10) color:vec4<f32>
 };
 
 struct FragmentOutput{
@@ -38,16 +40,15 @@ fn fragment(input: FragmentInput) -> FragmentOutput{
     }
     var ndotl = clamp(dot(input.normal, vec3(0.0,10.0,5.0)) * 0.5 + 0.5,0.0,1.0);
     ndotl = ndotl * ndotl;
-    let AO = clamp(pow(h, 2.0),0.0,1.0) + 0.2;
+    let AO = clamp(pow(h, input.attenuation) + input.occ_bias, 0.0, 1.0);
     out.color = vec4<f32>(input.color.rgb * ndotl * AO, 1.0);
 
     return out;
 }
 
-
-fn hash(i:u32) ->f32{
+fn hash(in:u32) ->f32 {
 				// integer hash copied from Hugo Elias
-				var n = (i << 13) ^ i;
-				n = n * (n * n * 15731 + 7901729) + 835873109;
-				return f32(n & u32(2147483647)) / f32(2147483647);
+				var n = (in << u32(13)) ^ in;
+				n = n * (n * n * u32(15731) + u32(0x789221)) + u32(0x13763125);
+				return f32(n & u32(0x7fffffff)) / f32(0x7fffffff);
 			}

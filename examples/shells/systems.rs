@@ -42,23 +42,27 @@ pub fn create_plane(
     mut materials: ResMut<Assets<GrassMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
-    let mesh = meshes.add(Plane3d::new(Vec3::Y, Vec2::splat(15.0)));
+    let mesh = meshes.add(Plane3d::new(Vec3::Y, Vec2::splat(5.0)));
 
-    let material = materials.add(GrassMaterial {
+    let material = GrassMaterial {
         length: 0.15,
-        density: 100.0,
-        thickness: 2.0,
-        shell_count: 16,
+        density: 300.0,
+        thickness: 1.0,
+        count: 20,
+        attenuation: 1.0,
+        dist_attenuation: 1.0,
+        occ_bias: 0.1,
         variance: Vec2::new(0.0, 1.0),
         color: GREEN.into(),
-    });
+    };
 
-    for i in 0..10 {
+
+    for i in 0..material.count {
         commands.spawn((
             Mesh3d(mesh.clone()),
             Showcase,
             MeshTag(i),
-            MeshMaterial3d(material.clone()),
+            MeshMaterial3d(materials.add(material.clone())),
             Transform::default(),
             NoFrustumCulling,
             ThirdPersonCameraTarget,
@@ -72,7 +76,10 @@ pub struct GrassMaterial {
     pub length: f32,
     pub density: f32,
     pub thickness: f32,
-    pub shell_count: u32,
+    pub count: u32,
+    pub attenuation: f32,
+    pub dist_attenuation: f32,
+    pub occ_bias: f32,
     pub variance: Vec2,
     pub color: Color,
 }
@@ -83,6 +90,9 @@ pub struct GrassUniform {
     density: f32,
     thickness: f32,
     count: u32,
+    attenuation: f32,
+    dist_attenuation: f32,
+    occ_bias: f32,
     variance: Vec2,
     color: Vec4,
 }
@@ -111,7 +121,10 @@ impl AsBindGroupShaderType<GrassUniform> for GrassMaterial {
             length: self.length,
             density: self.density,
             thickness: self.thickness,
-            count: self.shell_count,
+            count: self.count,
+            attenuation: self.attenuation,
+            dist_attenuation: self.dist_attenuation,
+            occ_bias: self.occ_bias,
             variance: self.variance,
             color: self.color.to_linear().to_vec4(),
         }

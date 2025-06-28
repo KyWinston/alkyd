@@ -1,5 +1,4 @@
 #define_import_path shells;
-
 #import bevy_pbr::mesh_functions::view_transformations::{mesh_position_world_to_clip};
 #import bevy_pbr::pbr_functions::prepare_world_normal;
 #import bevy_pbr::mesh_functions::{get_world_from_local,mesh_normal_local_to_world,mesh_position_local_to_world, mesh_position_local_to_clip};
@@ -10,6 +9,9 @@ struct ShellProperties{
     density:f32,
     thickness:f32,
     count:u32,
+    attenuation:f32,
+    dist_attenuation:f32,  
+    occ_bias:f32,
     variance:vec2<f32>,
     shell_color:vec4<f32>
 }
@@ -33,8 +35,10 @@ struct VertexOutput {
     @location(4) uv:vec2<f32>,
     @location(5) density:f32,
     @location(6) count:u32,
-    @location(7) variance:vec2<f32>,
-    @location(8) color:vec4<f32>
+    @location(7) attenuation:f32,
+    @location(8) occ_bias:f32,
+    @location(9) variance:vec2<f32>,
+    @location(10) color:vec4<f32>
 };
 
 @vertex
@@ -44,7 +48,7 @@ fn vertex(vertex: Vertex) -> VertexOutput {
     out.position = vec4(vertex.position,1.0);
 
     var shell_height = f32(out.index) / f32(shell_props.count);
-
+	shell_height = pow(shell_height, shell_props.dist_attenuation);
     var vertex_position = out.position.xyz;
 
     vertex_position += vertex.normal.xyz * shell_props.length * shell_height;
@@ -57,6 +61,8 @@ fn vertex(vertex: Vertex) -> VertexOutput {
     out.uv = vertex.uv;
     out.density = shell_props.density;
     out.count = shell_props.count;
+    out.attenuation = shell_props.attenuation;
+    out.occ_bias = shell_props.occ_bias;
     out.variance = shell_props.variance;
     out.color = shell_props.shell_color;
 
