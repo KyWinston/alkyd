@@ -19,6 +19,9 @@ struct ShellProperties{
 @group(2) @binding(0)
 var<uniform> shell_props:ShellProperties;
 
+@group(2) @binding(1)
+var<storage> points:array<vec3<f32>,100>;
+
 struct Vertex {
     @builtin(instance_index) instance_index: u32,
     @location(0) position: vec3<f32>,

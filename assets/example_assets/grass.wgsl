@@ -1,7 +1,10 @@
 #import shells::{shell_props,ShellProperties}
 #import utils::{rand11};
-// @group(2) @binding(0)
-// var<uniform> shell_props:ShellProperties;
+@group(2) @binding(100)
+var displacement:texture_2d<f32>;
+
+@group(2) @binding(101)
+var displacement_s:sampler;
 
 
 struct FragmentInput {
