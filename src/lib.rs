@@ -2,18 +2,17 @@ use bevy::{asset::weak_handle, prelude::*};
 use utilities::UtilitiesPlugin;
 use workers::WorkersPlugin;
 
-use crate::shells::ShellsPlugin;
+use crate::foliage::FoliagePlugin;
 
 pub mod components;
-pub mod shells;
+pub mod foliage;
 pub mod showcase;
 pub mod custom_materials;
 pub mod utilities;
 pub mod uv_paint;
 pub mod workers;
 
-
-pub const SHELL_GEN_HANDLE: Handle<Shader> = weak_handle!("bdc72c60-48e1-4a4a-b789-39937c58f9df");
+pub const FOLIAGE_GEN_HANDLE: Handle<Shader> = weak_handle!("bdc72c60-48e1-4a4a-b789-39937c58f9df");
 pub const UV_PAINT_HANDLE: Handle<Shader> = weak_handle!("38279689-e0e5-42b4-af48-601ceb8da1b6");
 pub const IRRIDESCANT_SHADER_HANDLE: Handle<Shader> =
     weak_handle!("16ccd8db-afe4-4afe-afe6-3b77bf067d02");
@@ -45,6 +44,6 @@ pub struct AlkydPlugin;
 
 impl Plugin for AlkydPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((UtilitiesPlugin, ShellsPlugin, WorkersPlugin));
+        app.add_plugins((UtilitiesPlugin, FoliagePlugin, WorkersPlugin));
     }
 }

@@ -1,15 +1,19 @@
-use alkyd::{shells::node::ShellMaterial, AlkydPlugin};
+use alkyd::{AlkydPlugin, foliage::node::FoliageMaterial};
 
 use bevy::{
-    color::palettes::css::GRAY, diagnostic::{
+    color::palettes::css::GRAY,
+    diagnostic::{
         EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin,
         SystemInformationDiagnosticsPlugin,
-    }, image::{ImageAddressMode, ImageSamplerDescriptor}, log::LogPlugin, pbr::ExtendedMaterial, prelude::*
+    },
+    pbr::ExtendedMaterial,
+    prelude::*,
+    scene::SceneInstanceReady,
 };
 
 use bevy_third_person_camera::ThirdPersonCameraPlugin;
 use iyes_perf_ui::PerfUiPlugin;
-use systems::{create_plane, init_scene};
+use systems::init_scene;
 
 use crate::systems::GrassMaterial;
 
@@ -20,13 +24,14 @@ fn main() {
         .add_plugins((
             DefaultPlugins,
             AlkydPlugin,
-            MaterialPlugin::<ExtendedMaterial<ShellMaterial, GrassMaterial>>::default(),
+            MaterialPlugin::<ExtendedMaterial<FoliageMaterial, GrassMaterial>>::default(),
             PerfUiPlugin,
             FrameTimeDiagnosticsPlugin::default(),
             EntityCountDiagnosticsPlugin,
             SystemInformationDiagnosticsPlugin,
             ThirdPersonCameraPlugin,
         ))
-        .add_systems(Startup, (init_scene, create_plane).chain())
+        .add_event::<SceneInstanceReady>()
+        .add_systems(Startup, init_scene)
         .run();
 }
