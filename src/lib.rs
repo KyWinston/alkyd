@@ -5,12 +5,14 @@ use workers::WorkersPlugin;
 use crate::foliage::FoliagePlugin;
 
 pub mod components;
+pub mod custom_materials;
 pub mod foliage;
 pub mod showcase;
-pub mod custom_materials;
 pub mod utilities;
 pub mod uv_paint;
 pub mod workers;
+
+pub const PIXEL_ART_HANDLE: Handle<Shader> = weak_handle!("0b01ee16-d86c-4b00-b7ca-c5926e3ad868");
 
 pub const FOLIAGE_GEN_HANDLE: Handle<Shader> = weak_handle!("bdc72c60-48e1-4a4a-b789-39937c58f9df");
 pub const UV_PAINT_HANDLE: Handle<Shader> = weak_handle!("38279689-e0e5-42b4-af48-601ceb8da1b6");

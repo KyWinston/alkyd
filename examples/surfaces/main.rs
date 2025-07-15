@@ -1,3 +1,5 @@
+use std::default;
+
 use alkyd::AlkydPlugin;
 
 use bevy::{
@@ -13,7 +15,10 @@ use irridescant::{IrridescantMaterialPlugin, shader::IrridescantMaterial};
 use iyes_perf_ui::PerfUiPlugin;
 use systems::{create_cube, init_scene, rotate_mesh};
 
+use crate::pixel_art::{shader::PixelArtMaterial, PixelArtPlugin};
+
 pub mod irridescant;
+pub mod pixel_art;
 pub mod systems;
 fn main() {
     App::new()
@@ -28,8 +33,8 @@ fn main() {
                 },
             }),
             AlkydPlugin,
-            IrridescantMaterialPlugin,
-            MaterialPlugin::<ExtendedMaterial<StandardMaterial, IrridescantMaterial>>::default(),
+            PixelArtPlugin,
+            MaterialPlugin::<PixelArtMaterial>::default(),
             PerfUiPlugin,
             EntityCountDiagnosticsPlugin,
             SystemInformationDiagnosticsPlugin,

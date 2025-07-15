@@ -1,12 +1,13 @@
 use alkyd::components::Showcase;
 use bevy::{
-    color::palettes::css::{WHEAT, WHITE},
-    pbr::ExtendedMaterial,
+    color::palettes::css::RED,
+    core_pipeline::prepass::{DepthPrepass, MotionVectorPrepass, NormalPrepass},
     prelude::*,
+    render::camera::CameraProjection,
 };
 use bevy_third_person_camera::{ThirdPersonCamera, ThirdPersonCameraTarget, Zoom};
 
-use crate::irridescant::shader::IrridescantMaterial;
+use crate::pixel_art::shader::PixelArtMaterial;
 
 pub fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<Time>) {
     if let Ok(mut mesh) = mesh_q.single_mut() {
@@ -14,7 +15,11 @@ pub fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<
     }
 }
 
-pub fn init_scene(mut commands: Commands) {
+pub fn init_scene(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+) {
     commands.spawn((
         DirectionalLight {
             illuminance: 25000.0,
@@ -28,36 +33,45 @@ pub fn init_scene(mut commands: Commands) {
     ]);
     commands.spawn((
         Camera3d::default(),
+        Projection::Perspective(PerspectiveProjection {
+            near: 0.5,
+            far: 10.0,
+            ..default()
+        }),
         ThirdPersonCamera {
             zoom: Zoom::new(5.0, 40.0),
             ..default()
         },
+        Msaa::Off,
+        DepthPrepass,
+        NormalPrepass,
+        MotionVectorPrepass,
         Transform::from_xyz(0.0, 5.0, 15.0).looking_at(Vec3::ZERO, Vec3::Y),
     ));
+    // commands.spawn((
+    //     Mesh3d(meshes.add(Plane3d::new(Vec3::Y, Vec2::splat(20.0)))),
+    //     MeshMaterial3d(materials.add(StandardMaterial::default())),
+    //     Transform::from_xyz(0.0, -5.0, -15.0).looking_at(Vec3::new(0.0, 5.0, 15.0), Vec3::Y),
+    // ));
 }
 
 pub fn create_cube(
     mut commands: Commands,
-    mut s_materials: ResMut<Assets<StandardMaterial>>,
-    mut materials: ResMut<Assets<ExtendedMaterial<StandardMaterial, IrridescantMaterial>>>,
+    mut materials: ResMut<Assets<PixelArtMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
-    let material_1 = materials.add(ExtendedMaterial {
-        base: StandardMaterial {
-            base_color: WHITE.into(),
-            ..default()
-        },
-        extension: IrridescantMaterial { ior: 2.0 },
-    });
-    let material_2 = s_materials.add(StandardMaterial {
-        base_color: WHEAT.into(),
+    let material_1 = materials.add(PixelArtMaterial {
+        diffuse_color: RED.into(),
+        mettalic: 0.0,
+        specular: 0.0,
         ..default()
     });
+
     let mesh = meshes.add(Capsule3d::new(2.0, 4.0));
     commands.spawn((
         Mesh3d(mesh),
         Showcase,
-        MeshMaterial3d(material_2),
+        MeshMaterial3d(material_1),
         ThirdPersonCameraTarget,
         Transform::default().with_rotation(Quat::from_axis_angle(Vec3::Z, 25.0_f32.to_radians())),
     ));
