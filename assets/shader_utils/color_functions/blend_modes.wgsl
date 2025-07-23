@@ -49,3 +49,7 @@ fn soft_light(color1: vec3f, color2: vec3f) -> vec3f {
 fn overlay(color1:vec3f, color2:vec3f)-> vec3f{
     return hard_light(color2, color1);
 }
+
+fn brightness_curve(dots:f32,brightness:f32)-> f32 {
+    return mix(vec3(1.0),vec3(0.0),vec3(0.5 * dots + (1.0 - dots) + brightness,0.5,0.5)).r;
+}

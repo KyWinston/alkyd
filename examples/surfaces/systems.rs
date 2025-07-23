@@ -1,13 +1,12 @@
-use alkyd::components::Showcase;
+use alkyd::{components::Showcase, post_process::pixelate::PixelPostProcessSettings};
 use bevy::{
-    color::palettes::css::RED,
+    color::palettes::css::{BLUE, DARK_GREEN},
     core_pipeline::prepass::{DepthPrepass, MotionVectorPrepass, NormalPrepass},
     prelude::*,
-    render::camera::CameraProjection,
 };
-use bevy_third_person_camera::{ThirdPersonCamera, ThirdPersonCameraTarget, Zoom};
 
 use crate::pixel_art::shader::PixelArtMaterial;
+use bevy_third_person_camera::{ThirdPersonCamera, ThirdPersonCameraTarget, Zoom};
 
 pub fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<Time>) {
     if let Ok(mut mesh) = mesh_q.single_mut() {
@@ -15,11 +14,7 @@ pub fn rotate_mesh(mut mesh_q: Query<&mut Transform, With<Showcase>>, time: Res<
     }
 }
 
-pub fn init_scene(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-) {
+pub fn init_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         DirectionalLight {
             illuminance: 25000.0,
@@ -34,10 +29,14 @@ pub fn init_scene(
     commands.spawn((
         Camera3d::default(),
         Projection::Perspective(PerspectiveProjection {
-            near: 0.5,
-            far: 10.0,
+            near: 1.0,
+            far: 5.0,
             ..default()
         }),
+        PixelPostProcessSettings {
+            pixel_size: 4.0,
+            ..default()
+        },
         ThirdPersonCamera {
             zoom: Zoom::new(5.0, 40.0),
             ..default()
@@ -48,26 +47,26 @@ pub fn init_scene(
         MotionVectorPrepass,
         Transform::from_xyz(0.0, 5.0, 15.0).looking_at(Vec3::ZERO, Vec3::Y),
     ));
-    // commands.spawn((
-    //     Mesh3d(meshes.add(Plane3d::new(Vec3::Y, Vec2::splat(20.0)))),
-    //     MeshMaterial3d(materials.add(StandardMaterial::default())),
-    //     Transform::from_xyz(0.0, -5.0, -15.0).looking_at(Vec3::new(0.0, 5.0, 15.0), Vec3::Y),
-    // ));
 }
 
 pub fn create_cube(
     mut commands: Commands,
     mut materials: ResMut<Assets<PixelArtMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
+    mut images: ResMut<Assets<Image>>,
+    asset_server: Res<AssetServer>,
 ) {
     let material_1 = materials.add(PixelArtMaterial {
-        diffuse_color: RED.into(),
-        mettalic: 0.0,
-        specular: 0.0,
+        diffuse_color: BLUE.into(),
+        outline_color: DARK_GREEN.into(),
+        quantize_steps: 5,
+        bayer_count: 15,
+        bayer_scale: 7.0,
+        invert_color: false,
         ..default()
     });
 
-    let mesh = meshes.add(Capsule3d::new(2.0, 4.0));
+    let mesh = meshes.add(Cuboid::new(5.0, 5.0, 5.0));
     commands.spawn((
         Mesh3d(mesh),
         Showcase,

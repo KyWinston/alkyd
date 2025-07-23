@@ -7,6 +7,7 @@ use crate::foliage::FoliagePlugin;
 pub mod components;
 pub mod custom_materials;
 pub mod foliage;
+pub mod post_process;
 pub mod showcase;
 pub mod utilities;
 pub mod uv_paint;

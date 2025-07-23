@@ -69,7 +69,7 @@ fn sd_bezier(p: vec2f, A: vec2f, B: vec2f, C: vec2f) -> vec2f {
         let t = clamp(uv.x + uv.y - kx, 0., 1.);
         let f = d + (c + b * t) * t;
         res = vec2f(dot(f, f), t);
-    } else {                                                                
+    } else {
         let z = sqrt(-p1);
         let v = acos(q / (p1 * z * 2.)) / 3.;
         let m = cos(v);
@@ -119,7 +119,7 @@ fn raymarch(origin: vec3<f32>, direction: vec3<f32>, dst: f32) -> vec4<f32> {
     return vec4(vec3f(ro), dst);
 }
 
-fn conemarch(cro: vec3f, crd: vec3f, dst: f32, t_dst:f32) -> vec4<f32> {
+fn conemarch(cro: vec3f, crd: vec3f, dst: f32, t_dst: f32) -> vec4<f32> {
     var ro = cro;
     var rd = crd;
     var cd: f32; // current scene distance
@@ -127,13 +127,13 @@ fn conemarch(cro: vec3f, crd: vec3f, dst: f32, t_dst:f32) -> vec4<f32> {
 
     ro += t_dst * crd; // calculate new position
     ccr = (t_dst * tan(radians(45.0 / 2.0))) * 2. / 32.; // calculate cone radius
-        
-    if (dst < ccr * 1.25 || t_dst >= 200.0) {
-        return vec4f(ro,9999.0); // finally, return scene distance
+
+    if dst < ccr * 1.25 || t_dst >= 200.0 {
+        return vec4f(ro, 9999.0); // finally, return scene distance
     }
 
 
-    return vec4f(ro,dst); // finally, return scene distance
+    return vec4f(ro, dst); // finally, return scene distance
 }
     
 
@@ -404,14 +404,9 @@ fn bezier_tangent(t: f32, p0: vec3<f32>, p1: vec3<f32>, p2: vec3<f32>, p3: vec3<
     let u = 1.0 - t;
     let u2 = u * u;
     let t2 = t * t;
-    
-    let tangent = -3.0 * u2 * p0
-        + 3.0 * u2 * p1
-        - 6.0 * u * t * p1
-        + 6.0 * u * t * p2
-        - 3.0 * t2 * p2
-        + 3.0 * t2 * p3;
-    
+
+    let tangent = -3.0 * u2 * p0 + 3.0 * u2 * p1 - 6.0 * u * t * p1 + 6.0 * u * t * p2 - 3.0 * t2 * p2 + 3.0 * t2 * p3;
+
     return tangent;
 }
 
@@ -421,11 +416,11 @@ fn rotate_align(v1: vec3<f32>, v2: vec3<f32>) -> mat3x3<f32> {
     let cos_a = dot(v1, v2);
     let k = 1.0 / (1.0 + cos_a);
 
-    let result = mat3x3f( 
-            (axis.x * axis.x * k) + cos_a, (axis.x * axis.y * k) + axis.z, (axis.x * axis.z * k) - axis.y,
-            (axis.y * axis.x * k) - axis.z, (axis.y * axis.y * k) + cos_a,  (axis.y * axis.z * k) + axis.x, 
-            (axis.z * axis.x * k) + axis.y, (axis.z * axis.y * k) - axis.x, (axis.z * axis.z * k) + cos_a 
-        );
+    let result = mat3x3f(
+        (axis.x * axis.x * k) + cos_a, (axis.x * axis.y * k) + axis.z, (axis.x * axis.z * k) - axis.y,
+        (axis.y * axis.x * k) - axis.z, (axis.y * axis.y * k) + cos_a, (axis.y * axis.z * k) + axis.x,
+        (axis.z * axis.x * k) + axis.y, (axis.z * axis.y * k) - axis.x, (axis.z * axis.z * k) + cos_a
+    );
 
     return result;
 }
@@ -459,3 +454,119 @@ fn unpack_float(rgb: vec3<f32>) -> f32 {
 
     return noise;
 }
+
+
+fn smin(a: f32, b: f32, k: f32) -> f32 {
+    let _k = k * 4.0;
+    let h = max(_k - abs(a - b), 0.0) / _k;
+    return min(a, b) - h * h * _k * (1.0 / 4.0);
+}
+
+
+fn nearest_power_of_2(x: f32) -> f32 {
+    return pow(2.0, floor(log2(x)));
+}
+
+fn fetch_dither(uv: vec2<f32>, dx: vec2<f32>, dy: vec2<f32>, l: f32) -> vec4<f32> {
+    var brightness = l;
+    #ifdef INVERT_COLOR
+    brightness = 1.0 - brightness;
+    #endif
+
+
+    let dots_per_side = 4.0;
+    let dots_total = pow(dots_per_side, 2.0);
+
+    let matr = mat2x2(dx, dy);
+    let vectorized = vec4(dx, dy);
+    let Q = dot(vectorized, vectorized);
+    let R = determinant(matr);
+    let discriminant_sqr = max(0.0, Q * Q - 4.0 * R * R);
+    let discriminant = sqrt(discriminant_sqr);
+
+    let freq = sqrt(vec2(Q + discriminant, Q - discriminant) / 2.0);
+
+    var spacing = freq.y;
+    let scale_exp = exp2(material.bayer_scale);
+    spacing *= scale_exp;
+    spacing *= f32(dots_per_side) * 0.125;
+    let spacing_multiplier = pow(brightness * 2.0 + 0.001, -1.0 - 0.2);
+    spacing *= spacing_multiplier;
+
+
+    let scaling = floor(log2(spacing));
+    let f = fract(log2(spacing));
+
+    var new_uv = fract(uv / exp2(scaling));
+
+    var sublayer = floor(mix(0.25 * dots_total, dots_total, f));
+
+
+    var contrast = 1.0 * scale_exp * spacing_multiplier * 0.1;
+
+    contrast *= pow(freq.y / freq.x, 1.0);
+
+    let base_val = mix(0.5, brightness, saturate(1.05 / (1.0 + contrast)));
+
+    let threshold = 1.0 - brightness;
+
+    var d = 1.0;
+
+    let segment = 1.0 / dots_per_side;
+    let slice = i32(sublayer);
+    let bayer_slice = bayer_slices[slice];
+    for (var i = 0; i <= 4; i++) {
+        let bayer_i = bayer_slice[i];
+        let dot_i = segment * f32(i);
+        for (var j = 0; j <= 4; j++) {
+            if j < 4 && i < 4 {
+                let dot_j = segment * f32(j);
+                if bayer_i[j] > 0.0 {
+                    var res = vec2(dot_i, dot_j);
+                    d = min(d, distance(new_uv, res));
+                }
+            } else {
+                if i == 4 && j == 4 && bayer_slice[0][0] > 0.0 {
+                    let res = vec2(1.0);
+                    d = min(d, distance(new_uv, res));
+                } else if j == 4 && bayer_i[0] > 0.0 {
+                    let  res = vec2(dot_i, 1.0);
+                    d = min(d, distance(new_uv, res));
+                } else if i == 4 && bayer_slice[0][j] > 0.0 {
+                    let res = vec2(1.0, segment * f32(j));
+                    d = min(d, distance(new_uv, res));
+                }
+            }
+        }
+    }
+
+    d = saturate((d - threshold) * contrast + base_val);
+
+    #ifdef INVERT_COLOR
+    d = 1.0 - d;
+    #endif
+
+    return vec4(d, new_uv.x, new_uv.y, f32(sublayer));
+}
+
+
+// fn bayer_uv(dx,dy, scale) -> vec2<f32> {
+//     let matr = mat2x2(dx, dy);
+//     let vectorized = vec4(dx, dy);
+//     let Q = dot(vectorized, vectorized);
+//     let R = determinant(matr);
+//     let discriminant_sqr = max(0.0, Q * Q - 4.0 * R * R);
+//     let discriminant = sqrt(discriminant_sqr);
+
+//     let freq = sqrt(vec2(Q + discriminant, Q - discriminant) / 2.0);
+
+//     var spacing = freq.y;
+//     let scale_exp = exp2(material.bayer_scale);
+//     spacing *= scale_exp;
+//     spacing *= f32(4.0) * 0.125;
+
+//     let scaling = floor(log2(spacing));
+//     let f = fract(log2(spacing));
+
+//     return fract(uv / exp2(scaling));
+// }
