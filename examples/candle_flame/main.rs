@@ -1,11 +1,11 @@
-use alkyd::{tex_gen::resources::TexGenImage, AlkydPlugin};
+use alkyd::{
+    AlkydPlugin,
+    post_process::pixelate::{PixelPostProcessPlugin, PixelPostProcessSettings},
+};
 
 use bevy::{
     color::palettes::css::ORANGE,
-    diagnostic::{
-        EntityCountDiagnosticsPlugin,
-        SystemInformationDiagnosticsPlugin,
-    },
+    diagnostic::{EntityCountDiagnosticsPlugin, SystemInformationDiagnosticsPlugin},
     image::{ImageAddressMode, ImageSamplerDescriptor},
     pbr::NotShadowCaster,
     prelude::*,
@@ -14,8 +14,8 @@ use bevy::{
 use bevy_third_person_camera::{
     ThirdPersonCamera, ThirdPersonCameraPlugin, ThirdPersonCameraTarget, Zoom,
 };
-use candle_flame::{material::CandleFlameMaterial, CandleFlamePlugin};
-use iyes_perf_ui::{prelude::PerfUiDefaultEntries, PerfUiPlugin};
+use candle_flame::{CandleFlamePlugin, material::CandleFlameMaterial};
+use iyes_perf_ui::{PerfUiPlugin, prelude::PerfUiDefaultEntries};
 
 pub mod candle_flame;
 
@@ -33,7 +33,7 @@ fn main() {
                 })
                 .set(WindowPlugin {
                     primary_window: Some(Window {
-                        resolution: WindowResolution::new(1920., 1080.)
+                        resolution: WindowResolution::new(1920. / 2.0, 1080. / 2.0)
                             .with_scale_factor_override(1.0),
                         ..default()
                     }),
@@ -47,12 +47,13 @@ fn main() {
             SystemInformationDiagnosticsPlugin,
             CandleFlamePlugin,
             PerfUiPlugin,
+            PixelPostProcessPlugin,
             ThirdPersonCameraPlugin,
             MaterialPlugin::<CandleFlameMaterial>::default(),
             AlkydPlugin,
         ))
         .add_systems(Startup, (init_camera.before(init_scene), init_scene))
-        .add_systems(Update, create_cube.run_if(resource_added::<TexGenImage>))
+        .add_systems(Update, create_cube)
         .run();
 }
 
@@ -60,6 +61,7 @@ fn init_camera(mut commands: Commands) {
     commands.spawn((
         Transform::from_translation(Vec3::new(5.0, 3.5, 6.0)).looking_at(Vec3::ZERO, Vec3::Y),
         Camera3d::default(),
+        PixelPostProcessSettings { pixel_size: 3.0 },
         ThirdPersonCamera {
             zoom: Zoom::new(5.0, 30.0),
             ..default()
@@ -86,7 +88,6 @@ pub fn create_cube(
     mut materials: ResMut<Assets<CandleFlameMaterial>>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    tex_gen: Res<TexGenImage>,
 ) {
     let material = materials.add(CandleFlameMaterial {
         diffuse_color: Color::srgb_from_array(ORANGE.to_f32_array_no_alpha()),
@@ -94,8 +95,8 @@ pub fn create_cube(
         center: Vec3::ZERO,
         steps: 50,
         precision: 50.0,
-        fbm: Some(tex_gen.texture_0.clone_weak()),
-        fbm_2: Some(tex_gen.texture_1.clone_weak()),
+        fbm: None,
+        fbm_2: None,
     });
     let mesh = meshes.add(Cuboid::from_size(Vec3::splat(5.0)));
     commands.spawn((

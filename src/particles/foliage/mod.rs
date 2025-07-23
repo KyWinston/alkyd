@@ -1,6 +1,6 @@
 use bevy::{asset::load_internal_asset, prelude::*, render::render_resource::Shader};
 
-use crate::{FOLIAGE_GEN_HANDLE, foliage::node::FoliageProperties};
+use crate::{FOLIAGE_GEN_HANDLE, particles::foliage::node::FoliageProperties};
 
 pub mod node;
 
@@ -13,7 +13,7 @@ impl Plugin for FoliagePlugin {
         load_internal_asset!(
             app,
             FOLIAGE_GEN_HANDLE,
-            "../../assets/shader_utils/foliage.wgsl",
+            "../../../assets/shader_utils/foliage.wgsl",
             Shader::from_wgsl
         );
     }

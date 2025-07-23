@@ -5,6 +5,7 @@
 #import bevy_pbr::mesh_view_bindings::{globals,view};
 #import utils::{raymarch,conemarch,sdf_cone,map};
 #import bevy_pbr::utils::coords_to_viewport_uv;
+#import global_values::NoiseProperties;
 
 struct CandleFlame {
     diffuse_color: vec4<f32>,
@@ -15,10 +16,10 @@ struct CandleFlame {
 }
 
 @group(2) @binding(0) var<uniform> material:CandleFlame;
-@group(2) @binding(1) var first_half:texture_2d<f32>;
-@group(2) @binding(2) var s:sampler;
-@group(2) @binding(3) var second_half:texture_2d<f32>;
-@group(2) @binding(4) var s_2:sampler;
+// @group(2) @binding(1) var first_half:texture_2d<f32>;
+// @group(2) @binding(2) var s:sampler;
+// @group(2) @binding(3) var second_half:texture_2d<f32>;
+// @group(2) @binding(4) var s_2:sampler;
 
 @fragment
 fn fragment(
@@ -33,7 +34,7 @@ fn fragment(
         if dist > 20.0 {
             noise_offset = 0.0;
         } else {
-            noise_offset = (textureSample(first_half, s, vec2<f32>((ro.x + cos(globals.time)), ro.y - globals.time * 3.5)) * textureSample(second_half, s_2, vec2<f32>((ro.z + sin(globals.time)), 1.0))).r;
+            noise_offset = (FBN(vec4<f32>(uv.x, uv.y, uv.z, 1.0));(first_half, s, vec2<f32>((ro.x + cos(globals.time)), ro.y - globals.time * 3.5)) * textureSample(second_half, s_2, vec2<f32>((ro.z + sin(globals.time)), 1.0))).r;
         }
         let ray: vec4f = raymarch(ro, rd, sdf_cone(ro + noise_offset, material.radius, 0.1, 2.0));
         ro = ray.xyz;
@@ -53,4 +54,19 @@ fn fragment(
     return vec4(vec3f(0.0), 1.0 - dist);
 }
 
+
+
+fn FBN(p: vec4f) -> f32 {
+    var new_p = p;
+    var n_p = props;
+
+    var value = 0.0;
+    for (var i = 0; i < props.octaves; i++) {
+        value += n_p.amplitude * simplex_4d::snoise(n_p.frequency * new_p);
+        n_p.frequency *= n_p.lacunarity;
+        n_p.amplitude *= n_p.gain;
+    }
+
+    return value;
+}
 

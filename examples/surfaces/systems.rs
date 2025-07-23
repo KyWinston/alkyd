@@ -29,8 +29,8 @@ pub fn init_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         Camera3d::default(),
         Projection::Perspective(PerspectiveProjection {
-            near: 1.0,
-            far: 5.0,
+            near: 0.1,
+            far: 15.0,
             ..default()
         }),
         PixelPostProcessSettings {

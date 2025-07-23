@@ -55,16 +55,17 @@ fn fragment(
     pbr_input.material.base_color = material.color;
 
     let depth = prepass_depth(mesh.position, sample_index);
+
     pbr_input.N = prepass_normal(mesh.position, sample_index);
 
     var depth_dist: f32;
     var normal_dist: vec3<f32>;
     var normal_sum: f32;
     var uvs: array<vec4<f32>,4>;
-    uvs[0] = vec4(-1.0, 1.0, vec2(0.0));
-    uvs[1] = vec4(1.0, 1.0, vec2(0.0));
-    uvs[2] = vec4(-1.0, -1.0, vec2(0.0));
-    uvs[3] = vec4(1.0, -1.0, vec2(0.0));
+    uvs[0] = vec4(0.0, 1.0, vec2(0.0));
+    uvs[1] = vec4(1.0, 0.0, vec2(0.0));
+    uvs[2] = vec4(0.0, -1.0, vec2(0.0));
+    uvs[3] = vec4(-1.0, 0.0, vec2(0.0));
 
     for (var i = 0; i < 4; i++) {
         var d = prepass_depth(mesh.position + uvs[i], sample_index);
@@ -77,17 +78,21 @@ fn fragment(
         normal_sum += dot(normal_dist, normal_dist) * normal_ind;
     }
     let ind = sqrt(normal_sum);
-    let norm_edge = step(0.01, ind);
+    let norm_edge = step(0.001, ind);
 
-    let depth_edge = step(0.01, depth_dist);
+    let depth_edge = step(0.001, depth_dist);
     if depth_edge > 0.0 {
-        pbr_input.material.base_color = mix(pbr_input.material.base_color, pbr_input.material.base_color * 0.5, depth_edge);
+        pbr_input.material.base_color = mix(pbr_input.material.base_color, material.outline, depth_edge);
     } else {
-        pbr_input.material.base_color = mix(pbr_input.material.base_color, pbr_input.material.base_color + 0.3, norm_edge);
+        pbr_input.material.base_color = mix(pbr_input.material.base_color, material.outline, norm_edge);
     }
 
     out.color = fns::apply_pbr_lighting(pbr_input);
-
+    // greyscale pixel by calculating average of all channels
+    // let avg = (out.color.r + out.color.g + out.color.b) / 3.0;
+    // let ires = mesh.uv.xy * vec2(16.0, 9.0) * 2.0;
+    // let bayer_col = step(bayer[i32(ires.x) % 4][i32(ires.y) % 4], avg);
+    // out.color *= bayer_col;
     #endif
 
     return out;

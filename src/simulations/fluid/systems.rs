@@ -5,7 +5,6 @@ use bevy::{
     },
     prelude::*,
 };
-use bevy_easy_compute::prelude::AppComputeWorker;
 
 use super::{node::FluidWorker, resource::FluidParticleBuffer};
 
