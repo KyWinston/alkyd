@@ -4,7 +4,13 @@ version = "0.3.3"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/KyWinston/alkyd"
-exclude = ["**/bin", "examples/*", "assets/example_assets/*", "**/wgpu_trace"]
+exclude = [
+    "**/bin",
+    "examples/*",
+    "assets/example_assets/*",
+    "src/showcase",
+    "**/wgpu_trace",
+]
 description = "bevy crate for handling procedural textures and shaders"
 publish = true
 
@@ -17,9 +23,7 @@ bevy = { version = "0.16.1", default-features = false, features = [
 cfg-if = "1.0.0"
 bitflags = "2.5.0"
 bytemuck = "1.21.0"
-crossbeam-channel = "0.5.14"
 rand = "0.8.5"
-bevy_app_compute = "0.16"
 bevy-inspector-egui = "0.31.0"
 
 [dev-dependencies]
